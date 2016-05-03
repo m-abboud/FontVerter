@@ -64,6 +64,9 @@ public abstract class OpenTypeTable
         checksum = getTableChecksum(getData());
     }
 
+    void normalize() {
+    }
+
     protected final long getTableChecksum(byte[] tableData) throws IOException
     {
         DataInputStream is = new DataInputStream(new ByteArrayInputStream(tableData));

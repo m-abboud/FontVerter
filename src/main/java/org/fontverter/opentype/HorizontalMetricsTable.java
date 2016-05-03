@@ -4,6 +4,8 @@ import org.fontverter.FontWriter;
 
 import java.io.IOException;
 
+import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
+
 public class HorizontalMetricsTable extends OpenTypeTable {
     private int[] advanceWidth;
     private short[] leftSideBearing;
@@ -33,16 +35,27 @@ public class HorizontalMetricsTable extends OpenTypeTable {
     public static HorizontalMetricsTable createEmptyTable(OpenTypeFont font) {
         HorizontalMetricsTable table = new HorizontalMetricsTable();
         table.font = font;
-        table.numHMetrics = 5;
 
-        table.leftSideBearing =new short[]{0, 10, 29, 29, 55};
-        table.advanceWidth =  new int[]{1000, 1292, 1251, 1430, 1244};
-
-        int lsbArrCount = font.cmap.getNumberOfGlyphs() - table.numHMetrics;
-        table.nonHorizontalLeftSideBearing = new short[lsbArrCount];
-        for (int i = 0; i < lsbArrCount; i++)
-            table.nonHorizontalLeftSideBearing[i] = 1;
+        table.nonHorizontalLeftSideBearing = new short[]{};
+        table.leftSideBearing = new short[]{};
+        table.advanceWidth = new int[]{};
 
         return table;
+    }
+
+    @Override
+    void normalize() {
+        numHMetrics = 5;
+
+        leftSideBearing = new short[]{0, 10, 29, 29, 55};
+        advanceWidth = new int[]{1000, 1292, 1251, 1430, 1244};
+
+        int lsbArrCount = font.cmap.getNumberOfGlyphs() - numHMetrics;
+        if (lsbArrCount > 0) {
+            nonHorizontalLeftSideBearing = new short[lsbArrCount];
+            for (int i = 0; i < lsbArrCount; i++)
+                nonHorizontalLeftSideBearing[i] = 1;
+        } else
+            nonHorizontalLeftSideBearing = new short[]{};
     }
 }

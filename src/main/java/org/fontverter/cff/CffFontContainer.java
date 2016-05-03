@@ -4,6 +4,7 @@ package org.fontverter.cff;
 import org.apache.fontbox.cff.CFFCharset;
 import org.apache.fontbox.cff.CFFFont;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,12 +35,24 @@ public class CffFontContainer {
         return nonNullDictEntry("Notice", String.class);
     }
 
-    public Map<Integer, String> getGlyphIdsToNames() throws NoSuchFieldException, IllegalAccessException {
-        // reflection to get private map field for lazyness, !fragile!, obviously
-        Class type = font.getCharset().getClass();
-        Field mapField = type.getField("gidToName");
+    public Map<Integer, String> getGlyphIdsToNames() throws IOException {
+        try {
+            // reflection to get private map field for lazyness, !fragile!, obviously
+            Class type = CFFCharset.class;
+            Field[] fields = type.getDeclaredFields();
 
-        return (Map<Integer, String>) mapField.get(font.getCharset());
+            Field mapField = null;
+            for(Field fieldOn : fields) {
+                if (fieldOn.getName().contains("gidToName")) {
+                    mapField = fieldOn;
+                    mapField.setAccessible(true);
+                }
+            }
+
+            return (Map<Integer, String>) mapField.get(font.getCharset());
+        } catch(Exception ex) {
+            throw new IOException(ex);
+        }
     }
 
     private <X> X nonNullDictEntry(String key, Class<X> type) {

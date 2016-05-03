@@ -59,7 +59,6 @@ public class HeadTable extends OpenTypeTable
     @OtfSerializerProperty(dataType = DataType.SHORT)
     private short glyphDataFormat;
 
-    @Override
     public String getName()
     {
         return "head";
@@ -73,13 +72,13 @@ public class HeadTable extends OpenTypeTable
         table.checkSumAdjustment = 0;
         table.magicNumber = 0x5F0F3CF5;
         table.flags = 11;
-        table.unitsPerEm = 100;
+        table.unitsPerEm = 1000;
         table.created = GregorianCalendar.getInstance();
         table.modified = GregorianCalendar.getInstance();
-        table.xMin = -100;
-        table.yMin = -100;
-        table.xMax = 100;
-        table.yMax = 100;
+        table.xMin = 10;
+        table.yMin = -133;
+        table.xMax = 1193;
+        table.yMax = 796;
         table.macStyle = 0;
         table.lowestRecPPEM = 6;
         table.fontDirectionHint = 2;

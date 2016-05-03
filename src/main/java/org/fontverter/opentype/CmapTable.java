@@ -13,7 +13,10 @@ import static org.fontverter.opentype.CmapTable.CmapSubTable.CMAP_RECORD_BYTE_SI
 public class CmapTable extends OpenTypeTable {
     private static Logger log = LoggerFactory.getLogger(CmapTable.class);
     private static final int CMAP_HEADER_SIZE = 4;
+    private static Format4SubTable windowsTable;
+    private static Format4SubTable uniTable;
     private List<CmapSubTable> subTables = new ArrayList<CmapSubTable>();
+    private static Format0SubTable macTable;
 
     @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
     int version;
@@ -50,30 +53,36 @@ public class CmapTable extends OpenTypeTable {
         CmapTable table = new CmapTable();
         table.version = 0;
 
-        Format4SubTable subTable = new Format4SubTable();
-        subTable.setPlatformId(0);
-        subTable.setEncodingId(3);
-        subTable.addGlyphMapping(59, 1);
-        subTable.addGlyphMapping(76, 2);
-        subTable.addGlyphMapping(90, 3);
-        subTable.addGlyphMapping(123, 4);
-        table.subTables.add(subTable);
+        uniTable = new Format4SubTable();
+        uniTable.setPlatformId(0);
+        uniTable.setEncodingId(3);
+        table.subTables.add(uniTable);
 
-        Format0SubTable s0 = new Format0SubTable();
-        s0.setPlatformId(1);
-        s0.setEncodingId(0);
-        table.subTables.add(s0);
+        macTable = new Format0SubTable();
+        macTable.setPlatformId(1);
+        macTable.setEncodingId(0);
+        table.subTables.add(macTable);
 
-        subTable = new Format4SubTable();
-        subTable.setPlatformId(3);
-        subTable.setEncodingId(1);
-        subTable.addGlyphMapping(59, 1);
-        subTable.addGlyphMapping(76, 2);
-        subTable.addGlyphMapping(90, 3);
-        subTable.addGlyphMapping(123, 4);
-        table.subTables.add(subTable);
+        windowsTable = new Format4SubTable();
+        windowsTable.setPlatformId(3);
+        windowsTable.setEncodingId(1);
+        table.subTables.add(windowsTable);
 
         return table;
+    }
+
+    public void addGlyphMapping(Integer charCode, Integer glyphId) {
+        windowsTable.addGlyphMapping(charCode, glyphId);
+        uniTable.addGlyphMapping(charCode, glyphId);
+    }
+
+    public void addGlyphMapping(Map<Integer, Integer> mapping) {
+        for (Map.Entry<Integer, Integer> mappingOn : mapping.entrySet()) {
+            int charCode = mappingOn.getKey();
+            int glyphId = mappingOn.getValue();
+
+            addGlyphMapping(charCode, glyphId);
+        }
     }
 
     public int getNumberOfGlyphs() {
@@ -165,8 +174,10 @@ public class CmapTable extends OpenTypeTable {
             writer.writeUnsignedShort(getRangeShift());
 
 
+            List<Map.Entry<Integer, Integer>> orderedCodeMaps = getOrderedCharCodeToGlyphIds();
+
             // end[], end == charactercode in our current simple case
-            for (Map.Entry<Integer, Integer> entry : charCodeToGlyphId.entrySet())
+            for (Map.Entry<Integer, Integer> entry : orderedCodeMaps)
                 writer.writeUnsignedShort(entry.getKey());
             // end[] padding
             writer.writeUnsignedShort(65535);
@@ -175,12 +186,12 @@ public class CmapTable extends OpenTypeTable {
             writer.writeUnsignedShort(0);
 
             // start[] and padding, start == charactercode in our current simple case
-            for (Map.Entry<Integer, Integer> entry : charCodeToGlyphId.entrySet())
+            for (Map.Entry<Integer, Integer> entry : orderedCodeMaps)
                 writer.writeUnsignedShort(entry.getKey());
             writer.writeUnsignedShort(65535);
 
             // idDelta[], delta is glyphId storing
-            for (Map.Entry<Integer, Integer> entry : charCodeToGlyphId.entrySet()) {
+            for (Map.Entry<Integer, Integer> entry : orderedCodeMaps) {
                 int delta = 65536 + entry.getValue() - entry.getKey();
                 writer.writeUnsignedShort(delta);
             }
@@ -192,6 +203,21 @@ public class CmapTable extends OpenTypeTable {
 
 
             return writer.toByteArray();
+        }
+
+        private List<Map.Entry<Integer, Integer>> getOrderedCharCodeToGlyphIds() {
+            List<Map.Entry<Integer, Integer>> charCodeEntries = new ArrayList<Map.Entry<Integer, Integer>>();
+            for (Map.Entry<Integer, Integer> entryOn : charCodeToGlyphId.entrySet())
+                charCodeEntries.add(entryOn);
+
+            Collections.sort(charCodeEntries, new Comparator<Map.Entry<Integer, Integer>>() {
+                @Override
+                public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
+                    return o1.getValue() < o2.getValue() ? -1 : o1.getValue().equals(o2.getValue()) ? 0 : 1;
+                }
+            });
+
+            return charCodeEntries;
         }
 
         @Override

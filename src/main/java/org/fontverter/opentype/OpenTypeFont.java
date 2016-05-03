@@ -45,6 +45,9 @@ public class OpenTypeFont {
     protected void normalizeTables() {
         mxap.setNumGlyphs(cmap.getNumberOfGlyphs());
         mxap.setNumGlyphs(cmap.getNumberOfGlyphs());
+
+        for (OpenTypeTable tableOn : tables)
+            tableOn.normalize();
     }
 
     public OpenTypeFont() {
@@ -60,9 +63,9 @@ public class OpenTypeFont {
         tables.add(table);
     }
 
-    public List<OpenTypeTable> getTables() {
+    private List<OpenTypeTable> descendingSortedTables() {
         // OpenType spec says tables must be sorted alphabetically, but then later states some very specific order
-        // then still needs to be added here
+        // then still needs to be added here for seperate data entries
         Collections.sort(tables, new Comparator<OpenTypeTable>() {
             public int compare(OpenTypeTable left, OpenTypeTable right) {
                 return left.getName().compareTo(right.getName());
@@ -73,6 +76,8 @@ public class OpenTypeFont {
     }
 
     public byte[] getFontData() throws IOException, FontSerializerException {
+        descendingSortedTables();
+        normalizeTables();
         calculateOffsets(tables);
 
         // gotta calc checksums before doing final full font checksum
