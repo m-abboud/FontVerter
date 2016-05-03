@@ -1,16 +1,16 @@
 package org.fontverter.opentype;
 
 public class MaximumProfileTable extends OpenTypeTable {
-    public static MaximumProfileTable createEmptyTable() {
+    public static MaximumProfileTable createDefaultTable() {
         MaximumProfileTable table = new MaximumProfileTable();
         table.version = .3125f;
         return table;
     }
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.FIXED32)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.FIXED32)
     protected float version;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
     protected int numGlyphs;
 
 
@@ -38,7 +38,7 @@ public class MaximumProfileTable extends OpenTypeTable {
 
 
     public static class MaximumProfileTableV1 extends MaximumProfileTable {
-        public static MaximumProfileTable createEmptyTable() {
+        public static MaximumProfileTable createDefaultTable() {
             MaximumProfileTableV1 table = new MaximumProfileTableV1();
             table.version = 1f;
             table.numGlyphs = 1;
@@ -59,43 +59,43 @@ public class MaximumProfileTable extends OpenTypeTable {
             return table;
         }
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxPoints;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxContours;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxCompositePoints;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxCompositeContours;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxZones;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxTwilightPoints;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxStorage;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxFunctionDefs;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxInstructionDefs;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxStackElements;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxSizeOfInstructions;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxComponentElements;
 
-        @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
         private int maxComponentDepth;
 
         public int getMaxPoints() {

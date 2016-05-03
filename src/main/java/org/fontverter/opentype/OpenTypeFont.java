@@ -4,6 +4,7 @@ import org.fontverter.FontWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,27 +25,28 @@ public class OpenTypeFont {
     public NameTable name;
 
     private static Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
+    private File sourceFile;
 
     public static OpenTypeFont createBlankFont() {
         OpenTypeFont font = new OpenTypeFont();
-        font.head = font.initTable(HeadTable.createEmptyTable());
+        font.head = font.initTable(HeadTable.createDefaultTable());
 
-        font.os2 = font.initTable(OS2WindowsMetricsTable.createEmptyTable());
-        font.hhea = font.initTable(HorizontalHeadTable.createEmptyTable());
-        font.mxap = font.initTable(MaximumProfileTable.createEmptyTable());
+        font.os2 = font.initTable(OS2WindowsMetricsTable.createDefaultTable());
+        font.hhea = font.initTable(HorizontalHeadTable.createDefaultTable());
+        font.mxap = font.initTable(MaximumProfileTable.createDefaultTable());
 
-        font.post = font.initTable(PostScriptTable.createEmptyTable());
-        font.cmap = font.initTable(CmapTable.createEmptyTable());
-        font.hmtx = font.initTable(HorizontalMetricsTable.createEmptyTable(font));
+        font.post = font.initTable(PostScriptTable.createDefaultTable());
+        font.cmap = font.initTable(CmapTable.createDefaultTable());
+        font.hmtx = font.initTable(HorizontalMetricsTable.createDefaultTable(font));
 
-        font.name = font.initTable(NameTable.createTable());
+        font.name = font.initTable(NameTable.createDefaultTable());
         font.normalizeTables();
         return font;
     }
 
-    protected void normalizeTables() {
-        mxap.setNumGlyphs(cmap.getNumberOfGlyphs());
-        mxap.setNumGlyphs(cmap.getNumberOfGlyphs());
+    public void normalizeTables() {
+        mxap.setNumGlyphs(cmap.getGlyphCount());
+        mxap.setNumGlyphs(cmap.getGlyphCount());
 
         for (OpenTypeTable tableOn : tables)
             tableOn.normalize();
@@ -142,5 +144,13 @@ public class OpenTypeFont {
 
     private double log2(int number) {
         return Math.log(number) / Math.log(2);
+    }
+
+    public File getSourceFile() {
+        return sourceFile;
+    }
+
+    public void setSourceFile(File sourceFile) {
+        this.sourceFile = sourceFile;
     }
 }

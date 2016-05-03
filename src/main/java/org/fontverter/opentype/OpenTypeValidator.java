@@ -21,6 +21,18 @@ public class OpenTypeValidator {
         return errors;
     }
 
+    public void validateWithExceptionsThrown(OpenTypeFont font) throws InvocationTargetException, IllegalAccessException, FontValidationException {
+        this.font = font;
+        List<FontValidatorError> errors = validate(this.font);
+
+        String validateMessage = "";
+        for (FontValidatorError errorOn : errors)
+            validateMessage += "\n" + errorOn.toString();
+
+        if (errors.size() > 0)
+            throw new FontValidationException("Internal Validator error(s) " + validateMessage);
+    }
+
     private void evaluateRule(List<FontValidatorError> errors, Method methodOn) throws IllegalAccessException, InvocationTargetException {
         ValidateRule annotation = methodOn.getAnnotation(ValidateRule.class);
 
@@ -67,5 +79,11 @@ public class OpenTypeValidator {
         ValidatorErrorType type() default ValidatorErrorType.ERROR;
 
         String message() default "";
+    }
+
+    public class FontValidationException extends Exception {
+        public FontValidationException(String message) {
+            super(message);
+        }
     }
 }

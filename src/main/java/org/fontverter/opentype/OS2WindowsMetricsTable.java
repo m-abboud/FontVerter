@@ -99,7 +99,7 @@ class OS2WindowsMetricsTable extends OpenTypeTable
         return out.toByteArray();
     }
 
-    public static OS2WindowsMetricsTable createEmptyTable()
+    public static OS2WindowsMetricsTable createDefaultTable()
     {
         OS2WindowsMetricsTable table = new OS2WindowsMetricsTable();
         table.version = 3;

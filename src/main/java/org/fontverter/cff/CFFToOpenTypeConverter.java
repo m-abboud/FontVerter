@@ -1,43 +1,35 @@
 package org.fontverter.cff;
 
-import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFStandardEncoding;
 import org.fontverter.CharsetConverter;
-import org.fontverter.FontNotSupportedException;
-import org.fontverter.opentype.CffTable;
-import org.fontverter.opentype.FontSerializerException;
-import org.fontverter.opentype.NameTable;
-import org.fontverter.opentype.OpenTypeFont;
+import org.fontverter.opentype.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 public class CffToOpenTypeConverter {
-
-    private final byte[] cffData;
     private CffFontContainer cffFont;
     private OpenTypeFont otfFont;
 
-    public CffToOpenTypeConverter(byte[] cffData) {
-        this.cffData = cffData;
+    public CffToOpenTypeConverter(CffFontContainer cffFont) {
+        this.cffFont = cffFont;
+    }
+
+    public CffToOpenTypeConverter(byte[] cffdata) throws IOException {
+        this.cffFont = CffFontContainer.parse(cffdata);
     }
 
     public OpenTypeFont generateFont() throws IOException, FontSerializerException {
-        CFFParser parser = new CFFParser();
-        List<CFFFont> fonts = parser.parse(cffData);
-        if (fonts.size() > 1)
-            throw new FontNotSupportedException("Multiple CFF fonts in one file are not supported.");
-
-        cffFont = new CffFontContainer(fonts.get(0));
         otfFont = OpenTypeFont.createBlankFont();
-
-        otfFont.addTable(new CffTable(this.cffData));
+        byte[] cffData = cffFont.getData();
+        otfFont.addTable(new CffTable(cffData));
 
         convertGlyphIdToCodeMap();
-        convertNameRecords();
+        convertNameRecords(otfFont.name);
+        convertHorizontalLayoutSettings();
 
+        // kinda kludgy having to call normalize after font is edited
+        otfFont.normalizeTables();
         return otfFont;
     }
 
@@ -52,13 +44,21 @@ public class CffToOpenTypeConverter {
         otfFont.cmap.addGlyphMapping(otfIdToCharCodes);
     }
 
-    private void convertNameRecords() throws IOException {
-        NameTable name = otfFont.name;
+    private void convertNameRecords(NameTable name) throws IOException {
         name.setFontFamily(cffFont.getFamilyName());
         name.setVersion(cffFont.getVersion());
         name.setFontSubFamily(cffFont.getSubFamilyName());
         name.setPostScriptName(cffFont.getFamilyName());
         name.setCopyright(cffFont.getTrademarkNotice());
         name.setFontFullName(cffFont.getFullName());
+    }
+
+    private void convertHorizontalLayoutSettings() throws IOException {
+        otfFont.hhea.descender = cffFont.getUnderLinePosition().shortValue();
+        otfFont.head.setMinX((short) cffFont.getMinX());
+        otfFont.head.setMaxX((short) cffFont.getMaxX());
+        
+        otfFont.head.setMinY((short) cffFont.getMinY());
+        otfFont.head.setMaxY((short) cffFont.getMaxY());
     }
 }

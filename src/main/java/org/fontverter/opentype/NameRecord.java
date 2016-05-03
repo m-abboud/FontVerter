@@ -2,7 +2,7 @@ package org.fontverter.opentype;
 
 import java.nio.charset.Charset;
 
-import static org.fontverter.opentype.OtfSerializerProperty.*;
+import static org.fontverter.opentype.OtfDataProperty.*;
 
 class NameRecord {
     static final int NAME_RECORD_SIZE = 12;
@@ -27,28 +27,28 @@ class NameRecord {
         return record;
     }
 
-    @OtfSerializerProperty(dataType = DataType.USHORT, order = 0)
+    @OtfDataProperty(dataType = DataType.USHORT, order = 0)
     int platformID;
 
-    @OtfSerializerProperty(dataType = DataType.USHORT, order = 1)
+    @OtfDataProperty(dataType = DataType.USHORT, order = 1)
     int encodingID;
 
-    @OtfSerializerProperty(dataType = DataType.USHORT, order = 2)
+    @OtfDataProperty(dataType = DataType.USHORT, order = 2)
     int languageID;
 
-    @OtfSerializerProperty(dataType = DataType.USHORT, order = 3)
+    @OtfDataProperty(dataType = DataType.USHORT, order = 3)
     int nameID;
 
-    @OtfSerializerProperty(dataType = DataType.USHORT, order = 4)
+    @OtfDataProperty(dataType = DataType.USHORT, order = 4)
     int getLength() {
         return getStringData().length;
     }
 
-    @OtfSerializerProperty(dataType = DataType.USHORT, order = 5)
+    @OtfDataProperty(dataType = DataType.USHORT, order = 5)
     int offset;
 
     private NameRecord(String name) {
-        stringData = name;
+        string = name;
     }
 
 
@@ -68,10 +68,14 @@ class NameRecord {
         this.nameID = nameID;
     }
 
-    private String stringData;
+    private String string;
 
     public byte[] getStringData() {
-        return stringData.getBytes(getEncoding());
+        return string.getBytes(getEncoding());
+    }
+
+    public String getRawString() {
+        return string;
     }
 
     private Charset getEncoding() {
@@ -81,7 +85,7 @@ class NameRecord {
     }
 
     public void setStringData(String stringData) {
-        this.stringData = stringData;
+        this.string = stringData;
     }
 
     public byte[] getRecordData() throws FontSerializerException {

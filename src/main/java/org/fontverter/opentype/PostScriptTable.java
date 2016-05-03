@@ -2,31 +2,31 @@ package org.fontverter.opentype;
 
 public class PostScriptTable extends OpenTypeTable
 {
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.FIXED32)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.FIXED32)
     private float formatType;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.FIXED32)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.FIXED32)
     private float italicAngle;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     private short underlinePosition;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     private short underlineThickness;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.ULONG)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
     private long isFixedPitch;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.ULONG)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
     private long minMemType42;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.ULONG)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
     private long maxMemType42;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.ULONG)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
     private long mimMemType1;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.ULONG)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
     private long maxMemType1;
 
     private String[] glyphNames = null;
@@ -37,7 +37,7 @@ public class PostScriptTable extends OpenTypeTable
         return "post";
     }
 
-    public static PostScriptTable createEmptyTable()
+    public static PostScriptTable createDefaultTable()
     {
         PostScriptTable table = new PostScriptTable();
         table.formatType = 3.0f;

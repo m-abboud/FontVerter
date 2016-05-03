@@ -4,8 +4,6 @@ import org.fontverter.FontWriter;
 
 import java.io.IOException;
 
-import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
-
 public class HorizontalMetricsTable extends OpenTypeTable {
     private int[] advanceWidth;
     private short[] leftSideBearing;
@@ -32,7 +30,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         return "hmtx";
     }
 
-    public static HorizontalMetricsTable createEmptyTable(OpenTypeFont font) {
+    public static HorizontalMetricsTable createDefaultTable(OpenTypeFont font) {
         HorizontalMetricsTable table = new HorizontalMetricsTable();
         table.font = font;
 
@@ -50,7 +48,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         leftSideBearing = new short[]{0, 10, 29, 29, 55};
         advanceWidth = new int[]{1000, 1292, 1251, 1430, 1244};
 
-        int lsbArrCount = font.cmap.getNumberOfGlyphs() - numHMetrics;
+        int lsbArrCount = font.cmap.getGlyphCount() - numHMetrics;
         if (lsbArrCount > 0) {
             nonHorizontalLeftSideBearing = new short[lsbArrCount];
             for (int i = 0; i < lsbArrCount; i++)

@@ -18,10 +18,10 @@ public class CmapTable extends OpenTypeTable {
     private List<CmapSubTable> subTables = new ArrayList<CmapSubTable>();
     private static Format0SubTable macTable;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
     int version;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
     int numTables() {
         return subTables.size();
     }
@@ -49,7 +49,7 @@ public class CmapTable extends OpenTypeTable {
         return writer.toByteArray();
     }
 
-    public static CmapTable createEmptyTable() {
+    public static CmapTable createDefaultTable() {
         CmapTable table = new CmapTable();
         table.version = 0;
 
@@ -85,12 +85,11 @@ public class CmapTable extends OpenTypeTable {
         }
     }
 
-    public int getNumberOfGlyphs() {
+    public int getGlyphCount() {
         if (subTables.size() == 0)
             return 0;
         return subTables.get(0).glyphCount();
     }
-
 
     private void calculateOffsets() throws IOException {
         int offset = subTables.size() * CMAP_RECORD_BYTE_SIZE + CMAP_HEADER_SIZE;

@@ -18,14 +18,14 @@ public class NameTable extends OpenTypeTable {
     private int formatSelector = 0;
     private OtfNameConstants.Language defaultLanguage = OtfNameConstants.Language.UNITED_STATES;
 
-    public static NameTable createTable() {
+    public static NameTable createDefaultTable() {
         NameTable table = new NameTable();
 
         table.setCopyright("Default Copyright");
         table.setFontFamily("DefaultFamily");
         table.setFontSubFamily("DefaultSubFamily");
         table.setVersion("Version 1.1");
-        table.setUniqueId(UUID.randomUUID().toString().replace("-", "").substring(0, 6));
+        table.setUniqueId(UUID.randomUUID().toString().replace("-", ""));
         table.setFontFullName("DefaultFontFullName");
         table.setPostScriptName("DefaultPostScriptName");
 
@@ -60,6 +60,13 @@ public class NameTable extends OpenTypeTable {
         addName(name, OtfNameConstants.RecordType.VERSION_STRING, defaultLanguage);
     }
 
+    public String getName(RecordType type) {
+        for(NameRecord recordOn : nameRecords)
+            if(recordOn.nameID == type.getValue())
+                return recordOn.getRawString();
+
+        return null;
+    }
 
     private void addName(String name, RecordType type, OtfNameConstants.Language language) {
         deleteExisting(type, language);
@@ -69,14 +76,15 @@ public class NameTable extends OpenTypeTable {
         NameRecord macRecord = NameRecord.createMacRecord(name, type, language);
         nameRecords.add(macRecord);
     }
+
     private void deleteExisting(RecordType type, OtfNameConstants.Language language) {
         List<NameRecord> deleteList = new LinkedList<NameRecord>();
-        for(NameRecord recordOn : nameRecords)
-        //recordOn.languageID == language.getValue() &&
-            if(recordOn.nameID == type.getValue())
+        for (NameRecord recordOn : nameRecords)
+            //recordOn.languageID == language.getValue() &&
+            if (recordOn.nameID == type.getValue())
                 deleteList.add(recordOn);
 
-        for(NameRecord recordOn : deleteList)
+        for (NameRecord recordOn : deleteList)
             nameRecords.remove(recordOn);
     }
 
@@ -113,7 +121,6 @@ public class NameTable extends OpenTypeTable {
             recordOn.setOffset(offset);
             log.debug("{} Name table sub table Offset Calc: ", offset);
 
-//            recordOn.length = recordOn.getLength();
             offset += recordOn.getLength();
         }
     }

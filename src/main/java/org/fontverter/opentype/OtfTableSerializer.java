@@ -42,11 +42,11 @@ class OtfTableSerializer {
         List<Object> properties = new LinkedList<Object>();
 
         for (Field fieldOn : type.getDeclaredFields()) {
-            if(fieldOn.isAnnotationPresent(OtfSerializerProperty.class))
+            if(fieldOn.isAnnotationPresent(OtfDataProperty.class))
                 properties.add(fieldOn);
         }
         for (Method methodOn : type.getDeclaredMethods()) {
-            if(methodOn.isAnnotationPresent(OtfSerializerProperty.class))
+            if(methodOn.isAnnotationPresent(OtfDataProperty.class))
                 properties.add(methodOn);
         }
 
@@ -67,21 +67,21 @@ class OtfTableSerializer {
         return properties;
     }
 
-    private OtfSerializerProperty getPropertyAnnotation(Object property) throws FontSerializerException {
+    private OtfDataProperty getPropertyAnnotation(Object property) throws FontSerializerException {
         if(property instanceof Field)
-            return ((Field)property).getAnnotation(OtfSerializerProperty.class);
+            return ((Field)property).getAnnotation(OtfDataProperty.class);
         else if(property instanceof Method)
-            return ((Method)property).getAnnotation(OtfSerializerProperty.class);
+            return ((Method)property).getAnnotation(OtfDataProperty.class);
         throw new FontSerializerException("Could not find annotation for property " + property.toString());
     }
 
     private void serializeMethod(Object object, Method method) throws IOException, InvocationTargetException, IllegalAccessException {
-        if (!method.isAnnotationPresent(OtfSerializerProperty.class))
+        if (!method.isAnnotationPresent(OtfDataProperty.class))
             return;
 
         method.setAccessible(true);
-        Annotation annotation = method.getAnnotation(OtfSerializerProperty.class);
-        OtfSerializerProperty property = (OtfSerializerProperty) annotation;
+        Annotation annotation = method.getAnnotation(OtfDataProperty.class);
+        OtfDataProperty property = (OtfDataProperty) annotation;
         Object retValue = method.invoke(object);
         switch (property.dataType()) {
             case SHORT:
@@ -116,12 +116,12 @@ class OtfTableSerializer {
     }
 
     private void serializeField(Object object, Field field) throws IllegalAccessException, IOException {
-        if (!field.isAnnotationPresent(OtfSerializerProperty.class))
+        if (!field.isAnnotationPresent(OtfDataProperty.class))
             return;
 
         field.setAccessible(true);
-        Annotation annotation = field.getAnnotation(OtfSerializerProperty.class);
-        OtfSerializerProperty property = (OtfSerializerProperty) annotation;
+        Annotation annotation = field.getAnnotation(OtfDataProperty.class);
+        OtfDataProperty property = (OtfDataProperty) annotation;
         Object fieldValue = field.get(object);
         switch (property.dataType()) {
             case SHORT:

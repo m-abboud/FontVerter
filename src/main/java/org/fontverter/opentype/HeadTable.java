@@ -4,59 +4,59 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static org.fontverter.opentype.OtfSerializerProperty.*;
+import static org.fontverter.opentype.OtfDataProperty.*;
 
 public class HeadTable extends OpenTypeTable
 {
-    @OtfSerializerProperty(dataType = DataType.FIXED32)
+    @OtfDataProperty(dataType = DataType.FIXED32)
     private float version;
 
-    @OtfSerializerProperty(dataType = DataType.FIXED32)
+    @OtfDataProperty(dataType = DataType.FIXED32)
     private float fontRevision;
 
-    @OtfSerializerProperty(dataType = DataType.ULONG)
+    @OtfDataProperty(dataType = DataType.ULONG)
     private long checkSumAdjustment;
 
-    @OtfSerializerProperty(dataType = DataType.ULONG)
+    @OtfDataProperty(dataType = DataType.ULONG)
     private long magicNumber;
 
-    @OtfSerializerProperty(dataType = DataType.USHORT)
+    @OtfDataProperty(dataType = DataType.USHORT)
     private int flags;
 
-    @OtfSerializerProperty(dataType = DataType.USHORT)
+    @OtfDataProperty(dataType = DataType.USHORT)
     private int unitsPerEm;
 
-    @OtfSerializerProperty(dataType = DataType.LONGDATETIME)
+    @OtfDataProperty(dataType = DataType.LONGDATETIME)
     private Calendar created;
 
-    @OtfSerializerProperty(dataType = DataType.LONGDATETIME)
+    @OtfDataProperty(dataType = DataType.LONGDATETIME)
     private Calendar modified;
 
-    @OtfSerializerProperty(dataType = DataType.SHORT)
+    @OtfDataProperty(dataType = DataType.SHORT)
     private short xMin;
 
-    @OtfSerializerProperty(dataType = DataType.SHORT)
+    @OtfDataProperty(dataType = DataType.SHORT)
     private short yMin;
 
-    @OtfSerializerProperty(dataType = DataType.SHORT)
+    @OtfDataProperty(dataType = DataType.SHORT)
     private short xMax;
 
-    @OtfSerializerProperty(dataType = DataType.SHORT)
+    @OtfDataProperty(dataType = DataType.SHORT)
     private short yMax;
 
-    @OtfSerializerProperty(dataType = DataType.USHORT)
+    @OtfDataProperty(dataType = DataType.USHORT)
     private int macStyle;
 
-    @OtfSerializerProperty(dataType = DataType.USHORT)
+    @OtfDataProperty(dataType = DataType.USHORT)
     private int lowestRecPPEM;
 
-    @OtfSerializerProperty(dataType = DataType.SHORT)
+    @OtfDataProperty(dataType = DataType.SHORT)
     private short fontDirectionHint;
 
-    @OtfSerializerProperty(dataType = DataType.SHORT)
+    @OtfDataProperty(dataType = DataType.SHORT)
     private short indexToLocFormat;
 
-    @OtfSerializerProperty(dataType = DataType.SHORT)
+    @OtfDataProperty(dataType = DataType.SHORT)
     private short glyphDataFormat;
 
     public String getName()
@@ -64,7 +64,7 @@ public class HeadTable extends OpenTypeTable
         return "head";
     }
 
-    public static HeadTable createEmptyTable()
+    public static HeadTable createDefaultTable()
     {
         HeadTable table = new HeadTable();
         table.version = 1;
@@ -75,10 +75,10 @@ public class HeadTable extends OpenTypeTable
         table.unitsPerEm = 1000;
         table.created = GregorianCalendar.getInstance();
         table.modified = GregorianCalendar.getInstance();
-        table.xMin = 10;
-        table.yMin = -133;
-        table.xMax = 1193;
-        table.yMax = 796;
+        table.xMin = 26;
+        table.yMin = -2;
+        table.xMax = 1200;
+        table.yMax = 800;
         table.macStyle = 0;
         table.lowestRecPPEM = 6;
         table.fontDirectionHint = 2;
@@ -90,5 +90,37 @@ public class HeadTable extends OpenTypeTable
 
     public void checksumAdjustment(byte[] fontBytes) throws IOException {
         checkSumAdjustment = 0xB1B0AFBA - getTableChecksum(fontBytes);
+    }
+
+    public short getyMin() {
+        return yMin;
+    }
+
+    public void setMinY(short yMin) {
+        this.yMin = yMin;
+    }
+
+    public short getxMin() {
+        return xMin;
+    }
+
+    public void setMinX(short xMin) {
+        this.xMin = xMin;
+    }
+
+    public short getxMax() {
+        return xMax;
+    }
+
+    public void setMaxX(short xMax) {
+        this.xMax = xMax;
+    }
+
+    public short getyMax() {
+        return yMax;
+    }
+
+    public void setMaxY(short yMax) {
+        this.yMax = yMax;
     }
 }

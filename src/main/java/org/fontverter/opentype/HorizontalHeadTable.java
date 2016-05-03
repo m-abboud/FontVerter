@@ -1,55 +1,55 @@
 package org.fontverter.opentype;
 
 public class HorizontalHeadTable extends OpenTypeTable {
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.FIXED32)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.FIXED32)
     public float version;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short ascender;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short descender;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short lineGap;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
     public int advanceWidthMax;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short minLeftSideBearing;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short minRightSideBearing;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short xMaxExtent;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short caretSlopeRise;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short caretSlopeRun;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short caretOffset;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     private short reserved1;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     private short reserved2;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     private short reserved3;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     private short reserved4;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
     public short metricDataFormat;
 
-    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+    @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
     public int numberOfHMetrics;
 
     @Override
@@ -58,7 +58,7 @@ public class HorizontalHeadTable extends OpenTypeTable {
         return "hhea";
     }
 
-    public static HorizontalHeadTable createEmptyTable() {
+    public static HorizontalHeadTable createDefaultTable() {
         HorizontalHeadTable table = new HorizontalHeadTable();
         table.version = 1;
         table.ascender = 796;

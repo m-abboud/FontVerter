@@ -1,2 +1,2 @@
 # FontVerter
-Pure java library for converting CFF fonts.
+Java library for converting CFF fonts.
