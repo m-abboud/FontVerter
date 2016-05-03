@@ -1,17 +1,17 @@
-package org.fontverter.cff;
+package org.fontverter.opentype;
 
 import org.fontverter.opentype.OpenTypeTable;
 
-class CFFTable extends OpenTypeTable
+public class CffTable extends OpenTypeTable
 {
     private byte[] data;
 
-    public CFFTable(byte[] data)
+    public CffTable(byte[] data)
     {
         this.data = data;
     }
 
-    public byte[] getData()
+    public byte[] getRawData()
     {
         return data;
     }

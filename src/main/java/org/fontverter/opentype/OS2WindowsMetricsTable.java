@@ -50,7 +50,7 @@ class OS2WindowsMetricsTable extends OpenTypeTable
         return "OS/2";
     }
 
-    public byte[] getData() throws IOException
+    protected byte[] getRawData() throws IOException
     {
         FontWriter out = FontWriter.createWriter();
         out.writeUnsignedShort(version);
@@ -70,10 +70,10 @@ class OS2WindowsMetricsTable extends OpenTypeTable
         out.writeShort(strikeoutPosition);
         out.writeUnsignedShort(familyClass);
         out.write(panose);
-        out.writeLong(unicodeRange1);
-        out.writeLong(unicodeRange2);
-        out.writeLong(unicodeRange3);
-        out.writeLong(unicodeRange4);
+        out.writeUnsignedInt((int) unicodeRange1);
+        out.writeUnsignedInt((int) unicodeRange2);
+        out.writeUnsignedInt((int) unicodeRange3);
+        out.writeUnsignedInt((int) unicodeRange4);
         out.writeString(achVendId);
         out.writeUnsignedShort(fsSelection);
         out.writeUnsignedShort(firstCharIndex);
@@ -85,13 +85,13 @@ class OS2WindowsMetricsTable extends OpenTypeTable
         out.writeUnsignedShort(winDescent);
         if (version >= 1)
         {
-            out.writeLong(codePageRange1);
-            out.writeLong(codePageRange2);
+            out.writeUnsignedInt((int) codePageRange1);
+            out.writeUnsignedInt((int) codePageRange2);
         }
         if (version >= 2)
         {
             out.writeShort(sxHeight);
-            out.writeUnsignedShort(sCapHeight);
+            out.writeShort(sCapHeight);
             out.writeUnsignedShort(usDefaultChar);
             out.writeUnsignedShort(usBreakChar);
             out.writeUnsignedShort(usMaxContext);

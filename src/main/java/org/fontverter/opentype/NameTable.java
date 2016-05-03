@@ -1,143 +1,119 @@
 package org.fontverter.opentype;
 
 import org.fontverter.FontWriter;
+import org.fontverter.opentype.OtfNameConstants.RecordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import static org.fontverter.FontWriter.openTypeCharEncoding;
-import static org.fontverter.opentype.NameTable.NameRecord.NAME_RECORD_SIZE;
+import static org.fontverter.opentype.NameRecord.NAME_RECORD_SIZE;
 
-public class NameTable extends OpenTypeTable
-{
-    private static Logger log = LoggerFactory.getLogger(NameTable.class);
+public class NameTable extends OpenTypeTable {
     static final int NAME_TABLE_HEADER_SIZE = 6;
-    private List<NameRecord> nameRecords = new ArrayList<NameRecord>();
-    private int formatSelector = 1;
+    private static Logger log = LoggerFactory.getLogger(NameTable.class);
 
-    public static NameTable createTable(String[] names)
-    {
+    private List<NameRecord> nameRecords = new ArrayList<NameRecord>();
+    private int formatSelector = 0;
+    private OtfNameConstants.Language defaultLanguage = OtfNameConstants.Language.UNITED_STATES;
+
+    public static NameTable createTable() {
         NameTable table = new NameTable();
-        for(String nameOn : names)
-            table.nameRecords.add(new NameRecord(nameOn));
+
+        table.setCopyright("Default Copyright");
+        table.setFontFamily("DefaultFamily");
+        table.setFontSubFamily("DefaultSubFamily");
+        table.setVersion("Version 1.1");
+        table.setUniqueId(UUID.randomUUID().toString().replace("-", "").substring(0, 6));
+        table.setFontFullName("DefaultFontFullName");
+        table.setPostScriptName("DefaultPostScriptName");
 
         return table;
     }
 
-    @Override
-    public byte[] getData() throws IOException
-    {
+    public void setFontFamily(String family) {
+        addName(family, OtfNameConstants.RecordType.FONT_FAMILY, defaultLanguage);
+    }
+
+    public void setCopyright(String name) {
+        addName(name, OtfNameConstants.RecordType.COPYRIGHT, defaultLanguage);
+    }
+
+    public void setFontSubFamily(String name) {
+        addName(name, OtfNameConstants.RecordType.FONT_SUB_FAMILY, defaultLanguage);
+    }
+
+    public void setFontFullName(String name) {
+        addName(name, OtfNameConstants.RecordType.FULL_FONT_NAME, defaultLanguage);
+    }
+
+    public void setUniqueId(String name) {
+        addName(name, OtfNameConstants.RecordType.UNIQUE_FONT_ID, defaultLanguage);
+    }
+
+    public void setPostScriptName(String name) {
+        addName(name, OtfNameConstants.RecordType.POSTSCRIPT_NAME, defaultLanguage);
+    }
+
+    public void setVersion(String name) {
+        addName(name, OtfNameConstants.RecordType.VERSION_STRING, defaultLanguage);
+    }
+
+
+    private void addName(String name, RecordType type, OtfNameConstants.Language language) {
+        NameRecord windowsRecord = NameRecord.createWindowsRecord(name, type, language);
+        nameRecords.add(windowsRecord);
+
+        NameRecord macRecord = NameRecord.createMacRecord(name, type, language);
+        nameRecords.add(macRecord);
+    }
+
+    protected byte[] getRawData() throws IOException, FontSerializerException {
         FontWriter writer = FontWriter.createWriter();
-        writer.writeUnsignedInt(formatSelector);
-        writer.writeUnsignedInt(nameRecords.size());
-        writer.writeUnsignedInt(getOffsetToStringStorage());
+        writer.writeUnsignedShort(formatSelector);
+        writer.writeUnsignedShort(nameRecords.size());
+        writer.writeUnsignedShort(getOffsetToStringStorage());
 
         calculateOffsets();
+
+        Collections.sort(nameRecords, new Comparator<NameRecord>() {
+            @Override
+            public int compare(NameRecord o1, NameRecord o2) {
+                if (o1.platformID != o2.platformID)
+                    return o1.platformID < o2.platformID ? -1 : 1;
+                return o1.nameID < o2.nameID ? -1 : o1.nameID == o2.nameID ? 0 : 1;
+
+            }
+        });
 
         for (NameRecord record : nameRecords)
             writer.write(record.getRecordData());
 
         for (NameRecord record : nameRecords)
-            writer.writeString(record.getStringData());
+            writer.write(record.getStringData());
 
         return writer.toByteArray();
     }
 
-    private void calculateOffsets() throws IOException
-    {
-        int offset = getOffsetToStringStorage();
-        int index = 0;
-        for (NameRecord recordOn : nameRecords)
-        {
-            recordOn.setNameID(index);
+    private void calculateOffsets() throws IOException {
+        int offset = 0;
+        for (NameRecord recordOn : nameRecords) {
             recordOn.setOffset(offset);
             log.debug("{} Name table sub table Offset Calc: ", offset);
 
+//            recordOn.length = recordOn.getLength();
             offset += recordOn.getLength();
-            index ++;
         }
     }
 
-    private int getOffsetToStringStorage()
-    {
+    private int getOffsetToStringStorage() {
         return NAME_TABLE_HEADER_SIZE + (NAME_RECORD_SIZE * nameRecords.size());
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "name";
     }
 
-    protected static class NameRecord
-    {
-        static final int NAME_RECORD_SIZE = 12;
-
-        @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
-        int platformID = 1;
-
-        @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
-        int encodingID = 0;
-
-        @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
-        int languageID = 0;
-
-        @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
-        int nameID;
-
-        @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
-        int offset;
-
-        public NameRecord(String name)
-        {
-            stringData = name;
-        }
-
-        @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
-        private int getLength()
-        {
-            return getStringData().getBytes(openTypeCharEncoding).length;
-        }
-
-        public int getOffset()
-        {
-            return offset;
-        }
-
-        public void setOffset(int offset)
-        {
-            this.offset = offset;
-        }
-
-        public int getNameID()
-        {
-            return nameID;
-        }
-
-        public void setNameID(int nameID)
-        {
-            this.nameID = nameID;
-        }
-
-        private String stringData;
-
-        public String getStringData()
-        {
-            return stringData;
-        }
-
-        public void setStringData(String stringData)
-        {
-            this.stringData = stringData;
-        }
-
-        public byte[] getRecordData() throws IOException
-        {
-            OpenTypeTableSerializer serializer = new OpenTypeTableSerializer();
-            return serializer.serialize(this);
-        }
-    }
 }

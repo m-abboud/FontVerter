@@ -4,43 +4,45 @@ import org.fontverter.FontWriter;
 
 import java.io.IOException;
 
-public class HorizontalMetricsTable extends OpenTypeTable
-{
+public class HorizontalMetricsTable extends OpenTypeTable {
     private int[] advanceWidth;
     private short[] leftSideBearing;
     private short[] nonHorizontalLeftSideBearing;
     private int numHMetrics;
-
+    private OpenTypeFont font;
 
     @Override
-    public byte[] getData() throws IOException
-    {
+    protected byte[] getRawData() throws IOException {
         FontWriter writer = FontWriter.createWriter();
 
-        int bytesRead = 0;
-        for (int i = 0; i < numHMetrics; i++)
-        {
+        for (int i = 0; i < numHMetrics; i++) {
             writer.writeUnsignedShort(advanceWidth[i]);
             writer.writeShort(leftSideBearing[i]);
-            bytesRead += 4;
         }
+        for (int i = 0; i < nonHorizontalLeftSideBearing.length; i++)
+            writer.writeUnsignedShort(nonHorizontalLeftSideBearing[i]);
 
         return writer.toByteArray();
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "hmtx";
     }
 
-    public static HorizontalMetricsTable createEmptyTable()
-    {
+    public static HorizontalMetricsTable createEmptyTable(OpenTypeFont font) {
         HorizontalMetricsTable table = new HorizontalMetricsTable();
-        table.numHMetrics = 1;
-        table.advanceWidth = new int[]{1};
-        table.leftSideBearing = new short[]{1};
-        table.nonHorizontalLeftSideBearing = new short[]{1};
+        table.font = font;
+        table.numHMetrics = 5;
+
+        table.leftSideBearing =new short[]{0, 10, 29, 29, 55};
+        table.advanceWidth =  new int[]{1000, 1292, 1251, 1430, 1244};
+
+        int lsbArrCount = font.cmap.getNumberOfGlyphs() - table.numHMetrics;
+        table.nonHorizontalLeftSideBearing = new short[lsbArrCount];
+        for (int i = 0; i < lsbArrCount; i++)
+            table.nonHorizontalLeftSideBearing[i] = 1;
+
         return table;
     }
 }

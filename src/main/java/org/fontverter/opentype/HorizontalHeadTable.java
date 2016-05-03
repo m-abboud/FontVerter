@@ -1,56 +1,56 @@
 package org.fontverter.opentype;
 
 public class HorizontalHeadTable extends OpenTypeTable {
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.FIXED32)
-    private float version;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.FIXED32)
+    public float version;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short ascender;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short ascender;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short descender;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short descender;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short lineGap;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short lineGap;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
-    private int advanceWidthMax;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+    public int advanceWidthMax;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short minLeftSideBearing;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short minLeftSideBearing;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short minRightSideBearing;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short minRightSideBearing;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short xMaxExtent;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short xMaxExtent;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short caretSlopeRise;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short caretSlopeRise;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short caretSlopeRun;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short caretSlopeRun;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short caretOffset;
+
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
     private short reserved1;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
     private short reserved2;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
     private short reserved3;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
     private short reserved4;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short reserved5;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.SHORT)
+    public short metricDataFormat;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.SHORT)
-    private short metricDataFormat;
-
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
-    private int numberOfHMetrics;
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+    public int numberOfHMetrics;
 
     @Override
     public String getName()
@@ -61,22 +61,23 @@ public class HorizontalHeadTable extends OpenTypeTable {
     public static HorizontalHeadTable createEmptyTable() {
         HorizontalHeadTable table = new HorizontalHeadTable();
         table.version = 1;
-        table.ascender = 1;
-        table.descender = 1;
-        table.lineGap = 1;
-        table.advanceWidthMax = 1;
-        table.minLeftSideBearing = 1;
-        table.minRightSideBearing = 1;
-        table.xMaxExtent = 1;
+        table.ascender = 796;
+        table.descender = -133;
+        table.lineGap = 90;
+        table.advanceWidthMax = 1430;
+        table.minLeftSideBearing = 0;
+        table.minRightSideBearing = 0;
+        table.xMaxExtent = 1193;
         table.caretSlopeRise = 1;
-        table.caretSlopeRun = 1;
-        table.reserved1 = 1;
-        table.reserved2 = 1;
-        table.reserved3 = 1;
-        table.reserved4 = 1;
-        table.reserved5 = 1;
-        table.metricDataFormat = 1;
-        table.numberOfHMetrics = 1;
+        table.caretSlopeRun = 0;
+        table.caretOffset = 0;
+
+        table.reserved1 = 0;
+        table.reserved2 = 0;
+        table.reserved3 = 0;
+        table.reserved4 = 0;
+        table.metricDataFormat = 0;
+        table.numberOfHMetrics = 5;
         return table;
     }
 }

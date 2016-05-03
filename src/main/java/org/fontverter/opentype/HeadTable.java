@@ -1,61 +1,62 @@
 package org.fontverter.opentype;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static org.fontverter.opentype.OpenTypeProperty.*;
+import static org.fontverter.opentype.OtfSerializerProperty.*;
 
 public class HeadTable extends OpenTypeTable
 {
-    @OpenTypeProperty(dataType = DataType.FIXED32)
+    @OtfSerializerProperty(dataType = DataType.FIXED32)
     private float version;
 
-    @OpenTypeProperty(dataType = DataType.FIXED32)
+    @OtfSerializerProperty(dataType = DataType.FIXED32)
     private float fontRevision;
 
-    @OpenTypeProperty(dataType = DataType.ULONG)
+    @OtfSerializerProperty(dataType = DataType.ULONG)
     private long checkSumAdjustment;
 
-    @OpenTypeProperty(dataType = DataType.ULONG)
+    @OtfSerializerProperty(dataType = DataType.ULONG)
     private long magicNumber;
 
-    @OpenTypeProperty(dataType = DataType.USHORT)
+    @OtfSerializerProperty(dataType = DataType.USHORT)
     private int flags;
 
-    @OpenTypeProperty(dataType = DataType.USHORT)
+    @OtfSerializerProperty(dataType = DataType.USHORT)
     private int unitsPerEm;
 
-    @OpenTypeProperty(dataType = DataType.LONGDATETIME)
+    @OtfSerializerProperty(dataType = DataType.LONGDATETIME)
     private Calendar created;
 
-    @OpenTypeProperty(dataType = DataType.LONGDATETIME)
+    @OtfSerializerProperty(dataType = DataType.LONGDATETIME)
     private Calendar modified;
 
-    @OpenTypeProperty(dataType = DataType.SHORT)
+    @OtfSerializerProperty(dataType = DataType.SHORT)
     private short xMin;
 
-    @OpenTypeProperty(dataType = DataType.SHORT)
+    @OtfSerializerProperty(dataType = DataType.SHORT)
     private short yMin;
 
-    @OpenTypeProperty(dataType = DataType.SHORT)
+    @OtfSerializerProperty(dataType = DataType.SHORT)
     private short xMax;
 
-    @OpenTypeProperty(dataType = DataType.SHORT)
+    @OtfSerializerProperty(dataType = DataType.SHORT)
     private short yMax;
 
-    @OpenTypeProperty(dataType = DataType.USHORT)
+    @OtfSerializerProperty(dataType = DataType.USHORT)
     private int macStyle;
 
-    @OpenTypeProperty(dataType = DataType.USHORT)
+    @OtfSerializerProperty(dataType = DataType.USHORT)
     private int lowestRecPPEM;
 
-    @OpenTypeProperty(dataType = DataType.SHORT)
+    @OtfSerializerProperty(dataType = DataType.SHORT)
     private short fontDirectionHint;
 
-    @OpenTypeProperty(dataType = DataType.SHORT)
+    @OtfSerializerProperty(dataType = DataType.SHORT)
     private short indexToLocFormat;
 
-    @OpenTypeProperty(dataType = DataType.SHORT)
+    @OtfSerializerProperty(dataType = DataType.SHORT)
     private short glyphDataFormat;
 
     @Override
@@ -69,10 +70,10 @@ public class HeadTable extends OpenTypeTable
         HeadTable table = new HeadTable();
         table.version = 1;
         table.fontRevision = 1;
-        table.checkSumAdjustment = 1;
+        table.checkSumAdjustment = 0;
         table.magicNumber = 0x5F0F3CF5;
-        table.flags = 0;
-        table.unitsPerEm = 16;
+        table.flags = 11;
+        table.unitsPerEm = 100;
         table.created = GregorianCalendar.getInstance();
         table.modified = GregorianCalendar.getInstance();
         table.xMin = -100;
@@ -85,5 +86,10 @@ public class HeadTable extends OpenTypeTable
         table.indexToLocFormat = 1;
         table.glyphDataFormat = 0;
         return table;
+    }
+
+
+    public void checksumAdjustment(byte[] fontBytes) throws IOException {
+        checkSumAdjustment = 0xB1B0AFBA - getTableChecksum(fontBytes);
     }
 }

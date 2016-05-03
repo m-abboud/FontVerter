@@ -1,5 +1,6 @@
 package org.fontverter.opentype;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.fontverter.FontWriter;
 
 import java.io.ByteArrayInputStream;
@@ -10,39 +11,67 @@ public abstract class OpenTypeTable
 {
     public static final int TABLE_RECORD_SIZE = 16;
 
+    private long checksum;
     private int offset;
+
+    private int paddingAdded;
 
     public OpenTypeTable()
     {
     }
 
-    public byte[] getData() throws IOException
-    {
-        OpenTypeTableSerializer serializer = new OpenTypeTableSerializer();
+    public final byte[] getData() throws IOException, FontSerializerException {
+        // open type tables should be padded to be divisible by 4
+        return padTableData(getRawData());
+    }
+
+    protected byte[] getRawData() throws IOException, FontSerializerException {
+        OtfTableSerializer serializer = new OtfTableSerializer();
         return serializer.serialize(this);
     }
 
     public abstract String getName();
 
-    public byte[] getRecordEntry() throws IOException
-    {
+    public byte[] getRecordEntry() throws IOException, FontSerializerException {
         FontWriter writer = FontWriter.createWriter();
-        long checksum = calcTableChecksum(getData());
+        byte[] data = getData();
 
         writer.writeString(getName());
         writer.writeUnsignedInt((int) checksum);
         writer.writeUnsignedInt(getOffset());
-        writer.writeUnsignedInt((getData().length));
+        writer.writeUnsignedInt(data.length - paddingAdded);
 
         return writer.toByteArray();
     }
 
-    long calcTableChecksum(byte[] tableData) throws IOException
+    private byte[] padTableData(byte[] tableData) {
+        if (tableData.length % 4 != 0) {
+            int paddingNeeded = 4- (tableData.length % 4);
+
+            byte[] padding = new byte[paddingNeeded];
+            for (int i = 0; i < padding.length; i++)
+                padding[i] = 0;
+
+            paddingAdded = paddingNeeded;
+            return ArrayUtils.addAll(tableData, padding);
+        }
+
+        paddingAdded = 0;
+        return tableData;
+    }
+
+    public void finalizeRecord() throws IOException, FontSerializerException {
+        checksum = getTableChecksum(getData());
+    }
+
+    protected final long getTableChecksum(byte[] tableData) throws IOException
     {
-        long checksum = 0;
         DataInputStream is = new DataInputStream(new ByteArrayInputStream(tableData));
-        while (is.available() > 4)
-            checksum = checksum + is.readLong();
+
+        long checksum = 0;
+        while (is.available() >= 4)
+            checksum = checksum + is.readInt();
+
         is.close();
         return checksum;
     }

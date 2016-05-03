@@ -6,69 +6,86 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.fontverter.opentype.CmapTable.CmapSubTable.CMAP_RECORD_BYTE_SIZE;
 
-public class CmapTable extends OpenTypeTable
-{
+public class CmapTable extends OpenTypeTable {
     private static Logger log = LoggerFactory.getLogger(CmapTable.class);
     private static final int CMAP_HEADER_SIZE = 4;
     private List<CmapSubTable> subTables = new ArrayList<CmapSubTable>();
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
     int version;
 
-    @OpenTypeProperty(dataType = OpenTypeProperty.DataType.USHORT)
-    int numTables()
-    {
+    @OtfSerializerProperty(dataType = OtfSerializerProperty.DataType.USHORT)
+    int numTables() {
         return subTables.size();
     }
 
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "cmap";
     }
 
     @Override
-    public byte[] getData() throws IOException
-    {
+    protected byte[] getRawData() throws IOException, FontSerializerException {
         calculateOffsets();
 
         FontWriter writer = FontWriter.createWriter();
-        writer.write(super.getData());
+        writer.write(super.getRawData());
 
-        for (CmapSubTable tableOn : subTables)
-        {
+        for (CmapSubTable tableOn : subTables) {
             writer.write(tableOn.getRecordData());
         }
 
         for (CmapSubTable tableOn : subTables)
-        {
-            OpenTypeTableSerializer serializer = new OpenTypeTableSerializer();
-            writer.write(serializer.serialize(tableOn));
+            writer.write(tableOn.getData());
 
-        }
         return writer.toByteArray();
     }
 
-    public static CmapTable createEmptyTable()
-    {
+    public static CmapTable createEmptyTable() {
         CmapTable table = new CmapTable();
         table.version = 0;
+
+        Format4SubTable subTable = new Format4SubTable();
+        subTable.setPlatformId(0);
+        subTable.setEncodingId(3);
+        subTable.addGlyphMapping(59, 1);
+        subTable.addGlyphMapping(76, 2);
+        subTable.addGlyphMapping(90, 3);
+        subTable.addGlyphMapping(123, 4);
+        table.subTables.add(subTable);
+
+        Format0SubTable s0 = new Format0SubTable();
+        s0.setPlatformId(1);
+        s0.setEncodingId(0);
+        table.subTables.add(s0);
+
+        subTable = new Format4SubTable();
+        subTable.setPlatformId(3);
+        subTable.setEncodingId(1);
+        subTable.addGlyphMapping(59, 1);
+        subTable.addGlyphMapping(76, 2);
+        subTable.addGlyphMapping(90, 3);
+        subTable.addGlyphMapping(123, 4);
+        table.subTables.add(subTable);
+
         return table;
     }
 
+    public int getNumberOfGlyphs() {
+        if (subTables.size() == 0)
+            return 0;
+        return subTables.get(0).glyphCount();
+    }
 
-    private void calculateOffsets() throws IOException
-    {
+
+    private void calculateOffsets() throws IOException {
         int offset = subTables.size() * CMAP_RECORD_BYTE_SIZE + CMAP_HEADER_SIZE;
-        for (CmapSubTable tableOn : subTables)
-        {
+        for (CmapSubTable tableOn : subTables) {
             tableOn.setSubTableOffset(offset);
             log.debug("{} Cmap sub table Offset Calc: ", offset);
 
@@ -76,8 +93,7 @@ public class CmapTable extends OpenTypeTable
         }
     }
 
-    protected static abstract class CmapSubTable
-    {
+    protected static abstract class CmapSubTable {
         public static final int CMAP_RECORD_BYTE_SIZE = 8;
 
         private int platformId;
@@ -88,18 +104,15 @@ public class CmapTable extends OpenTypeTable
 
         protected float formatNumber;
 
-        public long getSubTableOffset()
-        {
+        public long getSubTableOffset() {
             return subTableOffset;
         }
 
-        public void setSubTableOffset(long subTableOffset)
-        {
+        public void setSubTableOffset(long subTableOffset) {
             this.subTableOffset = subTableOffset;
         }
 
-        public byte[] getRecordData() throws IOException
-        {
+        public byte[] getRecordData() throws IOException {
             FontWriter writer = FontWriter.createWriter();
             writer.writeUnsignedShort(platformId);
             writer.writeUnsignedShort(platformEncodingId);
@@ -107,30 +120,168 @@ public class CmapTable extends OpenTypeTable
             return writer.toByteArray();
         }
 
+        public int getPlatformId() {
+            return platformId;
+        }
+
+        public void setPlatformId(int platformId) {
+            this.platformId = platformId;
+        }
+
+        public int getPlatformEncodingId() {
+            return platformEncodingId;
+        }
+
+        public void setEncodingId(int platformEncodingId) {
+            this.platformEncodingId = platformEncodingId;
+        }
 
         public abstract byte[] getData() throws IOException;
 
+        public abstract int glyphCount();
+
     }
 
-    protected static class Format4SubTable extends CmapSubTable
-    {
-        public Format4SubTable()
-        {
+    protected static class Format4SubTable extends CmapSubTable {
+        private static final int FORMAT4_HEADER_SIZE = 16;
+        // LinkedHashMap important, for keeping ordering the same for loops
+        private LinkedHashMap<Integer, Integer> charCodeToGlyphId = new LinkedHashMap<Integer, Integer>();
+
+        public Format4SubTable() {
             formatNumber = 4;
         }
 
         @Override
-        public byte[] getData() throws IOException
-        {
+        public byte[] getData() throws IOException {
             FontWriter writer = FontWriter.createWriter();
+
             writer.writeUnsignedShort((int) formatNumber);
+            writer.writeUnsignedShort(getLength());
+            writer.writeUnsignedShort(getLanguageId());
+
+            writer.writeUnsignedShort(getSegmentCount() * 2);
+            writer.writeUnsignedShort(getSearchRange());
+            writer.writeUnsignedShort(getEntrySelector());
+            writer.writeUnsignedShort(getRangeShift());
+
+
+            // end[], end == charactercode in our current simple case
+            for (Map.Entry<Integer, Integer> entry : charCodeToGlyphId.entrySet())
+                writer.writeUnsignedShort(entry.getKey());
+            // end[] padding
+            writer.writeUnsignedShort(65535);
+
+            // 'reservedPad' Set to 0
+            writer.writeUnsignedShort(0);
+
+            // start[] and padding, start == charactercode in our current simple case
+            for (Map.Entry<Integer, Integer> entry : charCodeToGlyphId.entrySet())
+                writer.writeUnsignedShort(entry.getKey());
+            writer.writeUnsignedShort(65535);
+
+            // idDelta[], delta is glyphId storing
+            for (Map.Entry<Integer, Integer> entry : charCodeToGlyphId.entrySet()) {
+                int delta = 65536 + entry.getValue() - entry.getKey();
+                writer.writeUnsignedShort(delta);
+            }
+            writer.writeUnsignedShort(1);
+
+            // idRangeOffset[] blanks unused
+            for (int i = 0; i < getSegmentCount() + 1; i++)
+                writer.writeUnsignedInt(0);
+
 
             return writer.toByteArray();
         }
+
+        @Override
+        public int glyphCount() {
+            return getSegmentCount();
+        }
+
+        private int getLanguageId() {
+            return 0;
+        }
+
+        private int getSegmentCount() {
+            // +1 for padding at end of segment arrays
+            return charCodeToGlyphId.size() + 1;
+        }
+
+        private int getSearchRange() {
+            double logFloor = Math.floor(log2(getSegmentCount()));
+            return (int) (2 * (Math.pow(2, logFloor)));
+        }
+
+        private int getEntrySelector() {
+            return (int) log2(getSearchRange() / 2);
+        }
+
+        private int getRangeShift() {
+            return 2 * getSegmentCount() - getSearchRange();
+        }
+
+        private double log2(int number) {
+            return Math.log(number) / Math.log(2);
+        }
+
+        private int getLength() {
+            // + 1 to size for appearant padding need
+            return FORMAT4_HEADER_SIZE + ((charCodeToGlyphId.size() + 1) * 8);
+        }
+
+        public void addGlyphMapping(int characterCode, int glyphId) {
+            charCodeToGlyphId.put(characterCode, glyphId);
+        }
+
     }
 
-    protected static class SubTableSegment
-    {
+    protected static class Format0SubTable extends CmapSubTable {
+        private static final int FORMAT0_HEADER_SIZE = 6 + 256;
+        // LinkedHashMap important, for keeping ordering the same for loops
+        private LinkedHashMap<Integer, Integer> charCodeToGlyphId = new LinkedHashMap<Integer, Integer>();
+
+        public Format0SubTable() {
+            formatNumber = 0;
+            for (int i = 0; i < 256; i++)
+                charCodeToGlyphId.put(i, 0);
+        }
+
+        @Override
+        public byte[] getData() throws IOException {
+            FontWriter writer = FontWriter.createWriter();
+
+            writer.writeUnsignedShort((int) formatNumber);
+            writer.writeUnsignedShort(getLength());
+            writer.writeUnsignedShort(getLanguageId());
+
+            for (Map.Entry<Integer, Integer> entry : charCodeToGlyphId.entrySet()) {
+                writer.writeByte(entry.getValue());
+            }
+
+            return writer.toByteArray();
+        }
+
+        public int glyphCount() {
+            return 0;
+        }
+
+        private int getLanguageId() {
+            return 0;
+        }
+
+        private int getLength() {
+            // + 1 to size for appearant padding need
+            return FORMAT0_HEADER_SIZE;
+        }
+
+        public void addGlyphMapping(int characterCode, int glyphId) {
+            charCodeToGlyphId.put(characterCode, glyphId);
+        }
+
+    }
+
+    protected static class SubTableSegment {
         int endCount;
         int startCount;
         int idCount;

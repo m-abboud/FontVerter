@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
-public @interface OpenTypeProperty
+public @interface OtfSerializerProperty
 {
     public enum DataType
     {
@@ -15,4 +15,6 @@ public @interface OpenTypeProperty
     }
 
     DataType dataType();
+
+    int order() default -1;
 }

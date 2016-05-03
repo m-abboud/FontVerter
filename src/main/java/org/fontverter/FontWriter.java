@@ -41,8 +41,10 @@ public class FontWriter extends DataOutputStream
 
     public void write32Fixed(float num) throws IOException
     {
+//        writeFloat(num);
         writeShort((int) num);
-        short decimalVal = (short) ((num - (int) num) * 65535);
+        float decimalOnlyVal = (num - (int) num);
+        int decimalVal = (int) (decimalOnlyVal * 65536);
         writeUnsignedShort(decimalVal);
     }
 
