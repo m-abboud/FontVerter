@@ -34,6 +34,11 @@ public class NameTable extends OpenTypeTable {
         return table;
     }
 
+    @Override
+    public String getName() {
+        return "name";
+    }
+
     public void setFontFamily(String family) {
         addName(family, OtfNameConstants.RecordType.FONT_FAMILY, defaultLanguage);
     }
@@ -65,7 +70,7 @@ public class NameTable extends OpenTypeTable {
     private String formatVersion(String version) {
         String versionNumber = "";
 
-        Matcher versionRegex = Pattern.compile("[0-9]*[.][0-9]*").matcher(version);
+        Matcher versionRegex = Pattern.compile("[1-9][0-9]*[.][0-9]*").matcher(version);
         if (versionRegex.find())
             versionNumber = versionRegex.group(0);
 
@@ -139,19 +144,12 @@ public class NameTable extends OpenTypeTable {
         int offset = 0;
         for (NameRecord recordOn : nameRecords) {
             recordOn.setOffset(offset);
-            log.debug("{} Name table sub table Offset Calc: ", offset);
-
             offset += recordOn.getLength();
         }
     }
 
     private int getOffsetToStringStorage() {
         return NAME_TABLE_HEADER_SIZE + (NAME_RECORD_SIZE * nameRecords.size());
-    }
-
-    @Override
-    public String getName() {
-        return "name";
     }
 
 }

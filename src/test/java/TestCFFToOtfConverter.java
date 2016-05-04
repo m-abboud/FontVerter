@@ -1,9 +1,8 @@
 import org.apache.commons.io.FileUtils;
 import org.apache.fontbox.ttf.OTFParser;
 import org.fontverter.cff.CffToOpenTypeConverter;
-import org.fontverter.opentype.FontSerializerException;
 import org.fontverter.opentype.OpenTypeFont;
-import org.fontverter.opentype.OpenTypeValidator;
+import org.fontverter.opentype.validator.OpenTypeFontValidator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,14 +25,12 @@ public class TestCffToOtfConverter {
     @Test
     public void convertFullAlphabetFont_fontValidatorsPass() throws Exception {
         OpenTypeFont font = convertAndSaveFile("FontVerter+FullAlphabetFont");
-        // windows font viewer failing atm
         runAllValidators(font);
     }
 
     @Test
     public void convert_CFF_fullAlphabetFont_then_OTF_has94Glyphs() throws Exception {
         OpenTypeFont font = convert("FontVerter+FullAlphabetFont");
-
         // getNumGlyphs includes padded glyph so -1 for padding,there's 4 actual glyphs
         Assert.assertEquals(94, font.cmap.getGlyphCount() - 1);
     }
@@ -77,27 +74,10 @@ public class TestCffToOtfConverter {
         return generatedFont;
     }
 
-    private OpenTypeFont convert(String fileName) throws IOException, FontSerializerException {
+    private OpenTypeFont convert(String fileName) throws IOException {
         byte[] cff = FileUtils.readFileToByteArray(new File(testPath + fileName + ".cff"));
         CffToOpenTypeConverter gen = new CffToOpenTypeConverter(cff);
         return gen.generateFont();
-    }
-
-    private void runInternalValidator(OpenTypeFont font) throws Exception{
-        OpenTypeValidator validator = new OpenTypeValidator();
-        validator.validateWithExceptionsThrown(font);
-    }
-
-    private void jdkFontValidate(File file) throws FontFormatException, IOException {
-        Font.createFont(Font.TRUETYPE_FONT, file);
-    }
-
-    private void fontboxValidate(File file) throws IOException {
-        // fontbox for validating generated fonts, fontbox has good pdf type font parsing no generation tho
-        // but font classes have package local constructors
-        OTFParser parser = new OTFParser();
-        org.apache.fontbox.ttf.OpenTypeFont font = parser.parse(file);
-        font.getName();
     }
 
     private void runAllValidators(OpenTypeFont font) throws Exception {
@@ -111,5 +91,22 @@ public class TestCffToOtfConverter {
                 throw ex;
         }
         jdkFontValidate(font.getSourceFile());
+    }
+
+    private void runInternalValidator(OpenTypeFont font) throws Exception{
+        OpenTypeFontValidator validator = new OpenTypeFontValidator();
+        validator.validateWithExceptionsThrown(font);
+    }
+
+    private void jdkFontValidate(File file) throws FontFormatException, IOException {
+        Font.createFont(Font.TRUETYPE_FONT, file);
+    }
+
+    private void fontboxValidate(File file) throws IOException {
+        // fontbox for validating generated fonts, fontbox has good pdf type font parsing no generation tho
+        // but font classes have package local constructors
+        OTFParser parser = new OTFParser();
+        org.apache.fontbox.ttf.OpenTypeFont font = parser.parse(file);
+        font.getName();
     }
 }
