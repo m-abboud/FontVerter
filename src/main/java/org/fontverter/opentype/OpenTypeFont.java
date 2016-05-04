@@ -1,6 +1,5 @@
 package org.fontverter.opentype;
 
-import org.fontverter.FontWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +92,7 @@ public class OpenTypeFont {
     }
 
     private byte[] getRawData() throws IOException, FontSerializerException {
-        FontWriter out = FontWriter.createWriter();
+        OtfWriter out = new OtfWriter();
         out.write(createSfntHeader(tables));
 
         for (OpenTypeTable tableOn : tables)
@@ -118,14 +117,14 @@ public class OpenTypeFont {
     }
 
     private byte[] createSfntHeader(List<OpenTypeTable> tables) throws IOException {
-        FontWriter out = FontWriter.createWriter();
+        OtfWriter out = new OtfWriter();
 
         int numTables = tables.size();
         int searchRange = closestMaxPowerOfTwo(numTables) * 16;
         int entrySelector = (int) log2(closestMaxPowerOfTwo(numTables));
         int rangeShift = numTables * 16 - searchRange;
 
-        out.write("OTTO".getBytes(FontWriter.openTypeCharEncoding));
+        out.write("OTTO".getBytes(OtfWriter.openTypeCharEncoding));
         out.writeShort(numTables);
         out.writeShort(searchRange);
         out.writeShort(entrySelector);

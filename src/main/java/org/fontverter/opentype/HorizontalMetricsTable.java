@@ -1,7 +1,5 @@
 package org.fontverter.opentype;
 
-import org.fontverter.FontWriter;
-
 import java.io.IOException;
 
 public class HorizontalMetricsTable extends OpenTypeTable {
@@ -13,7 +11,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
 
     @Override
     protected byte[] getRawData() throws IOException {
-        FontWriter writer = FontWriter.createWriter();
+        OtfWriter writer = new OtfWriter();
 
         for (int i = 0; i < numHMetrics; i++) {
             writer.writeUnsignedShort(advanceWidth[i]);

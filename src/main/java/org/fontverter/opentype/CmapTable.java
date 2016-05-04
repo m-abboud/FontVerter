@@ -1,7 +1,6 @@
 package org.fontverter.opentype;
 
 
-import org.fontverter.FontWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,17 +25,16 @@ public class CmapTable extends OpenTypeTable {
         return subTables.size();
     }
 
-
     @Override
     public String getName() {
         return "cmap";
     }
 
     @Override
-    protected byte[] getRawData() throws IOException, FontSerializerException {
+    protected byte[] getRawData() throws IOException {
         calculateOffsets();
 
-        FontWriter writer = FontWriter.createWriter();
+        OtfWriter writer = new OtfWriter();
         writer.write(super.getRawData());
 
         for (CmapSubTable tableOn : subTables) {
@@ -121,7 +119,7 @@ public class CmapTable extends OpenTypeTable {
         }
 
         public byte[] getRecordData() throws IOException {
-            FontWriter writer = FontWriter.createWriter();
+            OtfWriter writer = new OtfWriter();
             writer.writeUnsignedShort(platformId);
             writer.writeUnsignedShort(platformEncodingId);
             writer.writeUnsignedInt((int) subTableOffset);
@@ -162,7 +160,7 @@ public class CmapTable extends OpenTypeTable {
 
         @Override
         public byte[] getData() throws IOException {
-            FontWriter writer = FontWriter.createWriter();
+            OtfWriter writer = new OtfWriter();
 
             writer.writeUnsignedShort((int) formatNumber);
             writer.writeUnsignedShort(getLength());
@@ -207,7 +205,7 @@ public class CmapTable extends OpenTypeTable {
         }
 
         private void setDataHeaderLength(byte[] data) throws IOException {
-            FontWriter lengthWriter = FontWriter.createWriter();
+            OtfWriter lengthWriter = new OtfWriter();
             lengthWriter.writeUnsignedShort(data.length);
             byte[] lengthData = lengthWriter.toByteArray();
             data[2] =  lengthData[0];
@@ -332,7 +330,7 @@ public class CmapTable extends OpenTypeTable {
 
         @Override
         public byte[] getData() throws IOException {
-            FontWriter writer = FontWriter.createWriter();
+            OtfWriter writer = new OtfWriter();
 
             writer.writeUnsignedShort((int) formatNumber);
             writer.writeUnsignedShort(getLength());

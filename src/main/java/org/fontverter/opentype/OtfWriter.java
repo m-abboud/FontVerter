@@ -1,22 +1,17 @@
-package org.fontverter;
+package org.fontverter.opentype;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public class FontWriter extends DataOutputStream
+class OtfWriter extends DataOutputStream
 {
     public static final Charset openTypeCharEncoding = Charset.forName("ISO-8859-1");
 
-    private FontWriter()
+    public OtfWriter()
     {
         super(new ByteArrayOutputStream());
-    }
-
-    public static FontWriter createWriter()
-    {
-        return new FontWriter();
     }
 
     public byte[] toByteArray()

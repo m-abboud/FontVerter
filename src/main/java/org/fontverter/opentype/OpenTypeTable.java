@@ -1,7 +1,6 @@
 package org.fontverter.opentype;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.fontverter.FontWriter;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -33,7 +32,7 @@ public abstract class OpenTypeTable
     public abstract String getName();
 
     public byte[] getRecordEntry() throws IOException, FontSerializerException {
-        FontWriter writer = FontWriter.createWriter();
+        OtfWriter writer = new OtfWriter();
         byte[] data = getData();
 
         writer.writeString(getName());

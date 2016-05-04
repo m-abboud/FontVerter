@@ -1,7 +1,5 @@
 package org.fontverter.opentype;
 
-import org.fontverter.FontWriter;
-
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -10,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 class OtfTableSerializer {
-    private FontWriter writer = FontWriter.createWriter();
+    private OtfWriter writer = new OtfWriter();
 
     public byte[] serialize(Object object) throws FontSerializerException {
         try {

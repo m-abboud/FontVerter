@@ -1,6 +1,4 @@
-import org.fontverter.FontWriter;
-import org.fontverter.opentype.FontSerializerException;
-import org.fontverter.opentype.OpenTypeTable;
+package org.fontverter.opentype;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -43,8 +41,8 @@ public class TestOpenTypeTable {
     public void fourBytesOfData_thenTableChecksumIsSumOfLongs() throws Exception {
         // note longs in opentype are 32bit vs java 64
         CannedOpenTypeTable table = new CannedOpenTypeTable();
-        FontWriter writer = FontWriter.createWriter();
-        writer.writeUnsignedInt(1234567);
+        OtfWriter writer = new OtfWriter();
+        writer.writeInt(1234567);
         table.fillerData = writer.toByteArray();
 
         long checksum = table.checksum();
@@ -57,7 +55,7 @@ public class TestOpenTypeTable {
         // note longs in opentype are 32bit vs java 64
         CannedOpenTypeTable table = new CannedOpenTypeTable();
 
-        FontWriter writer = FontWriter.createWriter();
+        OtfWriter writer = new OtfWriter();
         int[] dataLongs = new int[]{500, 1000, 1234567, 991076541};
         int expectedChecksum = 0;
         for (int intOn : dataLongs) {
@@ -75,7 +73,7 @@ public class TestOpenTypeTable {
     public void _2BytesOfData_thenTableChecksumDoesNotThrowException() throws Exception {
         // if internal methods don't pad checksum calc won't be able to read 4 bytes at time
         CannedOpenTypeTable table = new CannedOpenTypeTable();
-        FontWriter writer = FontWriter.createWriter();
+        OtfWriter writer = new OtfWriter();
         writer.writeUnsignedShort(55);
         table.fillerData = writer.toByteArray();
 
