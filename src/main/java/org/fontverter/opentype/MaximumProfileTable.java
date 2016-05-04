@@ -13,8 +13,6 @@ public class MaximumProfileTable extends OpenTypeTable {
     @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
     protected int numGlyphs;
 
-
-
     @Override
     public String getName() {
         return "maxp";
@@ -35,7 +33,6 @@ public class MaximumProfileTable extends OpenTypeTable {
     public void setNumGlyphs(int numGlyphs) {
         this.numGlyphs = numGlyphs;
     }
-
 
     public static class MaximumProfileTableV1 extends MaximumProfileTable {
         public static MaximumProfileTable createDefaultTable() {

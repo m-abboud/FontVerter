@@ -31,11 +31,11 @@ public class TestCffToOtfConverter {
     }
 
     @Test
-    public void convert_CFF_fullAlphabetFont_then_OTF_has93Glyphs() throws Exception {
+    public void convert_CFF_fullAlphabetFont_then_OTF_has94Glyphs() throws Exception {
         OpenTypeFont font = convert("FontVerter+FullAlphabetFont");
 
         // getNumGlyphs includes padded glyph so -1 for padding,there's 4 actual glyphs
-        Assert.assertEquals(93, font.cmap.getGlyphCount() - 1);
+        Assert.assertEquals(94, font.cmap.getGlyphCount() - 1);
     }
 
     @Test

@@ -9,6 +9,11 @@ import java.util.List;
 public class OpenTypeValidator {
     private OpenTypeFont font;
 
+    @OpenTypeValidator.ValidateRule
+    public boolean hheaDescender() {
+        return font.hhea.descender < 0;
+    }
+
     public List<FontValidatorError> validate(OpenTypeFont font) throws InvocationTargetException, IllegalAccessException {
         this.font = font;
         List<FontValidatorError> errors = new LinkedList<FontValidatorError>();
@@ -39,11 +44,6 @@ public class OpenTypeValidator {
         Boolean result = (Boolean) methodOn.invoke(this);
         if (!result)
             errors.add(new FontValidatorError(annotation.type(), annotation.message() + " " + methodOn.getName()));
-    }
-
-    @OpenTypeValidator.ValidateRule
-    public boolean hheaDescender() {
-        return font.hhea.descender < 0;
     }
 
     public static class FontValidatorError {

@@ -1,10 +1,11 @@
 package org.fontverter.cff;
 
 
-import org.apache.fontbox.cff.CFFCharset;
-import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.cff.CFFParser;
+import org.apache.fontbox.EncodedFont;
+import org.apache.fontbox.cff.*;
+import org.apache.fontbox.encoding.Encoding;
 import org.fontverter.FontNotSupportedException;
+import org.fontverter.FontVerterUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -38,7 +39,7 @@ public class CffFontContainer {
 
     public String getFullName() {
         String name = font.getName();
-        if(name.isEmpty())
+        if (name.isEmpty())
             name = nonNullDictEntry("FullName", String.class);
 
         return name;
@@ -46,7 +47,7 @@ public class CffFontContainer {
 
     public String getFamilyName() {
         String name = nonNullDictEntry("FamilyName", String.class);
-        if(name.isEmpty())
+        if (name.isEmpty())
             name = nonNullDictEntry("FullName", String.class);
 
         return name;
@@ -63,6 +64,7 @@ public class CffFontContainer {
     public String getTrademarkNotice() {
         return nonNullDictEntry("Notice", String.class);
     }
+
     public Integer getUnderLinePosition() {
         return nonNullDictEntry("UnderlinePosition", Integer.class);
     }
@@ -87,10 +89,10 @@ public class CffFontContainer {
         Object obj = font.getTopDict().get("FontBBox");
         ArrayList<Integer> boundingBox = null;
 
-        if(obj != null && obj instanceof ArrayList)
+        if (obj != null && obj instanceof ArrayList)
             boundingBox = (ArrayList<Integer>) obj;
 
-        if(boundingBox == null || boundingBox.size() < 4)
+        if (boundingBox == null || boundingBox.size() < 4)
             boundingBox = createDefaultBoundingBox();
 
         return boundingBox;
@@ -110,23 +112,40 @@ public class CffFontContainer {
 
     public Map<Integer, String> getGlyphIdsToNames() throws IOException {
         try {
-            // reflection to get private map field for lazyness, !fragile!, obviously
-            Class type = CFFCharset.class;
-            Field[] fields = type.getDeclaredFields();
 
-            Field mapField = null;
-            for (Field fieldOn : fields) {
-                if (fieldOn.getName().contains("gidToName")) {
-                    mapField = fieldOn;
-                    mapField.setAccessible(true);
-                }
-            }
+            // reflection to get private map field for lazyness, !fragile!, obviously
+            Field mapField = FontVerterUtils.findPrivateField("gidToName", CFFCharset.class);
 
             return (Map<Integer, String>) mapField.get(font.getCharset());
         } catch (Exception ex) {
             throw new IOException(ex);
         }
     }
+
+    public Encoding getEncoding() {
+        if (font instanceof EncodedFont) {
+            try {
+                return ((EncodedFont) font).getEncoding();
+            } catch (IOException e) {
+                return CFFStandardEncoding.getInstance();
+            }
+        }
+
+        return CFFStandardEncoding.getInstance();
+    }
+
+//    public Map<Integer, String> getNameToSid() throws IOException {
+//        try {
+//            // reflection to get private map field for lazyness, !fragile!, obviously
+////            Field mapField = FontVerterUtils.findPrivateField("nameToCode", Encoding.class);
+////
+////            font.
+////            return (Map<Integer, String>) mapField.get(font.g);
+//        } catch (Exception ex) {
+//            throw new IOException(ex);
+//        }
+//    }
+
 
     private <X> X nonNullDictEntry(String key, Class<X> type) {
         Object value = font.getTopDict().get(key);

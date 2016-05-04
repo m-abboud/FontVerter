@@ -39,7 +39,7 @@ public class CffToOpenTypeConverter {
             glyphIdsToNames.remove(0);
 
         Map<Integer, Integer> otfIdToCharCodes =
-                CharsetConverter.nameMapToEncoding(glyphIdsToNames, CFFStandardEncoding.getInstance());
+                CharsetConverter.nameMapToEncoding(glyphIdsToNames, cffFont.getEncoding());
 
         otfFont.cmap.addGlyphMapping(otfIdToCharCodes);
     }

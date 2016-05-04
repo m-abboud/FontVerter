@@ -154,6 +154,7 @@ public class CmapTable extends OpenTypeTable {
         private static final int FORMAT4_HEADER_SIZE = 16;
         // LinkedHashMap important, for keeping ordering the same for loops
         private LinkedHashMap<Integer, Integer> charCodeToGlyphId = new LinkedHashMap<Integer, Integer>();
+        private int length = 0;
 
         public Format4SubTable() {
             formatNumber = 4;
@@ -173,55 +174,49 @@ public class CmapTable extends OpenTypeTable {
             writer.writeUnsignedShort(getRangeShift());
 
 
-            List<Map.Entry<Integer, Integer>> orderedCodeMaps = getOrderedCharCodeToGlyphIds();
+            List<Integer> ends = getGlyphEnds();
+            List<Integer> starts = getGlyphStarts();
+            List<Integer> deltas = getGlyphDeltas();
 
-            // end[], end == charactercode in our current simple case
-            for (Map.Entry<Integer, Integer> entry : orderedCodeMaps)
-                writer.writeUnsignedShort(entry.getKey());
+            for (Integer endEntryOn : ends)
+                writer.writeUnsignedShort(endEntryOn);
             // end[] padding
             writer.writeUnsignedShort(65535);
 
             // 'reservedPad' Set to 0
             writer.writeUnsignedShort(0);
 
-            // start[] and padding, start == charactercode in our current simple case
-            for (Map.Entry<Integer, Integer> entry : orderedCodeMaps)
-                writer.writeUnsignedShort(entry.getKey());
+            for (Integer startEntryOn : starts)
+                writer.writeUnsignedShort(startEntryOn);
+            // start[] padding,
             writer.writeUnsignedShort(65535);
 
             // idDelta[], delta is glyphId storing
-            for (Map.Entry<Integer, Integer> entry : orderedCodeMaps) {
-                int delta = 65536 + entry.getValue() - entry.getKey();
-                writer.writeUnsignedShort(delta);
-            }
+            for (Integer deltaEntryOn : deltas)
+                writer.writeUnsignedShort(deltaEntryOn);
             writer.writeUnsignedShort(1);
 
             // idRangeOffset[] blanks unused
-            for (int i = 0; i < getSegmentCount() + 1; i++)
+            for (int i = 0; i < getSegmentCount(); i++)
                 writer.writeUnsignedInt(0);
 
 
-            return writer.toByteArray();
+            byte[] data = writer.toByteArray();
+            setDataHeaderLength(data);
+            return data;
         }
 
-        private List<Map.Entry<Integer, Integer>> getOrderedCharCodeToGlyphIds() {
-            List<Map.Entry<Integer, Integer>> charCodeEntries = new ArrayList<Map.Entry<Integer, Integer>>();
-            for (Map.Entry<Integer, Integer> entryOn : charCodeToGlyphId.entrySet())
-                charCodeEntries.add(entryOn);
-
-            Collections.sort(charCodeEntries, new Comparator<Map.Entry<Integer, Integer>>() {
-                @Override
-                public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
-                    return o1.getValue() < o2.getValue() ? -1 : o1.getValue().equals(o2.getValue()) ? 0 : 1;
-                }
-            });
-
-            return charCodeEntries;
+        private void setDataHeaderLength(byte[] data) throws IOException {
+            FontWriter lengthWriter = FontWriter.createWriter();
+            lengthWriter.writeUnsignedShort(data.length);
+            byte[] lengthData = lengthWriter.toByteArray();
+            data[2] =  lengthData[0];
+            data[3] = lengthData[1];
         }
 
         @Override
         public int glyphCount() {
-            return getSegmentCount();
+            return charCodeToGlyphId.size() + 1;
         }
 
         private int getLanguageId() {
@@ -230,7 +225,7 @@ public class CmapTable extends OpenTypeTable {
 
         private int getSegmentCount() {
             // +1 for padding at end of segment arrays
-            return charCodeToGlyphId.size() + 1;
+            return getGlyphEnds().size() + 1;
         }
 
         private int getSearchRange() {
@@ -252,13 +247,76 @@ public class CmapTable extends OpenTypeTable {
 
         private int getLength() {
             // + 1 to size for appearant padding need
-            return FORMAT4_HEADER_SIZE + ((charCodeToGlyphId.size() + 1) * 8);
+            return FORMAT4_HEADER_SIZE + ((charCodeToGlyphId.size() ) * 8);
         }
 
         public void addGlyphMapping(int characterCode, int glyphId) {
             charCodeToGlyphId.put(characterCode, glyphId);
         }
 
+        private List<Integer> getGlyphDeltas() {
+            List<Integer> deltas = new ArrayList<Integer>();
+
+            int lastCharCode = -1;
+            for (Map.Entry<Integer, Integer> entryOn : getOrderedCharCodeToGlyphIds()) {
+                int curCharCode = entryOn.getKey();
+                if (curCharCode != lastCharCode + 1)
+                    deltas.add(65536 + entryOn.getValue() - curCharCode);
+
+                lastCharCode = curCharCode;
+            }
+
+            return deltas;
+        }
+
+        private List<Integer> getGlyphStarts () {
+            List<Integer> starts = new ArrayList<Integer>();
+            int lastCharCode = -1;
+
+            for (Map.Entry<Integer, Integer> entryOn :  getOrderedCharCodeToGlyphIds()) {
+                int curCharCode = entryOn.getKey();
+                if (curCharCode != lastCharCode + 1)
+                    starts.add(curCharCode);
+
+                lastCharCode = curCharCode;
+            }
+
+            return starts;
+        }
+
+        private List<Integer> getGlyphEnds () {
+            List<Integer> ends = new ArrayList<Integer>();
+            int lastCharCode = -1;
+            List<Map.Entry<Integer, Integer>> entries = getOrderedCharCodeToGlyphIds();
+            for (Map.Entry<Integer, Integer> entryOn : entries) {
+                int curCharCode = entryOn.getKey();
+                if (curCharCode != lastCharCode + 1 && lastCharCode != -1)
+                    ends.add(lastCharCode);
+
+                lastCharCode = curCharCode;
+            }
+
+            // add last one not caught in loop
+            if(entries.size() > 1)
+                ends.add(entries.get(entries.size() - 1).getKey());
+
+            return ends;
+        }
+
+        private List<Map.Entry<Integer, Integer>> getOrderedCharCodeToGlyphIds() {
+            List<Map.Entry<Integer, Integer>> charCodeEntries = new ArrayList<Map.Entry<Integer, Integer>>();
+            for (Map.Entry<Integer, Integer> entryOn : charCodeToGlyphId.entrySet())
+                charCodeEntries.add(entryOn);
+
+            Collections.sort(charCodeEntries, new Comparator<Map.Entry<Integer, Integer>>() {
+                @Override
+                public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
+                    return o1.getKey() < o2.getKey() ? -1 : o1.getKey().equals(o2.getKey()) ? 0 : 1;
+                }
+            });
+
+            return charCodeEntries;
+        }
     }
 
     protected static class Format0SubTable extends CmapSubTable {

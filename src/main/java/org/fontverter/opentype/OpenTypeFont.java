@@ -46,7 +46,6 @@ public class OpenTypeFont {
 
     public void normalizeTables() {
         mxap.setNumGlyphs(cmap.getGlyphCount());
-        mxap.setNumGlyphs(cmap.getGlyphCount());
 
         for (OpenTypeTable tableOn : tables)
             tableOn.normalize();
