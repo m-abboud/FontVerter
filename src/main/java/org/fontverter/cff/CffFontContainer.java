@@ -58,7 +58,7 @@ public class CffFontContainer {
     }
 
     public String getVersion() {
-        return nonNullDictEntry("Version", String.class);
+        return nonNullDictEntry("version", String.class);
     }
 
     public String getTrademarkNotice() {
@@ -133,19 +133,6 @@ public class CffFontContainer {
 
         return CFFStandardEncoding.getInstance();
     }
-
-//    public Map<Integer, String> getNameToSid() throws IOException {
-//        try {
-//            // reflection to get private map field for lazyness, !fragile!, obviously
-////            Field mapField = FontVerterUtils.findPrivateField("nameToCode", Encoding.class);
-////
-////            font.
-////            return (Map<Integer, String>) mapField.get(font.g);
-//        } catch (Exception ex) {
-//            throw new IOException(ex);
-//        }
-//    }
-
 
     private <X> X nonNullDictEntry(String key, Class<X> type) {
         Object value = font.getTopDict().get(key);

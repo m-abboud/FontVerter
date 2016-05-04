@@ -1,6 +1,8 @@
 package org.fontverter.opentype;
 
-public class FontSerializerException extends Exception {
+import java.io.IOException;
+
+public class FontSerializerException extends IOException {
 
     public FontSerializerException(Exception e) {
         super(e);

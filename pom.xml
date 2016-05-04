@@ -31,7 +31,9 @@
     </build>
 
     <dependencies>
-        <!--pdfbox for validating generated fonts, fontbox has good font parsing no generation tho-->
+        <!--pdfbox for validating generated fonts and cff parsing, fontbox has alright font parsing no
+        generation tho and OTF classes with private constructors so can't extend off , windows/chrome will
+        barf on a lot of things it doesn't too-->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>

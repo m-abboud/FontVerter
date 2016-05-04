@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.fontverter.opentype.NameRecord.NAME_RECORD_SIZE;
 
@@ -57,12 +59,30 @@ public class NameTable extends OpenTypeTable {
     }
 
     public void setVersion(String name) {
-        addName(name, OtfNameConstants.RecordType.VERSION_STRING, defaultLanguage);
+        addName(formatVersion(name), OtfNameConstants.RecordType.VERSION_STRING, defaultLanguage);
+    }
+
+    private String formatVersion(String version) {
+        String versionNumber = "";
+
+        Matcher versionRegex = Pattern.compile("[0-9]*[.][0-9]*").matcher(version);
+        if (versionRegex.find())
+            versionNumber = versionRegex.group(0);
+
+        if (versionNumber.isEmpty()) {
+            Matcher noPeriodVersionRegex = Pattern.compile("[0-9]*").matcher(version);
+            versionNumber = noPeriodVersionRegex.group(0) + ".0";
+        }
+
+        if (versionNumber.isEmpty())
+            versionNumber = "1.1";
+
+        return "Version " + versionNumber;
     }
 
     public String getName(RecordType type) {
-        for(NameRecord recordOn : nameRecords)
-            if(recordOn.nameID == type.getValue())
+        for (NameRecord recordOn : nameRecords)
+            if (recordOn.nameID == type.getValue())
                 return recordOn.getRawString();
 
         return null;
