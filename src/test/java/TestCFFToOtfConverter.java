@@ -102,7 +102,14 @@ public class TestCffToOtfConverter {
 
     private void runAllValidators(OpenTypeFont font) throws Exception {
         runInternalValidator(font);
-        fontboxValidate(font.getSourceFile());
+        try {
+            fontboxValidate(font.getSourceFile());
+        } catch (IOException ex) {
+            // fontbox bug location table is not mandatory for otf with cff type fonts
+            // putting patch in soon
+            if(!ex.getMessage().contains("loca is mandatory"))
+                throw ex;
+        }
         jdkFontValidate(font.getSourceFile());
     }
 }
