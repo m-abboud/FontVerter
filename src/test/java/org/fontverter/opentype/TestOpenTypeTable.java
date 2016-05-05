@@ -1,4 +1,6 @@
 package org.fontverter.opentype;
+import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.ByteSerializerException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -41,7 +43,7 @@ public class TestOpenTypeTable {
     public void fourBytesOfData_thenTableChecksumIsSumOfLongs() throws Exception {
         // note longs in opentype are 32bit vs java 64
         CannedOpenTypeTable table = new CannedOpenTypeTable();
-        OtfWriter writer = new OtfWriter();
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         writer.writeInt(1234567);
         table.fillerData = writer.toByteArray();
 
@@ -55,7 +57,7 @@ public class TestOpenTypeTable {
         // note longs in opentype are 32bit vs java 64
         CannedOpenTypeTable table = new CannedOpenTypeTable();
 
-        OtfWriter writer = new OtfWriter();
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         int[] dataLongs = new int[]{500, 1000, 1234567, 991076541};
         int expectedChecksum = 0;
         for (int intOn : dataLongs) {
@@ -73,7 +75,7 @@ public class TestOpenTypeTable {
     public void _2BytesOfData_thenTableChecksumDoesNotThrowException() throws Exception {
         // if internal methods don't pad checksum calc won't be able to read 4 bytes at time
         CannedOpenTypeTable table = new CannedOpenTypeTable();
-        OtfWriter writer = new OtfWriter();
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         writer.writeUnsignedShort(55);
         table.fillerData = writer.toByteArray();
 
@@ -85,11 +87,11 @@ public class TestOpenTypeTable {
     private class CannedOpenTypeTable extends OpenTypeTable {
         byte[] fillerData;
 
-        protected byte[] getRawData() throws IOException, FontSerializerException {
+        protected byte[] getRawData() throws IOException, ByteSerializerException {
             return fillerData;
         }
 
-        public long checksum() throws IOException, FontSerializerException {
+        public long checksum() throws IOException, ByteSerializerException {
             return getTableChecksum(getData());
         }
 

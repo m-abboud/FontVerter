@@ -1,32 +1,34 @@
 package org.fontverter.opentype;
 
+import org.fontverter.io.ByteDataProperty;
+
 public class PostScriptTable extends OpenTypeTable
 {
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.FIXED32)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.FIXED32)
     private float formatType;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.FIXED32)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.FIXED32)
     private float italicAngle;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
     private short underlinePosition;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.SHORT)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
     private short underlineThickness;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
     private long isFixedPitch;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
     private long minMemType42;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
     private long maxMemType42;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
     private long mimMemType1;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.ULONG)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
     private long maxMemType1;
 
     private String[] glyphNames = null;

@@ -1,5 +1,7 @@
 package org.fontverter.opentype;
 
+import org.fontverter.io.ByteDataProperty;
+
 public class MaximumProfileTable extends OpenTypeTable {
     public static MaximumProfileTable createDefaultTable() {
         MaximumProfileTable table = new MaximumProfileTable();
@@ -7,10 +9,10 @@ public class MaximumProfileTable extends OpenTypeTable {
         return table;
     }
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.FIXED32)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.FIXED32)
     protected float version;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
     protected int numGlyphs;
 
     @Override
@@ -56,43 +58,43 @@ public class MaximumProfileTable extends OpenTypeTable {
             return table;
         }
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxPoints;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxContours;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxCompositePoints;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxCompositeContours;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxZones;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxTwilightPoints;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxStorage;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxFunctionDefs;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxInstructionDefs;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxStackElements;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxSizeOfInstructions;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxComponentElements;
 
-        @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+        @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
         private int maxComponentDepth;
 
         public int getMaxPoints() {

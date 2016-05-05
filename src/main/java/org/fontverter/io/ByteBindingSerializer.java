@@ -1,4 +1,4 @@
-package org.fontverter.opentype;
+package org.fontverter.io;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -7,10 +7,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-class OtfTableSerializer {
-    private OtfWriter writer = new OtfWriter();
+public class ByteBindingSerializer {
+    private ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
 
-    public byte[] serialize(Object object) throws FontSerializerException {
+    public byte[] serialize(Object object) throws ByteSerializerException {
         try {
             Class type = object.getClass();
             List<Object> properties = getOrderedProperties(type);
@@ -20,31 +20,31 @@ class OtfTableSerializer {
 
             writer.flush();
         } catch(IOException ex) {
-            throw new FontSerializerException(ex);
+            throw new ByteSerializerException(ex);
         }
         return writer.toByteArray();
     }
 
-    private void serializeProperty(Object object, Object propertyOn) throws FontSerializerException {
+    private void serializeProperty(Object object, Object propertyOn) throws ByteSerializerException {
         try {
             if(propertyOn instanceof Method)
                 serializeMethod(object, (Method) propertyOn);
             else if(propertyOn instanceof Field)
                 serializeField(object, (Field) propertyOn);
         } catch (Exception e) {
-            throw new FontSerializerException(e);
+            throw new ByteSerializerException(e);
         }
     }
 
-    private List<Object> getOrderedProperties(Class type) throws FontSerializerException {
+    private List<Object> getOrderedProperties(Class type) throws ByteSerializerException {
         List<Object> properties = new LinkedList<Object>();
 
         for (Field fieldOn : type.getDeclaredFields()) {
-            if(fieldOn.isAnnotationPresent(OtfDataProperty.class))
+            if(fieldOn.isAnnotationPresent(ByteDataProperty.class))
                 properties.add(fieldOn);
         }
         for (Method methodOn : type.getDeclaredMethods()) {
-            if(methodOn.isAnnotationPresent(OtfDataProperty.class))
+            if(methodOn.isAnnotationPresent(ByteDataProperty.class))
                 properties.add(methodOn);
         }
 
@@ -56,7 +56,7 @@ class OtfTableSerializer {
                     int order2 = getPropertyAnnotation(obj2).order();
 
                     return order1 < order2 ? -1 : order1 == order2 ? 0 : 1;
-                } catch (FontSerializerException e) {
+                } catch (ByteSerializerException e) {
                     return 0;
                 }
             }
@@ -65,80 +65,57 @@ class OtfTableSerializer {
         return properties;
     }
 
-    private OtfDataProperty getPropertyAnnotation(Object property) throws FontSerializerException {
+    private ByteDataProperty getPropertyAnnotation(Object property) throws ByteSerializerException {
         if(property instanceof Field)
-            return ((Field)property).getAnnotation(OtfDataProperty.class);
+            return ((Field)property).getAnnotation(ByteDataProperty.class);
         else if(property instanceof Method)
-            return ((Method)property).getAnnotation(OtfDataProperty.class);
-        throw new FontSerializerException("Could not find annotation for property " + property.toString());
+            return ((Method)property).getAnnotation(ByteDataProperty.class);
+        
+        throw new ByteSerializerException("Could not find annotation for property " + property.toString());
     }
 
     private void serializeMethod(Object object, Method method) throws IOException, InvocationTargetException, IllegalAccessException {
-        if (!method.isAnnotationPresent(OtfDataProperty.class))
+        if (!method.isAnnotationPresent(ByteDataProperty.class))
             return;
 
         method.setAccessible(true);
-        Annotation annotation = method.getAnnotation(OtfDataProperty.class);
-        OtfDataProperty property = (OtfDataProperty) annotation;
+        Annotation annotation = method.getAnnotation(ByteDataProperty.class);
+        ByteDataProperty property = (ByteDataProperty) annotation;
         Object retValue = method.invoke(object);
-        switch (property.dataType()) {
-            case SHORT:
-                writer.writeShort((Integer) retValue);
-                break;
-            case USHORT:
-                writer.writeUnsignedShort((Integer) retValue);
-                break;
-            case LONG:
-                writer.writeInt((Integer) retValue);
-                break;
-            case ULONG:
-                writer.writeUnsignedInt((Integer) retValue);
-                break;
-            case FIXED32:
-                writer.write32Fixed((Float) retValue);
-                break;
-            case INT:
-                writer.writeInt((Integer) retValue);
-                break;
-            case STRING:
-                writer.writeString((String) retValue);
-                break;
-            case BYTE_ARRAY:
-                writer.write((byte[]) retValue);
-                break;
-            case LONGDATETIME:
-                Calendar date = (Calendar) retValue;
-                writer.writeLong((long) (date.getTimeInMillis() / 1000));
-                break;
-        }
+        writeValue(property, retValue);
+
     }
 
     private void serializeField(Object object, Field field) throws IllegalAccessException, IOException {
-        if (!field.isAnnotationPresent(OtfDataProperty.class))
+        if (!field.isAnnotationPresent(ByteDataProperty.class))
             return;
 
         field.setAccessible(true);
-        Annotation annotation = field.getAnnotation(OtfDataProperty.class);
-        OtfDataProperty property = (OtfDataProperty) annotation;
+        Annotation annotation = field.getAnnotation(ByteDataProperty.class);
+        ByteDataProperty property = (ByteDataProperty) annotation;
         Object fieldValue = field.get(object);
+        writeValue(property, fieldValue);
+    }
+
+    private void writeValue(ByteDataProperty property, Object fieldValue) throws IOException {
         switch (property.dataType()) {
             case SHORT:
-                writer.writeShort(field.getShort(object));
+                writer.writeShort(((Number)fieldValue).shortValue());
                 break;
             case USHORT:
-                writer.writeUnsignedShort(field.getInt(object));
+                writer.writeUnsignedShort(((Number)fieldValue).intValue());
                 break;
             case LONG:
-                writer.writeInt(field.getInt(object));
+                writer.writeInt(((Number)fieldValue).intValue());
                 break;
             case ULONG:
-                writer.writeUnsignedInt((int) field.getLong(object));
+                writer.writeUnsignedInt((int) ((Number)fieldValue).longValue());
                 break;
             case FIXED32:
-                writer.write32Fixed(field.getFloat(object));
+                writer.write32Fixed(((Number)fieldValue).floatValue());
                 break;
             case INT:
-                writer.writeInt(field.getInt(object));
+                writer.writeInt(((Number)fieldValue).intValue());
                 break;
             case STRING:
                 writer.writeString((String) fieldValue);
@@ -152,7 +129,5 @@ class OtfTableSerializer {
                 break;
         }
     }
-
-
 }
 

@@ -1,5 +1,7 @@
 package org.fontverter.opentype;
 
+import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.ByteSerializerException;
 import org.fontverter.opentype.OtfNameConstants.RecordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,8 +114,8 @@ public class NameTable extends OpenTypeTable {
             nameRecords.remove(recordOn);
     }
 
-    protected byte[] getRawData() throws IOException, FontSerializerException {
-        OtfWriter writer = new OtfWriter();
+    protected byte[] getRawData() throws IOException, ByteSerializerException {
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         writer.writeUnsignedShort(formatSelector);
         writer.writeUnsignedShort(nameRecords.size());
         writer.writeUnsignedShort(getOffsetToStringStorage());

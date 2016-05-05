@@ -1,5 +1,7 @@
 package org.fontverter.opentype;
 
+import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.ByteSerializerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +77,7 @@ public class OpenTypeFont {
         return tables;
     }
 
-    public byte[] getFontData() throws IOException, FontSerializerException {
+    public byte[] getFontData() throws IOException, ByteSerializerException {
         descendingSortedTables();
         normalizeTables();
         calculateOffsets(tables);
@@ -91,8 +93,8 @@ public class OpenTypeFont {
         return getRawData();
     }
 
-    private byte[] getRawData() throws IOException, FontSerializerException {
-        OtfWriter out = new OtfWriter();
+    private byte[] getRawData() throws IOException, ByteSerializerException {
+        ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         out.write(createSfntHeader(tables));
 
         for (OpenTypeTable tableOn : tables)
@@ -104,7 +106,7 @@ public class OpenTypeFont {
         return out.toByteArray();
     }
 
-    private void calculateOffsets(List<OpenTypeTable> tables) throws IOException, FontSerializerException {
+    private void calculateOffsets(List<OpenTypeTable> tables) throws IOException, ByteSerializerException {
         // must calculate table record offsets before we write any table data
         // start data offsets after sfnt header and table records
         int offset = tables.size() * OpenTypeTable.TABLE_RECORD_SIZE + OpenTypeFont.SFNT_HEADER_SIZE;
@@ -117,14 +119,14 @@ public class OpenTypeFont {
     }
 
     private byte[] createSfntHeader(List<OpenTypeTable> tables) throws IOException {
-        OtfWriter out = new OtfWriter();
+        ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
 
         int numTables = tables.size();
         int searchRange = closestMaxPowerOfTwo(numTables) * 16;
         int entrySelector = (int) log2(closestMaxPowerOfTwo(numTables));
         int rangeShift = numTables * 16 - searchRange;
 
-        out.write("OTTO".getBytes(OtfWriter.openTypeCharEncoding));
+        out.write("OTTO".getBytes(ByteDataOutputStream.openTypeCharset));
         out.writeShort(numTables);
         out.writeShort(searchRange);
         out.writeShort(entrySelector);

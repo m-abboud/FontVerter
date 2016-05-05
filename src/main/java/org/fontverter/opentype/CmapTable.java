@@ -1,6 +1,8 @@
 package org.fontverter.opentype;
 
 
+import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.ByteDataProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +19,10 @@ public class CmapTable extends OpenTypeTable {
     private List<CmapSubTable> subTables = new ArrayList<CmapSubTable>();
     private static Format0SubTable macTable;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
     int version;
 
-    @OtfDataProperty(dataType = OtfDataProperty.DataType.USHORT)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
     int numTables() {
         return subTables.size();
     }
@@ -34,7 +36,7 @@ public class CmapTable extends OpenTypeTable {
     protected byte[] getRawData() throws IOException {
         calculateOffsets();
 
-        OtfWriter writer = new OtfWriter();
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         writer.write(super.getRawData());
 
         for (CmapSubTable tableOn : subTables) {
@@ -119,7 +121,7 @@ public class CmapTable extends OpenTypeTable {
         }
 
         public byte[] getRecordData() throws IOException {
-            OtfWriter writer = new OtfWriter();
+            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
             writer.writeUnsignedShort(platformId);
             writer.writeUnsignedShort(platformEncodingId);
             writer.writeUnsignedInt((int) subTableOffset);
@@ -160,7 +162,7 @@ public class CmapTable extends OpenTypeTable {
 
         @Override
         public byte[] getData() throws IOException {
-            OtfWriter writer = new OtfWriter();
+            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
 
             writer.writeUnsignedShort((int) formatNumber);
             writer.writeUnsignedShort(getLength());
@@ -205,7 +207,7 @@ public class CmapTable extends OpenTypeTable {
         }
 
         private void setDataHeaderLength(byte[] data) throws IOException {
-            OtfWriter lengthWriter = new OtfWriter();
+            ByteDataOutputStream lengthWriter = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
             lengthWriter.writeUnsignedShort(data.length);
             byte[] lengthData = lengthWriter.toByteArray();
             data[2] =  lengthData[0];
@@ -330,8 +332,7 @@ public class CmapTable extends OpenTypeTable {
 
         @Override
         public byte[] getData() throws IOException {
-            OtfWriter writer = new OtfWriter();
-
+            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
             writer.writeUnsignedShort((int) formatNumber);
             writer.writeUnsignedShort(getLength());
             writer.writeUnsignedShort(getLanguageId());

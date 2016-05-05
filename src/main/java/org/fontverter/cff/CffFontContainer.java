@@ -112,7 +112,6 @@ public class CffFontContainer {
 
     public Map<Integer, String> getGlyphIdsToNames() throws IOException {
         try {
-
             // reflection to get private map field for lazyness, !fragile!, obviously
             Field mapField = FontVerterUtils.findPrivateField("gidToName", CFFCharset.class);
 

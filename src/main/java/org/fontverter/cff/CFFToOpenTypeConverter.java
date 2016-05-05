@@ -1,7 +1,7 @@
 package org.fontverter.cff;
 
-import org.apache.fontbox.cff.CFFStandardEncoding;
 import org.fontverter.CharsetConverter;
+import org.fontverter.io.ByteSerializerException;
 import org.fontverter.opentype.*;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class CffToOpenTypeConverter {
         this.cffFont = CffFontContainer.parse(cffdata);
     }
 
-    public OpenTypeFont generateFont() throws IOException, FontSerializerException {
+    public OpenTypeFont generateFont() throws IOException, ByteSerializerException {
         otfFont = OpenTypeFont.createBlankFont();
         byte[] cffData = cffFont.getData();
         otfFont.addTable(new CffTable(cffData));

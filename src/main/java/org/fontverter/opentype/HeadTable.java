@@ -1,62 +1,64 @@
 package org.fontverter.opentype;
 
+import org.fontverter.io.ByteDataProperty;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static org.fontverter.opentype.OtfDataProperty.*;
+import static org.fontverter.io.ByteDataProperty.*;
 
 public class HeadTable extends OpenTypeTable
 {
-    @OtfDataProperty(dataType = DataType.FIXED32)
+    @ByteDataProperty(dataType = DataType.FIXED32)
     private float version;
 
-    @OtfDataProperty(dataType = DataType.FIXED32)
+    @ByteDataProperty(dataType = DataType.FIXED32)
     private float fontRevision;
 
-    @OtfDataProperty(dataType = DataType.ULONG)
+    @ByteDataProperty(dataType = DataType.ULONG)
     private long checkSumAdjustment;
 
-    @OtfDataProperty(dataType = DataType.ULONG)
+    @ByteDataProperty(dataType = DataType.ULONG)
     private long magicNumber;
 
-    @OtfDataProperty(dataType = DataType.USHORT)
+    @ByteDataProperty(dataType = DataType.USHORT)
     private int flags;
 
-    @OtfDataProperty(dataType = DataType.USHORT)
+    @ByteDataProperty(dataType = DataType.USHORT)
     private int unitsPerEm;
 
-    @OtfDataProperty(dataType = DataType.LONGDATETIME)
+    @ByteDataProperty(dataType = DataType.LONGDATETIME)
     private Calendar created;
 
-    @OtfDataProperty(dataType = DataType.LONGDATETIME)
+    @ByteDataProperty(dataType = DataType.LONGDATETIME)
     private Calendar modified;
 
-    @OtfDataProperty(dataType = DataType.SHORT)
+    @ByteDataProperty(dataType = DataType.SHORT)
     private short xMin;
 
-    @OtfDataProperty(dataType = DataType.SHORT)
+    @ByteDataProperty(dataType = DataType.SHORT)
     private short yMin;
 
-    @OtfDataProperty(dataType = DataType.SHORT)
+    @ByteDataProperty(dataType = DataType.SHORT)
     private short xMax;
 
-    @OtfDataProperty(dataType = DataType.SHORT)
+    @ByteDataProperty(dataType = DataType.SHORT)
     private short yMax;
 
-    @OtfDataProperty(dataType = DataType.USHORT)
+    @ByteDataProperty(dataType = DataType.USHORT)
     private int macStyle;
 
-    @OtfDataProperty(dataType = DataType.USHORT)
+    @ByteDataProperty(dataType = DataType.USHORT)
     private int lowestRecPPEM;
 
-    @OtfDataProperty(dataType = DataType.SHORT)
+    @ByteDataProperty(dataType = DataType.SHORT)
     private short fontDirectionHint;
 
-    @OtfDataProperty(dataType = DataType.SHORT)
+    @ByteDataProperty(dataType = DataType.SHORT)
     private short indexToLocFormat;
 
-    @OtfDataProperty(dataType = DataType.SHORT)
+    @ByteDataProperty(dataType = DataType.SHORT)
     private short glyphDataFormat;
 
     public String getName()

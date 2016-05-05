@@ -1,4 +1,4 @@
-package org.fontverter.opentype;
+package org.fontverter.io;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
-public @interface OtfDataProperty
+public @interface ByteDataProperty
 {
     public enum DataType
     {

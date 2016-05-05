@@ -1,5 +1,7 @@
 package org.fontverter.opentype;
 
+import org.fontverter.io.ByteDataOutputStream;
+
 import java.io.IOException;
 
 class OS2WindowsMetricsTable extends OpenTypeTable
@@ -50,7 +52,7 @@ class OS2WindowsMetricsTable extends OpenTypeTable
 
     protected byte[] getRawData() throws IOException
     {
-        OtfWriter out = new OtfWriter();
+        ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         out.writeUnsignedShort(version);
         out.writeShort(averageCharWidth);
         out.writeUnsignedShort(weightClass);

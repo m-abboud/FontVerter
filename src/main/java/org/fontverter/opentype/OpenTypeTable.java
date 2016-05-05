@@ -1,6 +1,9 @@
 package org.fontverter.opentype;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.ByteSerializerException;
+import org.fontverter.io.ByteBindingSerializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -19,20 +22,20 @@ public abstract class OpenTypeTable
     {
     }
 
-    public final byte[] getData() throws IOException, FontSerializerException {
+    public final byte[] getData() throws IOException, ByteSerializerException {
         // open type tables should be padded to be divisible by 4
         return padTableData(getRawData());
     }
 
-    protected byte[] getRawData() throws IOException, FontSerializerException {
-        OtfTableSerializer serializer = new OtfTableSerializer();
+    protected byte[] getRawData() throws IOException, ByteSerializerException {
+        ByteBindingSerializer serializer = new ByteBindingSerializer();
         return serializer.serialize(this);
     }
 
     public abstract String getName();
 
-    public byte[] getRecordEntry() throws IOException, FontSerializerException {
-        OtfWriter writer = new OtfWriter();
+    public byte[] getRecordEntry() throws IOException, ByteSerializerException {
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         byte[] data = getData();
 
         writer.writeString(getName());
@@ -59,7 +62,7 @@ public abstract class OpenTypeTable
         return tableData;
     }
 
-    public void finalizeRecord() throws IOException, FontSerializerException {
+    public void finalizeRecord() throws IOException, ByteSerializerException {
         checksum = getTableChecksum(getData());
     }
 
