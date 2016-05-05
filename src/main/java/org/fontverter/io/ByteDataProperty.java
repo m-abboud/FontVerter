@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface ByteDataProperty
 {
-    public enum DataType
+    enum DataType
     {
         SHORT, USHORT, LONG, ULONG, FIXED32, INT, STRING, BYTE_ARRAY, LONGDATETIME
     }

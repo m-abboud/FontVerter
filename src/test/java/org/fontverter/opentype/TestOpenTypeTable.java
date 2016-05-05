@@ -87,11 +87,11 @@ public class TestOpenTypeTable {
     private class CannedOpenTypeTable extends OpenTypeTable {
         byte[] fillerData;
 
-        protected byte[] getRawData() throws IOException, ByteSerializerException {
+        protected byte[] getRawData() throws IOException {
             return fillerData;
         }
 
-        public long checksum() throws IOException, ByteSerializerException {
+        public long checksum() throws IOException {
             return getTableChecksum(getData());
         }
 

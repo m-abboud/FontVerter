@@ -19,7 +19,7 @@ public class OtfNameConstants {
 
         private final int value;
 
-        private RecordType(int value) {
+        RecordType(int value) {
             this.value = value;
         }
 
@@ -42,7 +42,7 @@ public class OtfNameConstants {
 
         private final int value;
 
-        private Language(int value) {
+        Language(int value) {
             this.value = value;
         }
 

@@ -1,25 +1,32 @@
 package org.fontverter.cff;
 
 import org.fontverter.CharsetConverter;
+import org.fontverter.FontAdapter;
+import org.fontverter.FontConverter;
 import org.fontverter.io.ByteSerializerException;
 import org.fontverter.opentype.*;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class CffToOpenTypeConverter {
-    private CffFontContainer cffFont;
+public class CffToOpenTypeConverter implements FontConverter {
+    private CffFontAdapter cffFont;
     private OpenTypeFont otfFont;
 
-    public CffToOpenTypeConverter(CffFontContainer cffFont) {
+    public CffToOpenTypeConverter(CffFontAdapter cffFont) {
         this.cffFont = cffFont;
     }
 
     public CffToOpenTypeConverter(byte[] cffdata) throws IOException {
-        this.cffFont = CffFontContainer.parse(cffdata);
+        this.cffFont = CffFontAdapter.parse(cffdata);
     }
 
-    public OpenTypeFont generateFont() throws IOException, ByteSerializerException {
+    public FontAdapter convertFont(FontAdapter font) throws IOException {
+        this.cffFont = (CffFontAdapter)font;
+        return new OtfFontAdapter(generateFont());
+    }
+
+    public OpenTypeFont generateFont() throws IOException {
         otfFont = OpenTypeFont.createBlankFont();
         byte[] cffData = cffFont.getData();
         otfFont.addTable(new CffTable(cffData));
@@ -61,4 +68,5 @@ public class CffToOpenTypeConverter {
         otfFont.head.setMinY((short) cffFont.getMinY());
         otfFont.head.setMaxY((short) cffFont.getMaxY());
     }
+
 }

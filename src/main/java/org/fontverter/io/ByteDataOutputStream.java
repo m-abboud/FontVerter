@@ -38,6 +38,7 @@ public class ByteDataOutputStream extends DataOutputStream {
 
     public void write32Fixed(float num) throws IOException
     {
+        // DataOutputStream.writeFloat won't do it right for 16x16 float at least for OTF
         writeShort((int) num);
         float decimalOnlyVal = (num - (int) num);
         int decimalVal = (int) (decimalOnlyVal * 65536);

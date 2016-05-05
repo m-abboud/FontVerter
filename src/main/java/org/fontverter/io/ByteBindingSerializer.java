@@ -70,7 +70,7 @@ public class ByteBindingSerializer {
             return ((Field)property).getAnnotation(ByteDataProperty.class);
         else if(property instanceof Method)
             return ((Method)property).getAnnotation(ByteDataProperty.class);
-        
+
         throw new ByteSerializerException("Could not find annotation for property " + property.toString());
     }
 
@@ -125,7 +125,7 @@ public class ByteBindingSerializer {
                 break;
             case LONGDATETIME:
                 Calendar date = (Calendar) fieldValue;
-                writer.writeLong((long) (date.getTimeInMillis() / 1000));
+                writer.writeLong(date.getTimeInMillis() / 1000);
                 break;
         }
     }

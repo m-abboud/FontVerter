@@ -70,7 +70,7 @@ public abstract class RuleValidator<T> {
         }
     }
 
-    public static enum ValidatorErrorType {
+    public enum ValidatorErrorType {
         ERROR, WARNING, INFO, NONE
     }
 

@@ -1,31 +1,27 @@
 import org.apache.commons.io.FileUtils;
-import org.apache.fontbox.ttf.OTFParser;
 import org.fontverter.cff.CffToOpenTypeConverter;
 import org.fontverter.opentype.OpenTypeFont;
-import org.fontverter.opentype.validator.OpenTypeFontValidator;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
 import static org.fontverter.opentype.OtfNameConstants.RecordType.*;
 
 public class TestCffToOtfConverter {
-    private static final String testPath = "src/test/files/";
     private static final String tempOutputPath = "src/test/test-output/";
 
     @Test
     public void convertSimpleFont_fontValidatorsPass() throws Exception {
         OpenTypeFont font = convertAndSaveFile("FontVerter+SimpleTestFont");
-        runAllValidators(font);
+        TestUtils.runAllValidators(font);
     }
 
     @Test
     public void convertFullAlphabetFont_fontValidatorsPass() throws Exception {
         OpenTypeFont font = convertAndSaveFile("FontVerter+FullAlphabetFont");
-        runAllValidators(font);
+        TestUtils.runAllValidators(font);
     }
 
     @Test
@@ -61,7 +57,7 @@ public class TestCffToOtfConverter {
         Assert.assertEquals(793, font.head.getyMax());
     }
 
-    private OpenTypeFont convertAndSaveFile(String fileName) throws Exception {
+    public static OpenTypeFont convertAndSaveFile(String fileName) throws Exception {
         File outputFile = new File(tempOutputPath + fileName + ".otf");
         if(outputFile.exists())
             outputFile.delete();
@@ -74,39 +70,10 @@ public class TestCffToOtfConverter {
         return generatedFont;
     }
 
-    private OpenTypeFont convert(String fileName) throws IOException {
-        byte[] cff = FileUtils.readFileToByteArray(new File(testPath + fileName + ".cff"));
+    private static OpenTypeFont convert(String fileName) throws IOException {
+        byte[] cff = FileUtils.readFileToByteArray(new File(TestUtils.testPath + fileName + ".cff"));
         CffToOpenTypeConverter gen = new CffToOpenTypeConverter(cff);
         return gen.generateFont();
     }
 
-    private void runAllValidators(OpenTypeFont font) throws Exception {
-        runInternalValidator(font);
-        try {
-            fontboxValidate(font.getSourceFile());
-        } catch (IOException ex) {
-            // fontbox bug location table is not mandatory for otf with cff type fonts
-            // putting patch in soon
-            if(!ex.getMessage().contains("loca is mandatory"))
-                throw ex;
-        }
-        jdkFontValidate(font.getSourceFile());
-    }
-
-    private void runInternalValidator(OpenTypeFont font) throws Exception{
-        OpenTypeFontValidator validator = new OpenTypeFontValidator();
-        validator.validateWithExceptionsThrown(font);
-    }
-
-    private void jdkFontValidate(File file) throws FontFormatException, IOException {
-        Font.createFont(Font.TRUETYPE_FONT, file);
-    }
-
-    private void fontboxValidate(File file) throws IOException {
-        // fontbox for validating generated fonts, fontbox has good pdf type font parsing no generation tho
-        // but font classes have package local constructors
-        OTFParser parser = new OTFParser();
-        org.apache.fontbox.ttf.OpenTypeFont font = parser.parse(file);
-        font.getName();
-    }
 }

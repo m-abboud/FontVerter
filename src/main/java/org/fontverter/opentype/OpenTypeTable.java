@@ -22,19 +22,19 @@ public abstract class OpenTypeTable
     {
     }
 
-    public final byte[] getData() throws IOException, ByteSerializerException {
+    public final byte[] getData() throws IOException {
         // open type tables should be padded to be divisible by 4
         return padTableData(getRawData());
     }
 
-    protected byte[] getRawData() throws IOException, ByteSerializerException {
+    protected byte[] getRawData() throws IOException {
         ByteBindingSerializer serializer = new ByteBindingSerializer();
         return serializer.serialize(this);
     }
 
     public abstract String getName();
 
-    public byte[] getRecordEntry() throws IOException, ByteSerializerException {
+    public byte[] getRecordEntry() throws IOException {
         ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         byte[] data = getData();
 
@@ -62,7 +62,7 @@ public abstract class OpenTypeTable
         return tableData;
     }
 
-    public void finalizeRecord() throws IOException, ByteSerializerException {
+    public void finalizeRecord() throws IOException {
         checksum = getTableChecksum(getData());
     }
 

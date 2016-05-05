@@ -1,40 +1,63 @@
 package org.fontverter.cff;
 
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.fontbox.EncodedFont;
 import org.apache.fontbox.cff.*;
 import org.apache.fontbox.encoding.Encoding;
-import org.fontverter.FontNotSupportedException;
-import org.fontverter.FontVerterUtils;
+import org.fontverter.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class CffFontContainer {
+public class CffFontAdapter implements FontAdapter {
     private byte[] data = new byte[]{};
+    private CFFFont font;
 
-    public static CffFontContainer parse(byte[] cffData) throws IOException {
-        CFFParser parser = new CFFParser();
-        List<CFFFont> fonts = parser.parse(cffData);
-        if (fonts.size() > 1)
-            throw new FontNotSupportedException("Multiple CFF fonts in one file are not supported.");
-
-        CffFontContainer font = new CffFontContainer(fonts.get(0));
+    public static CffFontAdapter parse(byte[] cffData) throws IOException {
+        CFFFont cfffont = fontboxParse(cffData);
+        CffFontAdapter font = new CffFontAdapter(cfffont);
         font.setData(cffData);
         return font;
     }
 
-    public CFFFont getFont() {
-        return font;
+    private static CFFFont fontboxParse(byte[] cffData) throws IOException {
+        CFFParser parser = new CFFParser();
+        List<CFFFont> fonts = parser.parse(cffData);
+        if (fonts.size() > 1)
+            throw new FontNotSupportedException("Multiple CFF fonts in one file are not supported.");
+        return fonts.get(0);
     }
 
-    private final CFFFont font;
-
-    public CffFontContainer(CFFFont font) {
+    public CffFontAdapter(CFFFont font) {
         this.font = font;
+    }
+
+    public CffFontAdapter() {
+    }
+
+    public boolean detectFormat(byte[] fontFile) {
+        byte[] start = Arrays.copyOfRange(fontFile, 0, 10);
+        return FontVerterUtils.bytesStartsWith(start, new byte[]{1, 0, 4, 4});
+    }
+
+    public void read(byte[] fontFile) throws IOException {
+        font = fontboxParse(fontFile);
+    }
+
+    public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
+        if (fontFormat == FontVerter.FontFormat.OTF)
+            return new CffToOpenTypeConverter(this);
+
+        throw new FontNotSupportedException("CFF to " + fontFormat + " conversion is not supported");
+    }
+
+    public CFFFont getFont() {
+        return font;
     }
 
     public String getFullName() {
@@ -154,4 +177,6 @@ public class CffFontContainer {
     public byte[] getData() {
         return data;
     }
+
+
 }

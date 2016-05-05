@@ -77,7 +77,7 @@ public class OpenTypeFont {
         return tables;
     }
 
-    public byte[] getFontData() throws IOException, ByteSerializerException {
+    public byte[] getFontData() throws IOException {
         descendingSortedTables();
         normalizeTables();
         calculateOffsets(tables);
@@ -93,7 +93,7 @@ public class OpenTypeFont {
         return getRawData();
     }
 
-    private byte[] getRawData() throws IOException, ByteSerializerException {
+    private byte[] getRawData() throws IOException {
         ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         out.write(createSfntHeader(tables));
 
@@ -106,7 +106,7 @@ public class OpenTypeFont {
         return out.toByteArray();
     }
 
-    private void calculateOffsets(List<OpenTypeTable> tables) throws IOException, ByteSerializerException {
+    private void calculateOffsets(List<OpenTypeTable> tables) throws IOException {
         // must calculate table record offsets before we write any table data
         // start data offsets after sfnt header and table records
         int offset = tables.size() * OpenTypeTable.TABLE_RECORD_SIZE + OpenTypeFont.SFNT_HEADER_SIZE;
