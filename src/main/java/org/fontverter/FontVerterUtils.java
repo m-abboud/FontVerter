@@ -19,17 +19,21 @@ public class FontVerterUtils {
         return mapField;
     }
 
-    public static boolean bytesStartsWith(byte[] data, String startsWith) {
+    public static boolean bytesStartsWith(byte[] data, String... startsWith) {
         String dataAsString = new String(data, ByteDataOutputStream.openTypeCharset);
-        return dataAsString.startsWith("startsWith");
+        for (String matchOn : startsWith)
+            if (dataAsString.startsWith(matchOn))
+                return true;
+
+        return false;
     }
 
     public static boolean bytesStartsWith(byte[] data, byte[] startsWith) {
-        if(data.length < startsWith.length)
+        if (data.length < startsWith.length)
             return false;
 
-        for(int i = 0; i < startsWith.length;i++) {
-            if(data[i] != startsWith[i])
+        for (int i = 0; i < startsWith.length; i++) {
+            if (data[i] != startsWith[i])
                 return false;
         }
 

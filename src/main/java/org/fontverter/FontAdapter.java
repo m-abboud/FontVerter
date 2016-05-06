@@ -1,10 +1,10 @@
 package org.fontverter;
 
+import org.fontverter.io.ByteSerializerException;
+
 import java.io.IOException;
 import java.util.Map;
 
-// maybe interface should just be read write methods, different fonts kinda different and adapter doesnt fit too will
-// but design patterns , because
 public interface FontAdapter {
 //    String getFullName();
 //
@@ -27,7 +27,7 @@ public interface FontAdapter {
 //    int getMaxY();
 //
 //    Map<Integer, String> getGlyphIdsToNames() throws IOException;
-    byte[] getData();
+    byte[] getData() throws IOException;
 
     boolean detectFormat(byte[] fontFile);
 

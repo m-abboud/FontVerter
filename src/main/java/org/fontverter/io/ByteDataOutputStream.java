@@ -36,6 +36,12 @@ public class ByteDataOutputStream extends DataOutputStream {
         writeInt(num);
     }
 
+    public void writeUnsignedInt8(int num) throws IOException
+    {
+        byte int8 = (byte) (num >>> 24);
+        writeByte(int8);
+    }
+
     public void write32Fixed(float num) throws IOException
     {
         // DataOutputStream.writeFloat won't do it right for 16x16 float at least for OTF

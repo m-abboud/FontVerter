@@ -10,7 +10,6 @@ import java.io.IOException;
 import static org.fontverter.opentype.OtfNameConstants.RecordType.*;
 
 public class TestCffToOtfConverter {
-    private static final String tempOutputPath = "src/test/test-output/";
 
     @Test
     public void convertSimpleFont_fontValidatorsPass() throws Exception {
@@ -58,7 +57,7 @@ public class TestCffToOtfConverter {
     }
 
     public static OpenTypeFont convertAndSaveFile(String fileName) throws Exception {
-        File outputFile = new File(tempOutputPath + fileName + ".otf");
+        File outputFile = new File(TestUtils.tempOutputPath + fileName + ".otf");
         if(outputFile.exists())
             outputFile.delete();
 

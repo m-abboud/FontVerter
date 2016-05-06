@@ -8,6 +8,7 @@ import java.io.IOException;
 
 public class TestUtils {
     static final String testPath = "src/test/files/";
+    static final String tempOutputPath = "src/test/test-output/";
 
     public static void runAllValidators(OpenTypeFont font) throws Exception {
         runInternalValidator(font);
