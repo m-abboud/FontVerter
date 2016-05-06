@@ -214,7 +214,6 @@ public class CmapTable extends OpenTypeTable {
             data[3] = lengthData[1];
         }
 
-        @Override
         public int glyphCount() {
             return charCodeToGlyphId.size() + 1;
         }
@@ -361,12 +360,5 @@ public class CmapTable extends OpenTypeTable {
             charCodeToGlyphId.put(characterCode, glyphId);
         }
 
-    }
-
-    protected static class SubTableSegment {
-        int endCount;
-        int startCount;
-        int idCount;
-        int idRangeOffset;
     }
 }
