@@ -1,6 +1,6 @@
 package org.fontverter.opentype;
+import org.fontverter.FontVerterUtils;
 import org.fontverter.io.ByteDataOutputStream;
-import org.fontverter.io.ByteSerializerException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -92,7 +92,7 @@ public class TestOpenTypeTable {
         }
 
         public long checksum() throws IOException {
-            return getTableChecksum(getData());
+            return FontVerterUtils.getTableChecksum(getData());
         }
 
         public String getName() {

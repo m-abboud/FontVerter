@@ -3,6 +3,9 @@ package org.fontverter;
 import org.apache.fontbox.cff.CFFCharset;
 import org.fontverter.io.ByteDataOutputStream;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 public class FontVerterUtils {
@@ -38,5 +41,17 @@ public class FontVerterUtils {
         }
 
         return true;
+    }
+
+    public static long getTableChecksum(byte[] tableData) throws IOException
+    {
+        DataInputStream is = new DataInputStream(new ByteArrayInputStream(tableData));
+
+        long checksum = 0;
+        while (is.available() >= 4)
+            checksum = checksum + is.readInt();
+
+        is.close();
+        return checksum;
     }
 }

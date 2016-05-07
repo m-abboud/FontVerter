@@ -10,15 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WoffFont implements FontAdapter {
-    private WoffHeader header;
-    private List<FontTable> tables = new ArrayList<FontTable>();
-    private List<FontAdapter> fonts = new ArrayList<FontAdapter>();
-
+    protected WoffHeader header;
+    protected List<FontTable> tables = new ArrayList<FontTable>();
+    protected List<FontAdapter> fonts = new ArrayList<FontAdapter>();
 
     public static WoffFont createBlankFont() {
         WoffFont font = new WoffFont();
-        font.header = new WoffHeader();
-
+        font.header = WoffHeader.createWoff2Header();
         return font;
     }
 
@@ -29,7 +27,6 @@ public class WoffFont implements FontAdapter {
     public byte[] getData() throws IOException {
         // have to write out data twice for header calcs
         header.calculateValues(this);
-
         return getRawData();
     }
 
@@ -43,18 +40,11 @@ public class WoffFont implements FontAdapter {
         return out.toByteArray();
     }
 
-    private byte[] getSfntHeader() throws IOException {
-        if(fonts.get(0) instanceof OtfFontAdapter) {
-            OpenTypeFont font = ((OtfFontAdapter) fonts.get(0)).getFont();
-            return font.getFontData();
-        }
-        return new byte[] {};
-    }
-
     byte[] getTableDirectoryData() throws IOException {
         ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         for (FontTable tableOn : tables)
             writer.write(tableOn.getDirectoryData());
+
         return writer.toByteArray();
     }
 
@@ -79,8 +69,8 @@ public class WoffFont implements FontAdapter {
 
     public void addFont(FontAdapter adapter) {
         fonts.add(adapter);
-
     }
+
     public void addFontTable(byte[] data, WoffConstants.TableFlagType flag) {
         FontTable table = new FontTable(data, flag);
         tables.add(table);

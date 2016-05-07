@@ -18,6 +18,14 @@ public class WoffHeader {
         return header;
     }
 
+    public static WoffHeader createWoff1Header() {
+        WoffHeader header = new WoffHeader();
+        header.signature = WOFF_1_SIGNATURE;
+        header.majorVersion = 1;
+        header.minorVersion = 0;
+        return header;
+    }
+
     public byte[] getData() throws IOException {
         ByteBindingSerializer serializer = new ByteBindingSerializer();
         return serializer.serialize(this);

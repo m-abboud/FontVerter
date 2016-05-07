@@ -1,5 +1,6 @@
 package org.fontverter.opentype;
 
+import org.fontverter.FontVerterUtils;
 import org.fontverter.io.ByteDataProperty;
 
 import java.io.IOException;
@@ -91,7 +92,7 @@ public class HeadTable extends OpenTypeTable
 
 
     public void checksumAdjustment(byte[] fontBytes) throws IOException {
-        checkSumAdjustment = 0xB1B0AFBA - getTableChecksum(fontBytes);
+        checkSumAdjustment = 0xB1B0AFBA - FontVerterUtils.getTableChecksum(fontBytes);
     }
 
     public short getyMin() {

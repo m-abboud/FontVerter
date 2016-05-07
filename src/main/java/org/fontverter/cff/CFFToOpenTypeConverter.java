@@ -9,15 +9,15 @@ import org.fontverter.opentype.*;
 import java.io.IOException;
 import java.util.Map;
 
-public class CffToOpenTypeConverter implements FontConverter {
+public class CFFToOpenTypeConverter implements FontConverter {
     private CffFontAdapter cffFont;
     private OpenTypeFont otfFont;
 
-    public CffToOpenTypeConverter(CffFontAdapter cffFont) {
+    public CFFToOpenTypeConverter(CffFontAdapter cffFont) {
         this.cffFont = cffFont;
     }
 
-    public CffToOpenTypeConverter(byte[] cffdata) throws IOException {
+    public CFFToOpenTypeConverter(byte[] cffdata) throws IOException {
         this.cffFont = CffFontAdapter.parse(cffdata);
     }
 

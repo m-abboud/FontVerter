@@ -10,7 +10,6 @@ import org.fontverter.opentype.OtfToWoffConverter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -52,9 +51,9 @@ public class CffFontAdapter implements FontAdapter {
 
     public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
         if (fontFormat == FontVerter.FontFormat.OTF)
-            return new CffToOpenTypeConverter(this);
+            return new CFFToOpenTypeConverter(this);
         if (fontFormat == FontVerter.FontFormat.WOFF)
-            return new CombinedFontConverter(new CffToOpenTypeConverter(this), new OtfToWoffConverter());
+            return new CombinedFontConverter(new CFFToOpenTypeConverter(this), new OtfToWoffConverter());
 
         throw new FontNotSupportedException("CFF to " + fontFormat + " conversion is not supported");
     }

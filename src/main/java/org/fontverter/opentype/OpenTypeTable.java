@@ -1,16 +1,13 @@
 package org.fontverter.opentype;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.fontverter.FontVerterUtils;
 import org.fontverter.io.ByteDataOutputStream;
-import org.fontverter.io.ByteSerializerException;
 import org.fontverter.io.ByteBindingSerializer;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 
-public abstract class OpenTypeTable
-{
+public abstract class OpenTypeTable {
     public static final int TABLE_RECORD_SIZE = 16;
 
     private long checksum;
@@ -18,8 +15,7 @@ public abstract class OpenTypeTable
 
     private int paddingAdded;
 
-    public OpenTypeTable()
-    {
+    public OpenTypeTable() {
     }
 
     public final byte[] getData() throws IOException {
@@ -48,7 +44,7 @@ public abstract class OpenTypeTable
 
     private byte[] padTableData(byte[] tableData) {
         if (tableData.length % 4 != 0) {
-            int paddingNeeded = 4- (tableData.length % 4);
+            int paddingNeeded = 4 - (tableData.length % 4);
 
             byte[] padding = new byte[paddingNeeded];
             for (int i = 0; i < padding.length; i++)
@@ -63,31 +59,17 @@ public abstract class OpenTypeTable
     }
 
     public void finalizeRecord() throws IOException {
-        checksum = getTableChecksum(getData());
+        checksum = FontVerterUtils.getTableChecksum(getData());
     }
 
     void normalize() {
     }
 
-    protected final long getTableChecksum(byte[] tableData) throws IOException
-    {
-        DataInputStream is = new DataInputStream(new ByteArrayInputStream(tableData));
-
-        long checksum = 0;
-        while (is.available() >= 4)
-            checksum = checksum + is.readInt();
-
-        is.close();
-        return checksum;
-    }
-
-    public int getOffset()
-    {
+    public int getOffset() {
         return offset;
     }
 
-    public void setOffset(int offset)
-    {
+    public void setOffset(int offset) {
         this.offset = offset;
     }
 

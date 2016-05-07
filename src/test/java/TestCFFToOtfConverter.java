@@ -1,5 +1,5 @@
 import org.apache.commons.io.FileUtils;
-import org.fontverter.cff.CffToOpenTypeConverter;
+import org.fontverter.cff.CFFToOpenTypeConverter;
 import org.fontverter.opentype.OpenTypeFont;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import static org.fontverter.opentype.OtfNameConstants.RecordType.*;
 
-public class TestCffToOtfConverter {
+public class TestCFFToOtfConverter {
 
     @Test
     public void convertSimpleFont_fontValidatorsPass() throws Exception {
@@ -71,7 +71,7 @@ public class TestCffToOtfConverter {
 
     private static OpenTypeFont convert(String fileName) throws IOException {
         byte[] cff = FileUtils.readFileToByteArray(new File(TestUtils.testPath + fileName + ".cff"));
-        CffToOpenTypeConverter gen = new CffToOpenTypeConverter(cff);
+        CFFToOpenTypeConverter gen = new CFFToOpenTypeConverter(cff);
         return gen.generateFont();
     }
 

@@ -10,6 +10,7 @@ import org.fontverter.opentype.CmapTable;
 import org.fontverter.opentype.HorizontalMetricsTable;
 import org.fontverter.opentype.MaximumProfileTable;
 import org.fontverter.opentype.OpenTypeFont;
+import org.fontverter.woff.Woff1Font;
 import org.fontverter.woff.WoffConstants.TableFlagType;
 import org.fontverter.woff.WoffFont;
 
@@ -40,7 +41,7 @@ public class OtfToWoffConverter implements FontConverter {
 
     public FontAdapter convertFont(FontAdapter font) throws IOException {
         otfFont = ((OtfFontAdapter)font).getFont();
-        woffFont = WoffFont.createBlankFont();
+        woffFont = Woff1Font.createBlankFont();
         woffFont.addFont(font);
         addFontTables();
 
