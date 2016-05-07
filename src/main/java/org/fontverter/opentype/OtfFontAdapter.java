@@ -1,9 +1,10 @@
 package org.fontverter.opentype;
 
-import org.fontverter.FontAdapter;
-import org.fontverter.FontConverter;
-import org.fontverter.FontVerter;
-import org.fontverter.FontVerterUtils;
+import org.fontverter.*;
+
+import java.io.IOException;
+
+import static org.fontverter.FontVerter.*;
 
 public class OtfFontAdapter implements FontAdapter {
     private OpenTypeFont font;
@@ -15,8 +16,8 @@ public class OtfFontAdapter implements FontAdapter {
     public OtfFontAdapter() {
     }
 
-    public byte[] getData() {
-        return new byte[0];
+    public byte[] getData() throws IOException {
+        return font.getFontData();
     }
 
     public boolean detectFormat(byte[] fontFile) {
@@ -27,8 +28,11 @@ public class OtfFontAdapter implements FontAdapter {
         font = OpenTypeFont.createBlankFont();
     }
 
-    public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) {
-        return null;
+    public FontConverter createConverterForType(FontFormat fontFormat) throws FontNotSupportedException {
+        if (fontFormat == FontFormat.WOFF)
+            return new OtfToWoffConverter();
+
+        throw new FontNotSupportedException("Font conversion not supported");
     }
 
     public OpenTypeFont getFont() {

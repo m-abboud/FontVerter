@@ -89,13 +89,14 @@ public class OpenTypeFont {
         // head checksum has to be very last after other checksums + offsets calculated so just grab full byte
         // output to calc instead of trying to re-edit the byte array at the right place
         head.checksumAdjustment(getRawData());
+
         // now we for realsies write out the font bytes
         return getRawData();
     }
 
     private byte[] getRawData() throws IOException {
         ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
-        out.write(createSfntHeader(tables));
+        out.write(createSfntHeader());
 
         for (OpenTypeTable tableOn : tables)
             out.write(tableOn.getRecordEntry());
@@ -118,7 +119,7 @@ public class OpenTypeFont {
         }
     }
 
-    private byte[] createSfntHeader(List<OpenTypeTable> tables) throws IOException {
+    byte[] createSfntHeader() throws IOException {
         ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
 
         int numTables = tables.size();

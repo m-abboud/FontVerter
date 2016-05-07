@@ -1,11 +1,11 @@
 package org.fontverter.cff;
 
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.fontbox.EncodedFont;
 import org.apache.fontbox.cff.*;
 import org.apache.fontbox.encoding.Encoding;
 import org.fontverter.*;
+import org.fontverter.opentype.OtfToWoffConverter;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -41,8 +41,9 @@ public class CffFontAdapter implements FontAdapter {
     }
 
     public boolean detectFormat(byte[] fontFile) {
-        byte[] start = Arrays.copyOfRange(fontFile, 0, 10);
-        return FontVerterUtils.bytesStartsWith(start, new byte[]{1, 0, 4, 4});
+        //byte[] start = Arrays.copyOfRange(fontFile, 0, 10);
+//        return FontVerterUtils.bytesStartsWith(start, new byte[]{1, 0, 4, 4});
+        return false;
     }
 
     public void read(byte[] fontFile) throws IOException {
@@ -52,6 +53,8 @@ public class CffFontAdapter implements FontAdapter {
     public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
         if (fontFormat == FontVerter.FontFormat.OTF)
             return new CffToOpenTypeConverter(this);
+        if (fontFormat == FontVerter.FontFormat.WOFF)
+            return new CombinedFontConverter(new CffToOpenTypeConverter(this), new OtfToWoffConverter());
 
         throw new FontNotSupportedException("CFF to " + fontFormat + " conversion is not supported");
     }

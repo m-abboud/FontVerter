@@ -1,6 +1,7 @@
 package org.fontverter;
 
 import org.apache.commons.io.FileUtils;
+import org.fontverter.cff.CffFontAdapter;
 import org.fontverter.opentype.OtfFontAdapter;
 import org.reflections.Reflections;
 
@@ -9,7 +10,7 @@ import java.io.IOException;
 import java.util.Set;
 
 public class FontVerter {
-    private static Set<Class<? extends FontAdapter>> adapters;
+    private static Class[] adapters;
     private static final Object adapterLock = new Object();
 
     public enum FontFormat {
@@ -27,7 +28,11 @@ public class FontVerter {
 
     public static FontAdapter convertFont(File inputFontData, FontFormat convertTo) throws IOException {
         byte[] data = FileUtils.readFileToByteArray(inputFontData);
+        return convertFont(data, convertTo);
+    }
 
+    public static FontAdapter convertFont(String inputFontData, FontFormat convertTo) throws IOException {
+        byte[] data = FileUtils.readFileToByteArray(new File(inputFontData));
         return convertFont(data, convertTo);
     }
 
@@ -39,7 +44,9 @@ public class FontVerter {
             if (adapter != null) return adapter;
         }
 
-        return new OtfFontAdapter();
+        FontAdapter adapter = new CffFontAdapter();
+        adapter.read(fontData);
+        return adapter;
     }
 
     public static FontAdapter readFont(File fontFile) throws IOException {
@@ -69,7 +76,8 @@ public class FontVerter {
         synchronized (adapterLock) {
             if(adapters == null) {
                 Reflections reflections = new Reflections("org.fontverter");
-                adapters = reflections.getSubTypesOf(FontAdapter.class);
+                Set<Class<? extends FontAdapter>> adapterClasses = reflections.getSubTypesOf(FontAdapter.class);
+                adapters = adapterClasses.toArray(new Class[adapterClasses.size()]);
             }
         }
     }

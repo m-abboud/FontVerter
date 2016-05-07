@@ -1,6 +1,7 @@
-package org.fontverter.woff;
+package org.fontverter.opentype;
 
 import org.apache.fontbox.ttf.*;
+import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.fontverter.FontAdapter;
 import org.fontverter.FontConverter;
@@ -10,6 +11,7 @@ import org.fontverter.opentype.HorizontalMetricsTable;
 import org.fontverter.opentype.MaximumProfileTable;
 import org.fontverter.opentype.OpenTypeFont;
 import org.fontverter.woff.WoffConstants.TableFlagType;
+import org.fontverter.woff.WoffFont;
 
 import java.io.IOException;
 import java.util.Map;
@@ -39,6 +41,7 @@ public class OtfToWoffConverter implements FontConverter {
     public FontAdapter convertFont(FontAdapter font) throws IOException {
         otfFont = ((OtfFontAdapter)font).getFont();
         woffFont = WoffFont.createBlankFont();
+        woffFont.addFont(font);
         addFontTables();
 
         return woffFont;
@@ -47,6 +50,7 @@ public class OtfToWoffConverter implements FontConverter {
     private void addFontTables() throws IOException {
         for(OpenTypeTable tableOn : otfFont.tables)
             woffFont.addFontTable(tableOn.getData(), getTableFlag(tableOn));
+//        woffFont.addFontTable(otfFont.createSfntHeader(), TableFlagType.s);
     }
 
     private TableFlagType getTableFlag(OpenTypeTable table) {

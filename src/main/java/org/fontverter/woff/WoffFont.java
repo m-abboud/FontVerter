@@ -2,29 +2,68 @@ package org.fontverter.woff;
 
 import org.fontverter.*;
 import org.fontverter.io.ByteDataOutputStream;
-import org.fontverter.io.ByteDataProperty;
-import org.fontverter.io.ByteSerializerException;
-import org.fontverter.opentype.OpenTypeTable;
+import org.fontverter.opentype.OpenTypeFont;
+import org.fontverter.opentype.OtfFontAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WoffFont implements FontAdapter {
-    private List<WoffTable> tables = new ArrayList<WoffTable>();
+    private WoffHeader header;
+    private List<FontTable> tables = new ArrayList<FontTable>();
+    private List<FontAdapter> fonts = new ArrayList<FontAdapter>();
+
 
     public static WoffFont createBlankFont() {
         WoffFont font = new WoffFont();
-        font.tables.add(new WoffTable.WoffHeader());
+        font.header = new WoffHeader();
+
         return font;
     }
 
+    public List<FontTable> getTables() {
+        return tables;
+    }
+
     public byte[] getData() throws IOException {
+        // have to write out data twice for header calcs
+        header.calculateValues(this);
+
+        return getRawData();
+    }
+
+    byte[] getRawData() throws IOException {
         ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
-        for (WoffTable tableOn : tables)
-            out.write(tableOn.getData());
+
+        out.write(header.getData());
+        out.write(getTableDirectoryData());
+        out.write(getCompressedDataBlock());
 
         return out.toByteArray();
+    }
+
+    private byte[] getSfntHeader() throws IOException {
+        if(fonts.get(0) instanceof OtfFontAdapter) {
+            OpenTypeFont font = ((OtfFontAdapter) fonts.get(0)).getFont();
+            return font.getFontData();
+        }
+        return new byte[] {};
+    }
+
+    byte[] getTableDirectoryData() throws IOException {
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+        for (FontTable tableOn : tables)
+            writer.write(tableOn.getDirectoryData());
+        return writer.toByteArray();
+    }
+
+    byte[] getCompressedDataBlock() throws IOException {
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+        for (FontTable tableOn : tables)
+            writer.write(tableOn.getCompressedTableData());
+
+        return writer.toByteArray();
     }
 
     public boolean detectFormat(byte[] fontFile) {
@@ -32,15 +71,22 @@ public class WoffFont implements FontAdapter {
     }
 
     public void read(byte[] fontFile) throws IOException {
-
     }
 
     public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
-        return null;
+        throw new FontNotSupportedException("Font conversion not supported");
     }
 
+    public void addFont(FontAdapter adapter) {
+        fonts.add(adapter);
+
+    }
     public void addFontTable(byte[] data, WoffConstants.TableFlagType flag) {
         FontTable table = new FontTable(data, flag);
         tables.add(table);
+    }
+
+    public List<FontAdapter> getFonts() {
+        return fonts;
     }
 }

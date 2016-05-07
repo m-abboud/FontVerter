@@ -72,10 +72,26 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.meteogroup.jbrotli</groupId>
+            <artifactId>jbrotli</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.meteogroup.jbrotli</groupId>
+            <artifactId>jbrotli-native-win32-x86-amd64</artifactId>
+            <version>0.4.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
-
     <repositories>
+        <repository>
+            <id>bintray-nitram509-jbrotli</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/nitram509/jbrotli</url>
+        </repository>
+
         <repository>
             <id>ApacheSnapshot</id>
             <name>Apache Repository</name>
