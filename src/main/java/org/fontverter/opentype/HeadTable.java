@@ -126,4 +126,9 @@ public class HeadTable extends OpenTypeTable
     public void setMaxY(short yMax) {
         this.yMax = yMax;
     }
+
+    void resetCalculations() {
+        checkSumAdjustment = 0;
+        super.resetCalculations();
+    }
 }

@@ -114,7 +114,7 @@ public class NameTable extends OpenTypeTable {
             nameRecords.remove(recordOn);
     }
 
-    protected byte[] getRawData() throws IOException {
+    public byte[] getUnpaddedData() throws IOException {
         ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         writer.writeUnsignedShort(formatSelector);
         writer.writeUnsignedShort(nameRecords.size());

@@ -7,6 +7,8 @@ import org.fontverter.opentype.OtfFontAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class WoffFont implements FontAdapter {
@@ -33,6 +35,13 @@ public class WoffFont implements FontAdapter {
     byte[] getRawData() throws IOException {
         ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
 
+        Collections.sort(tables, new Comparator<FontTable>() {
+            public int compare(FontTable o1, FontTable o2) {
+                String c1 = o1.flag.toString();
+                String c2 = o2.flag.toString();
+                return c1.compareTo(c2);
+            }
+        });
         out.write(header.getData());
         out.write(getTableDirectoryData());
         out.write(getCompressedDataBlock());

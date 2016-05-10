@@ -1,7 +1,6 @@
 package org.fontverter.opentype;
 
 import org.fontverter.io.ByteDataOutputStream;
-import org.fontverter.io.ByteSerializerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,7 @@ public class OpenTypeFont {
     public HorizontalHeadTable hhea;
     public MaximumProfileTable mxap;
     public HorizontalMetricsTable hmtx;
-    public OS2WindowsMetricsTable os2;
+    public OS2WinMetricsTable os2;
     public PostScriptTable post;
     public CmapTable cmap;
     public NameTable name;
@@ -32,9 +31,10 @@ public class OpenTypeFont {
         OpenTypeFont font = new OpenTypeFont();
         font.head = font.initTable(HeadTable.createDefaultTable());
 
-        font.os2 = font.initTable(OS2WindowsMetricsTable.createDefaultTable());
+        font.os2 = font.initTable(OS2WinMetricsTable.createDefaultTable());
         font.hhea = font.initTable(HorizontalHeadTable.createDefaultTable());
         font.mxap = font.initTable(MaximumProfileTable.createDefaultTable());
+//        font.mxap = font.initTable(MaximumProfileTablev.createDefaultTable());
 
         font.post = font.initTable(PostScriptTable.createDefaultTable());
         font.cmap = font.initTable(CmapTable.createDefaultTable());
@@ -43,13 +43,6 @@ public class OpenTypeFont {
         font.name = font.initTable(NameTable.createDefaultTable());
         font.normalizeTables();
         return font;
-    }
-
-    public void normalizeTables() {
-        mxap.setNumGlyphs(cmap.getGlyphCount());
-
-        for (OpenTypeTable tableOn : tables)
-            tableOn.normalize();
     }
 
     public OpenTypeFont() {
@@ -78,20 +71,36 @@ public class OpenTypeFont {
     }
 
     public byte[] getFontData() throws IOException {
+        // offsets and gotta calc checksums before doing final full font checksum so calling the data write out
+        // twice to be lazy
+        finalizeFont();
+
+        // now we for realsies write out the font bytes
+        return getRawData();
+    }
+
+    public void finalizeFont() throws IOException {
+        // gott make sure checksums = 0 before doing calc
+        for (OpenTypeTable tableOn : tables)
+            tableOn.resetCalculations();
+
         descendingSortedTables();
         normalizeTables();
         calculateOffsets(tables);
 
-        // gotta calc checksums before doing final full font checksum
         for (OpenTypeTable tableOn : tables)
             tableOn.finalizeRecord();
 
         // head checksum has to be very last after other checksums + offsets calculated so just grab full byte
         // output to calc instead of trying to re-edit the byte array at the right place
         head.checksumAdjustment(getRawData());
+    }
 
-        // now we for realsies write out the font bytes
-        return getRawData();
+    private void normalizeTables() {
+        mxap.setNumGlyphs(cmap.getGlyphCount());
+
+        for (OpenTypeTable tableOn : tables)
+            tableOn.normalize();
     }
 
     private byte[] getRawData() throws IOException {

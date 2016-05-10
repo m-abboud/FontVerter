@@ -36,7 +36,8 @@ public class CFFToOpenTypeConverter implements FontConverter {
         convertHorizontalLayoutSettings();
 
         // kinda kludgy having to call normalize after font is edited
-        otfFont.normalizeTables();
+        otfFont.finalizeFont();
+
         return otfFont;
     }
 

@@ -1,6 +1,8 @@
 package org.fontverter;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.fontbox.cff.CFFCharset;
+import org.fontverter.io.ByteDataInputStream;
 import org.fontverter.io.ByteDataOutputStream;
 
 import java.io.ByteArrayInputStream;
@@ -43,15 +45,26 @@ public class FontVerterUtils {
         return true;
     }
 
-    public static long getTableChecksum(byte[] tableData) throws IOException
-    {
-        DataInputStream is = new DataInputStream(new ByteArrayInputStream(tableData));
+    public static long getTableChecksum(byte[] tableData) throws IOException {
+        ByteDataInputStream is = new ByteDataInputStream(tableData);
 
         long checksum = 0;
         while (is.available() >= 4)
-            checksum = checksum + is.readInt();
+            checksum = checksum + is.readUnsignedInt();
 
         is.close();
         return checksum;
+    }
+
+    public static byte[] tablePaddingNeeded(byte[] tableData) {
+        if (tableData.length % 4 == 0)
+            return new byte[]{};
+
+        int paddingNeeded = 4 - (tableData.length % 4);
+        byte[] padding = new byte[paddingNeeded];
+        for (int i = 0; i < padding.length; i++)
+            padding[i] = 0;
+
+        return padding;
     }
 }

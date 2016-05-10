@@ -20,13 +20,14 @@ public abstract class OpenTypeTable {
 
     public final byte[] getData() throws IOException {
         // open type tables should be padded to be divisible by 4
-        return padTableData(getRawData());
+        return padTableData(getUnpaddedData());
     }
 
-    protected byte[] getRawData() throws IOException {
+    public byte[] getUnpaddedData() throws IOException {
         ByteBindingSerializer serializer = new ByteBindingSerializer();
         return serializer.serialize(this);
     }
+
 
     public abstract String getName();
 
@@ -35,7 +36,7 @@ public abstract class OpenTypeTable {
         byte[] data = getData();
 
         writer.writeString(getName());
-        writer.writeUnsignedInt((int) checksum);
+        writer.writeUnsignedInt(checksum);
         writer.writeUnsignedInt(getOffset());
         writer.writeUnsignedInt(data.length - paddingAdded);
 
@@ -43,19 +44,9 @@ public abstract class OpenTypeTable {
     }
 
     private byte[] padTableData(byte[] tableData) {
-        if (tableData.length % 4 != 0) {
-            int paddingNeeded = 4 - (tableData.length % 4);
-
-            byte[] padding = new byte[paddingNeeded];
-            for (int i = 0; i < padding.length; i++)
-                padding[i] = 0;
-
-            paddingAdded = paddingNeeded;
-            return ArrayUtils.addAll(tableData, padding);
-        }
-
-        paddingAdded = 0;
-        return tableData;
+        byte[] padding = FontVerterUtils.tablePaddingNeeded(tableData);
+        paddingAdded = padding.length;
+        return ArrayUtils.addAll(tableData, padding);
     }
 
     public void finalizeRecord() throws IOException {
@@ -73,4 +64,8 @@ public abstract class OpenTypeTable {
         this.offset = offset;
     }
 
+    void resetCalculations() {
+        checksum = 0;
+        offset = 0;
+    }
 }

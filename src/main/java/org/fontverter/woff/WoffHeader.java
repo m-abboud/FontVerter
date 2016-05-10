@@ -5,6 +5,7 @@ import org.fontverter.io.ByteDataProperty;
 import org.fontverter.io.ByteSerializerException;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 public class WoffHeader {
     static final int WOFF_1_SIGNATURE = 0x774F4646;
@@ -49,7 +50,7 @@ public class WoffHeader {
     @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
     int totalSfntSize;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT, ignoreIf = "isVersionOne")
     int totalCompressedSize;
 
     @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
@@ -59,19 +60,19 @@ public class WoffHeader {
     short minorVersion;
 
     @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
-    int metaOffset;
+    int metaOffset = 0;
 
     @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
-    int metaLength;
+    int metaLength = 0;
 
     @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
-    int metaOrigLength;
+    int metaOrigLength = 0;
 
     @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
-    int privOffset;
+    int privOffset = 0;
 
     @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
-    int privLength;
+    int privLength = 0;
 
     public void calculateValues(WoffFont woffFont) throws IOException {
         length = woffFont.getRawData().length;
@@ -79,6 +80,15 @@ public class WoffHeader {
         totalCompressedSize = woffFont.getCompressedDataBlock().length;
         totalSfntSize = woffFont.getFonts().get(0).getData().length;
         flavorSfntVersion = 0x4F54544F;// "OTTO".he;
+
+//        totalSfntSize = 12;
+//        totalSfntSize += 16 * numTables;
+//        for(FontTable tableOn : woffFont.getTables())
+//            totalSfntSize += (tableOn.origLength() + 3) & 0xFFFFFFFC;
+    }
+
+    public boolean isVersionOne() {
+        return majorVersion == 1;
     }
 }
 

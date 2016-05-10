@@ -87,7 +87,7 @@ public class TestOpenTypeTable {
     private class CannedOpenTypeTable extends OpenTypeTable {
         byte[] fillerData;
 
-        protected byte[] getRawData() throws IOException {
+        public byte[] getUnpaddedData() throws IOException {
             return fillerData;
         }
 

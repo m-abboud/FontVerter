@@ -11,7 +11,7 @@ public class CffTable extends OpenTypeTable
         this.data = data;
     }
 
-    public byte[] getRawData()
+    public byte[] getUnpaddedData()
     {
         return data;
     }

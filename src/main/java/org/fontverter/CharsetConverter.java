@@ -28,7 +28,8 @@ public class CharsetConverter {
                 code = entryOn.getKey();
         }
 
-        // have to remove char codes since can repeat in encoding map and names so need to move to next
+        // glyph names can map to multiple id's so we have to remove the id from our search after mapping
+        // a name to it
         usedCodes.put(code, 0);
         return code;
     }

@@ -4,7 +4,7 @@ import org.fontverter.io.ByteDataOutputStream;
 
 import java.io.IOException;
 
-class OS2WindowsMetricsTable extends OpenTypeTable
+class OS2WinMetricsTable extends OpenTypeTable
 {
     private int version;
     private short averageCharWidth;
@@ -50,7 +50,7 @@ class OS2WindowsMetricsTable extends OpenTypeTable
         return "OS/2";
     }
 
-    protected byte[] getRawData() throws IOException
+    public byte[] getUnpaddedData() throws IOException
     {
         ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
         out.writeUnsignedShort(version);
@@ -99,9 +99,9 @@ class OS2WindowsMetricsTable extends OpenTypeTable
         return out.toByteArray();
     }
 
-    public static OS2WindowsMetricsTable createDefaultTable()
+    public static OS2WinMetricsTable createDefaultTable()
     {
-        OS2WindowsMetricsTable table = new OS2WindowsMetricsTable();
+        OS2WinMetricsTable table = new OS2WinMetricsTable();
         table.version = 3;
         table.averageCharWidth = 1304;
         table.weightClass = 500;

@@ -33,11 +33,11 @@ public class CmapTable extends OpenTypeTable {
     }
 
     @Override
-    protected byte[] getRawData() throws IOException {
+    public byte[] getUnpaddedData() throws IOException {
         calculateOffsets();
 
         ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
-        writer.write(super.getRawData());
+        writer.write(super.getUnpaddedData());
 
         for (CmapSubTable tableOn : subTables) {
             writer.write(tableOn.getRecordData());

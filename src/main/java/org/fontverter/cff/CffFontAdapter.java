@@ -47,6 +47,7 @@ public class CffFontAdapter implements FontAdapter {
 
     public void read(byte[] fontFile) throws IOException {
         font = fontboxParse(fontFile);
+        data = fontFile;
     }
 
     public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {

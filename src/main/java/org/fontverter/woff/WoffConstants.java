@@ -1,5 +1,7 @@
 package org.fontverter.woff;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class WoffConstants {
     public enum TableFlagType {
         cmap(0), EBLC(16), CBDT(32), gvar(48),
@@ -38,9 +40,12 @@ public class WoffConstants {
         }
 
         public String toString() {
-            return this.name();
+            String name = this.name();
+            if(name.equals("OS2"))
+                name = "OS/2";
+            if(name.length() < 4)
+                name += StringUtils.repeat(' ',4 - name.length());
+            return name;
         }
     }
-
-
 }

@@ -12,7 +12,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
     private OpenTypeFont font;
 
     @Override
-    protected byte[] getRawData() throws IOException {
+    public byte[] getUnpaddedData() throws IOException {
         ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
 
         for (int i = 0; i < numHMetrics; i++) {

@@ -1,40 +1,47 @@
 package org.fontverter.woff;
 
-import com.google.common.collect.Table;
+import org.apache.commons.lang3.ArrayUtils;
+import org.fontverter.FontVerterUtils;
 import org.fontverter.io.ByteDataOutputStream;
-import org.fontverter.opentype.OpenTypeFont;
-import org.fontverter.opentype.OpenTypeTable;
 
 import java.io.IOException;
-import java.util.List;
 
 public class Woff1Font extends WoffFont {
+    private final int WOFF1_TABLE_DIRECTORY_ENTRY_SIZE = 4 * 5;
+    private final int WOFF1_HEADER_SIZE = (9 * 4) + (4 * 2);
+
     public static WoffFont createBlankFont() {
         Woff1Font font = new Woff1Font();
         font.header = WoffHeader.createWoff1Header();
         return font;
     }
 
-
     public void addFontTable(byte[] data, WoffConstants.TableFlagType flag) {
-        FontTable table = new FontTable.WoffV1FontTable(data, flag);
+        Woff1FontTable table = new Woff1FontTable(data, flag);
         tables.add(table);
     }
 
-    protected Ta
-    public byte[] getData() {
-
+    byte[] getRawData() throws IOException {
+        calculateOffsets();
+        return super.getRawData();
     }
+    
+    byte[] getCompressedDataBlock() throws IOException {
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+        for (FontTable tableOn : tables)
+            writer.write(tableOn.getCompressedTableData());
 
-    private final int WOFF1_TABLE_DIRECTORY_ENTRY_SIZE = 4 * 5;
+        return writer.toByteArray();
+    }
 
     private void calculateOffsets() throws IOException {
         // must calculate table record offsets before we write any table data
         // start data offsets after sfnt header and table records
-        int offset = tables.size() * WOFF1_TABLE_DIRECTORY_ENTRY_SIZE + OpenTypeFont.SFNT_HEADER_SIZE;
-        for (FontTable.WoffV1FontTable tableOn : tables) {
+        int offset = tables.size() * WOFF1_TABLE_DIRECTORY_ENTRY_SIZE + WOFF1_HEADER_SIZE;
+        for (FontTable table : tables) {
+            Woff1FontTable tableOn = (Woff1FontTable) table;
             tableOn.setOffset(offset);
-            offset += tableOn.getData().length;
+            offset += tableOn.getCompressedTableData().length;
         }
     }
 

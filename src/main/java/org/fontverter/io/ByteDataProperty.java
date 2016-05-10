@@ -16,6 +16,8 @@ public @interface ByteDataProperty
 
     DataType dataType();
 
+    String ignoreIf() default "";
+
     boolean ignore() default false;
 
     int order() default -1;
