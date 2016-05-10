@@ -42,7 +42,7 @@ public class OtfToWoffConverter implements FontConverter {
 
     private void addFontTables() throws IOException {
         for(OpenTypeTable tableOn : otfFont.tables)
-            woffFont.addFontTable(tableOn.getUnpaddedData(), getTableFlag(tableOn));
+            woffFont.addFontTable(tableOn.getUnpaddedData(), getTableFlag(tableOn), tableOn.getChecksum());
 //        woffFont.addFontTable(otfFont.createSfntHeader(), TableFlagType.s);
     }
 

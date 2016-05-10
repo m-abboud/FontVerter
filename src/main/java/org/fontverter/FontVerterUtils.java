@@ -63,7 +63,8 @@ public class FontVerterUtils {
         int paddingNeeded = 4 - (tableData.length % 4);
         byte[] padding = new byte[paddingNeeded];
         for (int i = 0; i < padding.length; i++)
-            padding[i] = 0;
+//            padding[i] = 0;
+        padding[i] = '\u0000';
 
         return padding;
     }

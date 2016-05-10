@@ -2,8 +2,6 @@ package org.fontverter.woff;
 
 import org.fontverter.*;
 import org.fontverter.io.ByteDataOutputStream;
-import org.fontverter.opentype.OpenTypeFont;
-import org.fontverter.opentype.OtfFontAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,7 +78,7 @@ public class WoffFont implements FontAdapter {
         fonts.add(adapter);
     }
 
-    public void addFontTable(byte[] data, WoffConstants.TableFlagType flag) {
+    public void addFontTable(byte[] data, WoffConstants.TableFlagType flag, long checksum) {
         FontTable table = new FontTable(data, flag);
         tables.add(table);
     }

@@ -1,7 +1,5 @@
 package org.fontverter.woff;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.fontverter.FontVerterUtils;
 import org.fontverter.io.ByteDataOutputStream;
 
 import java.io.IOException;
@@ -16,8 +14,9 @@ public class Woff1Font extends WoffFont {
         return font;
     }
 
-    public void addFontTable(byte[] data, WoffConstants.TableFlagType flag) {
+    public void addFontTable(byte[] data, WoffConstants.TableFlagType flag, long checksum) {
         Woff1FontTable table = new Woff1FontTable(data, flag);
+        table.checksum = checksum;
         tables.add(table);
     }
 

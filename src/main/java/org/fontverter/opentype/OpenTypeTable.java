@@ -10,6 +10,10 @@ import java.io.IOException;
 public abstract class OpenTypeTable {
     public static final int TABLE_RECORD_SIZE = 16;
 
+    public long getChecksum() {
+        return checksum;
+    }
+
     private long checksum;
     private int offset;
 
@@ -36,7 +40,7 @@ public abstract class OpenTypeTable {
         byte[] data = getData();
 
         writer.writeString(getName());
-        writer.writeUnsignedInt(checksum);
+        writer.writeUnsignedInt((int) checksum);
         writer.writeUnsignedInt(getOffset());
         writer.writeUnsignedInt(data.length - paddingAdded);
 

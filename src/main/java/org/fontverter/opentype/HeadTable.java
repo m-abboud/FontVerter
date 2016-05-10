@@ -76,8 +76,12 @@ public class HeadTable extends OpenTypeTable
         table.magicNumber = 0x5F0F3CF5;
         table.flags = 11;
         table.unitsPerEm = 1000;
+
         table.created = GregorianCalendar.getInstance();
+        table.created.set(1991,3,1);
         table.modified = GregorianCalendar.getInstance();
+        table.modified.set(1991,3,1);
+
         table.xMin = 26;
         table.yMin = -2;
         table.xMax = 1200;

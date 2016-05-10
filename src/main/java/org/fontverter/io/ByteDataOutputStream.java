@@ -52,10 +52,5 @@ public class ByteDataOutputStream extends DataOutputStream {
         writeUnsignedShort(decimalVal);
     }
 
-    public void writeUnsignedInt(long v) throws IOException {
-        write((byte)(v >>> 56));
-        write((byte)(v >>> 48));
-        write((byte)(v >>> 40));
-        write((byte)(v >>> 32));
-    }
+
 }
