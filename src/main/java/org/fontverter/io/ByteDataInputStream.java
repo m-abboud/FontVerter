@@ -14,9 +14,7 @@ public class ByteDataInputStream extends DataInputStream {
         long byte3 = read();
         long byte4 = read();
         if (byte4 < 0)
-        {
             throw new EOFException();
-        }
         return (byte1 << 24) + (byte2 << 16) + (byte3 << 8) + (byte4 << 0);
     }
 }

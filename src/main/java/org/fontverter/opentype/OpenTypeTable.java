@@ -36,7 +36,7 @@ public abstract class OpenTypeTable {
     public abstract String getName();
 
     public byte[] getRecordEntry() throws IOException {
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
         byte[] data = getData();
 
         writer.writeString(getName());

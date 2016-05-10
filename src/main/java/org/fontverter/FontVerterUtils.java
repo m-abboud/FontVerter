@@ -1,12 +1,8 @@
 package org.fontverter;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.fontbox.cff.CFFCharset;
 import org.fontverter.io.ByteDataInputStream;
 import org.fontverter.io.ByteDataOutputStream;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
@@ -25,7 +21,7 @@ public class FontVerterUtils {
     }
 
     public static boolean bytesStartsWith(byte[] data, String... startsWith) {
-        String dataAsString = new String(data, ByteDataOutputStream.openTypeCharset);
+        String dataAsString = new String(data, ByteDataOutputStream.OPEN_TYPE_CHARSET);
         for (String matchOn : startsWith)
             if (dataAsString.startsWith(matchOn))
                 return true;
@@ -63,8 +59,7 @@ public class FontVerterUtils {
         int paddingNeeded = 4 - (tableData.length % 4);
         byte[] padding = new byte[paddingNeeded];
         for (int i = 0; i < padding.length; i++)
-//            padding[i] = 0;
-        padding[i] = '\u0000';
+            padding[i] = '\u0000';
 
         return padding;
     }

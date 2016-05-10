@@ -6,15 +6,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 public class ByteDataOutputStream extends DataOutputStream {
-//    public static final Charset openTypeCharset = Charset.forName("utf-8");
-    public static final Charset openTypeCharset = Charset.forName("ISO-8859-1");
-
-    private final Charset encoding;
+    public static final Charset OPEN_TYPE_CHARSET = Charset.forName("ISO-8859-1");
 
     public ByteDataOutputStream(Charset encoding)
     {
         super(new ByteArrayOutputStream());
-        this.encoding = encoding;
     }
 
     public byte[] toByteArray()
@@ -24,7 +20,7 @@ public class ByteDataOutputStream extends DataOutputStream {
 
     public void writeString(String string) throws IOException
     {
-        out.write(string.getBytes(openTypeCharset));
+        out.write(string.getBytes(OPEN_TYPE_CHARSET));
     }
 
     public void writeUnsignedShort(int num) throws IOException
@@ -51,6 +47,4 @@ public class ByteDataOutputStream extends DataOutputStream {
         int decimalVal = (int) (decimalOnlyVal * 65536);
         writeUnsignedShort(decimalVal);
     }
-
-
 }

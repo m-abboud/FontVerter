@@ -16,6 +16,7 @@ public class TestOtfToWoffConverter {
     public void convertWoff() throws Exception {
         FontAdapter woffFont = FontVerter.convertFont(TestUtils.testPath + "test.cff", FontFormat.WOFF);
         saveTempFile(woffFont.getData(), "FontVerter+SimpleTestFont.woff");
+        new File(TestUtils.tempOutputPath + "FontVerter+SimpleTestFont_validate.html").delete();
     }
 
     private static void saveTempFile(byte[] data, String fileName) throws Exception {

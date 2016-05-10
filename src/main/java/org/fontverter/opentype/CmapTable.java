@@ -36,7 +36,7 @@ public class CmapTable extends OpenTypeTable {
     public byte[] getUnpaddedData() throws IOException {
         calculateOffsets();
 
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
         writer.write(super.getUnpaddedData());
 
         for (CmapSubTable tableOn : subTables) {
@@ -121,7 +121,7 @@ public class CmapTable extends OpenTypeTable {
         }
 
         public byte[] getRecordData() throws IOException {
-            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
             writer.writeUnsignedShort(platformId);
             writer.writeUnsignedShort(platformEncodingId);
             writer.writeUnsignedInt((int) subTableOffset);
@@ -162,7 +162,7 @@ public class CmapTable extends OpenTypeTable {
 
         @Override
         public byte[] getData() throws IOException {
-            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
 
             writer.writeUnsignedShort((int) formatNumber);
             writer.writeUnsignedShort(getLength());
@@ -207,7 +207,7 @@ public class CmapTable extends OpenTypeTable {
         }
 
         private void setDataHeaderLength(byte[] data) throws IOException {
-            ByteDataOutputStream lengthWriter = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+            ByteDataOutputStream lengthWriter = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
             lengthWriter.writeUnsignedShort(data.length);
             byte[] lengthData = lengthWriter.toByteArray();
             data[2] =  lengthData[0];
@@ -331,7 +331,7 @@ public class CmapTable extends OpenTypeTable {
 
         @Override
         public byte[] getData() throws IOException {
-            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
             writer.writeUnsignedShort((int) formatNumber);
             writer.writeUnsignedShort(getLength());
             writer.writeUnsignedShort(getLanguageId());

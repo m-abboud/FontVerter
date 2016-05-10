@@ -13,7 +13,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
 
     @Override
     public byte[] getUnpaddedData() throws IOException {
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
 
         for (int i = 0; i < numHMetrics; i++) {
             writer.writeUnsignedShort(advanceWidth[i]);

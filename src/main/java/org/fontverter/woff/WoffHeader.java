@@ -79,12 +79,7 @@ public class WoffHeader {
         numTables = (short) woffFont.getTables().size();
         totalCompressedSize = woffFont.getCompressedDataBlock().length;
         totalSfntSize = woffFont.getFonts().get(0).getData().length;
-        flavorSfntVersion = 0x4F54544F;// "OTTO".he;
-
-//        totalSfntSize = 12;
-//        totalSfntSize += 16 * numTables;
-//        for(FontTable tableOn : woffFont.getTables())
-//            totalSfntSize += (tableOn.origLength() + 3) & 0xFFFFFFFC;
+        flavorSfntVersion = 0x4F54544F;
     }
 
     public boolean isVersionOne() {

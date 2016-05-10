@@ -5,8 +5,8 @@ import org.fontverter.io.ByteDataOutputStream;
 import java.io.IOException;
 
 public class Woff1Font extends WoffFont {
-    private final int WOFF1_TABLE_DIRECTORY_ENTRY_SIZE = 4 * 5;
-    private final int WOFF1_HEADER_SIZE = (9 * 4) + (4 * 2);
+    private static final int WOFF1_TABLE_DIRECTORY_ENTRY_SIZE = 4 * 5;
+    private static final int WOFF1_HEADER_SIZE = (9 * 4) + (4 * 2);
 
     public static WoffFont createBlankFont() {
         Woff1Font font = new Woff1Font();
@@ -26,7 +26,7 @@ public class Woff1Font extends WoffFont {
     }
     
     byte[] getCompressedDataBlock() throws IOException {
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
         for (FontTable tableOn : tables)
             writer.write(tableOn.getCompressedTableData());
 

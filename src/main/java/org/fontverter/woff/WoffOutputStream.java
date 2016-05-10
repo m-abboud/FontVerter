@@ -3,15 +3,13 @@ package org.fontverter.woff;
 import org.apache.commons.lang3.StringUtils;
 import org.fontverter.io.ByteDataOutputStream;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WoffOutputStream extends ByteDataOutputStream {
     public WoffOutputStream() {
-        super(openTypeCharset);
+        super(OPEN_TYPE_CHARSET);
     }
 
     public void writeUIntBase128(int num) throws IOException {

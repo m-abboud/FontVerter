@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class ByteBindingSerializer {
-    private ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+    private ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
 
     public byte[] serialize(Object object) throws ByteSerializerException {
         try {

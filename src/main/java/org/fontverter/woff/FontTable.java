@@ -1,6 +1,5 @@
 package org.fontverter.woff;
 
-import com.google.common.io.ByteStreams;
 import org.apache.commons.lang3.ArrayUtils;
 import org.fontverter.FontVerterUtils;
 import org.fontverter.woff.WoffConstants.TableFlagType;
@@ -8,8 +7,7 @@ import org.meteogroup.jbrotli.Brotli;
 import org.meteogroup.jbrotli.BrotliStreamCompressor;
 import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
 
-import java.io.*;
-import java.util.zip.DeflaterOutputStream;
+import java.io.IOException;
 
 public class FontTable {
     protected final byte[] tableData;

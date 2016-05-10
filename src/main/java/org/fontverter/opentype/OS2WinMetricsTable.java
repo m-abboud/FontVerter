@@ -52,7 +52,7 @@ class OS2WinMetricsTable extends OpenTypeTable
 
     public byte[] getUnpaddedData() throws IOException
     {
-        ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.openTypeCharset);
+        ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
         out.writeUnsignedShort(version);
         out.writeShort(averageCharWidth);
         out.writeUnsignedShort(weightClass);

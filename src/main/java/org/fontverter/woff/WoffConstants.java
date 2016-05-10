@@ -43,6 +43,8 @@ public class WoffConstants {
             String name = this.name();
             if(name.equals("OS2"))
                 name = "OS/2";
+
+            // flag has to be 4 bytes long so add padding if only 3 chars
             if(name.length() < 4)
                 name += StringUtils.repeat(' ',4 - name.length());
             return name;

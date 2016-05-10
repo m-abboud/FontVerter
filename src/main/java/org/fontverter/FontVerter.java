@@ -4,12 +4,15 @@ import org.apache.commons.io.FileUtils;
 import org.fontverter.cff.CffFontAdapter;
 import org.fontverter.opentype.OtfFontAdapter;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
 public class FontVerter {
+    private static Logger log = LoggerFactory.getLogger(FontVerter.class);
     private static Class[] adapters;
     private static final Object adapterLock = new Object();
 
@@ -61,12 +64,12 @@ public class FontVerter {
     private static FontAdapter tryReadFontAdapter(byte[] fontData, Class<? extends FontAdapter> adapterOn) throws IOException {
         try {
             FontAdapter adapter = adapterOn.newInstance();
-            if(adapter.detectFormat(fontData)) {
+            if (adapter.detectFormat(fontData)) {
                 adapter.read(fontData);
                 return adapter;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug("Error creating font adapter {} Message: {}", adapterOn.getName(), e);
             return null;
         }
         return null;
@@ -74,7 +77,7 @@ public class FontVerter {
 
     private static void registerFontAdapters() {
         synchronized (adapterLock) {
-            if(adapters == null) {
+            if (adapters == null) {
                 Reflections reflections = new Reflections("org.fontverter");
                 Set<Class<? extends FontAdapter>> adapterClasses = reflections.getSubTypesOf(FontAdapter.class);
                 adapters = adapterClasses.toArray(new Class[adapterClasses.size()]);
