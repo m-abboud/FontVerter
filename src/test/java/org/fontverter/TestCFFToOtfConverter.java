@@ -1,3 +1,5 @@
+package org.fontverter;
+
 import org.apache.commons.io.FileUtils;
 import org.fontverter.cff.CFFToOpenTypeConverter;
 import org.fontverter.opentype.OpenTypeFont;
@@ -70,7 +72,7 @@ public class TestCFFToOtfConverter {
     }
 
     private static OpenTypeFont convert(String fileName) throws IOException {
-        byte[] cff = FileUtils.readFileToByteArray(new File(TestUtils.testPath + fileName + ".cff"));
+        byte[] cff = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + fileName + ".cff"));
         CFFToOpenTypeConverter gen = new CFFToOpenTypeConverter(cff);
         return gen.generateFont();
     }

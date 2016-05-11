@@ -1,8 +1,7 @@
+package org.fontverter;
+
 import org.apache.commons.io.FileUtils;
-import org.fontverter.FontAdapter;
-import org.fontverter.FontVerter;
 import org.fontverter.cff.CffFontAdapter;
-import org.fontverter.opentype.OpenTypeFont;
 import org.fontverter.opentype.OtfFontAdapter;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +14,7 @@ public class TestFontVerter {
 
     @Test
     public void givenCffFile_detectsCffFontFormat() throws IOException {
-        File file = new File(TestUtils.testPath + "FontVerter+SimpleTestFont.cff");
+        File file = new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.cff");
         FontAdapter font = FontVerter.readFont(file);
 
         Assert.assertEquals(CffFontAdapter.class, font.getClass());
@@ -23,7 +22,7 @@ public class TestFontVerter {
 
     @Test
     public void givenOtfFile_detectsCffFontFormat() throws IOException {
-        File file = new File(TestUtils.testPath + "FontVerter+SimpleTestFont.otf");
+        File file = new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
         FontAdapter font = FontVerter.readFont(file);
 
         Assert.assertEquals(OtfFontAdapter.class, font.getClass());
@@ -31,7 +30,7 @@ public class TestFontVerter {
 
     @Test
     public void givenCffFont_convertWithFontVerterApi_fontValidatorsPass() throws Exception {
-        File file = new File(TestUtils.testPath + "FontVerter+SimpleTestFont.cff");
+        File file = new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.cff");
         OtfFontAdapter font = (OtfFontAdapter) FontVerter.convertFont(file, FontVerter.FontFormat.OTF);
 
         File outputFile = new File(tempOutputPath + "FontVerter+SimpleTestFont.otf");

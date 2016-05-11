@@ -1,3 +1,5 @@
+package org.fontverter;
+
 import org.apache.fontbox.ttf.OTFParser;
 import org.fontverter.opentype.OpenTypeFont;
 import org.fontverter.opentype.validator.OpenTypeFontValidator;
@@ -7,8 +9,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class TestUtils {
-    static final String testPath = "src/test/files/";
-    static final String tempOutputPath = "src/test/test-output/";
+    public static final String TEST_PATH = "src/test/files/";
+    public static final String tempOutputPath = "src/test/test-output/";
 
     public static void runAllValidators(OpenTypeFont font) throws Exception {
         runInternalValidator(font);

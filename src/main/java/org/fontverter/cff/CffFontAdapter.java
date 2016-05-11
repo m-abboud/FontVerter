@@ -40,9 +40,13 @@ public class CffFontAdapter implements FontAdapter {
     }
 
     public boolean detectFormat(byte[] fontFile) {
-        //byte[] start = Arrays.copyOfRange(fontFile, 0, 10);
-//        return FontVerterUtils.bytesStartsWith(start, new byte[]{1, 0, 4, 4});
-        return false;
+        try {
+            // cff has no magic header so check if parseable to detect if cff
+            fontboxParse(fontFile);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void read(byte[] fontFile) throws IOException {

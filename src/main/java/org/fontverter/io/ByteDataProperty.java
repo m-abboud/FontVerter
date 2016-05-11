@@ -7,11 +7,9 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
-public @interface ByteDataProperty
-{
-    enum DataType
-    {
-        SHORT, USHORT, LONG, ULONG, FIXED32, INT, STRING, BYTE_ARRAY, LONGDATETIME
+public @interface ByteDataProperty {
+    enum DataType {
+        SHORT, USHORT, LONG, ULONG, FIXED32, INT, UINT, STRING, BYTE_ARRAY, LONG_DATE_TIME, UINT_BASE_128
     }
 
     DataType dataType();

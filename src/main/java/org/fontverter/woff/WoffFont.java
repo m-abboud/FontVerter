@@ -10,20 +10,29 @@ import java.util.Comparator;
 import java.util.List;
 
 public abstract class WoffFont implements FontAdapter {
-
     protected WoffHeader header;
     protected List<FontTable> tables = new ArrayList<FontTable>();
     protected List<FontAdapter> fonts = new ArrayList<FontAdapter>();
 
-//    public static WoffFont createBlankFont() {
-//        WoffFont font = new WoffFont();
-//        font.header = WoffHeader.createWoff2Header();
-//        return font;
-//    }
 
-    public List<FontTable> getTables() {
-        return tables;
+    public static WoffFont createBlankFont(int version) {
+        WoffFont font;
+
+        if (version == 1) {
+            font = new Woff1Font();
+            font.header = WoffHeader.createWoff1Header();
+        } else {
+            font = new Woff2Font();
+            font.header = WoffHeader.createWoff2Header();
+        }
+
+        return font;
     }
+
+    WoffFont() {
+    }
+
+    public abstract void addFontTable(byte[] unpaddedData, WoffConstants.TableFlagType tableFlag, long checksum);
 
     public byte[] getData() throws IOException {
         // have to write out data twice for header calcs
@@ -64,10 +73,6 @@ public abstract class WoffFont implements FontAdapter {
         return writer.toByteArray();
     }
 
-    public boolean detectFormat(byte[] fontFile) {
-        return FontVerterUtils.bytesStartsWith(fontFile, "wOF2", "wOFF");
-    }
-
     public void read(byte[] fontFile) throws IOException {
     }
 
@@ -79,12 +84,11 @@ public abstract class WoffFont implements FontAdapter {
         fonts.add(adapter);
     }
 
-    public void addFontTable(byte[] data, WoffConstants.TableFlagType flag, long checksum) {
-        FontTable table = new FontTable(data, flag);
-        tables.add(table);
-    }
-
     public List<FontAdapter> getFonts() {
         return fonts;
+    }
+
+    public List<FontTable> getTables() {
+        return tables;
     }
 }

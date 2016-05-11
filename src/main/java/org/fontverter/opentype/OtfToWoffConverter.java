@@ -2,6 +2,7 @@ package org.fontverter.opentype;
 
 import org.fontverter.FontAdapter;
 import org.fontverter.FontConverter;
+import org.fontverter.FontVerterConfig;
 import org.fontverter.woff.Woff1Font;
 import org.fontverter.woff.WoffConstants.TableFlagType;
 import org.fontverter.woff.WoffFont;
@@ -33,7 +34,8 @@ public class OtfToWoffConverter implements FontConverter {
 
     public FontAdapter convertFont(FontAdapter font) throws IOException {
         otfFont = ((OtfFontAdapter)font).getFont();
-        woffFont = Woff1Font.createBlankFont();
+        int woffVersion = FontVerterConfig.globalConfig().getWoffVersion();
+        woffFont = WoffFont.createBlankFont(woffVersion);
         woffFont.addFont(font);
         addFontTables();
 

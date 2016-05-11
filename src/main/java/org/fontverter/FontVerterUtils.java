@@ -29,18 +29,6 @@ public class FontVerterUtils {
         return false;
     }
 
-    public static boolean bytesStartsWith(byte[] data, byte[] startsWith) {
-        if (data.length < startsWith.length)
-            return false;
-
-        for (int i = 0; i < startsWith.length; i++) {
-            if (data[i] != startsWith[i])
-                return false;
-        }
-
-        return true;
-    }
-
     public static long getTableChecksum(byte[] tableData) throws IOException {
         ByteDataInputStream is = new ByteDataInputStream(tableData);
 

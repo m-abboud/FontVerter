@@ -1,17 +1,18 @@
 package org.fontverter.woff;
 
-import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.FontVerterUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.zip.DeflaterOutputStream;
+
+import static org.fontverter.woff.Woff1Font.Woff1FontTable.WOFF1_TABLE_DIRECTORY_ENTRY_SIZE;
+
 
 public class Woff1Font extends WoffFont {
-    private static final int WOFF1_TABLE_DIRECTORY_ENTRY_SIZE = 4 * 5;
-    private static final int WOFF1_HEADER_SIZE = (9 * 4) + (4 * 2);
+    private static final int WOFF1_HEADER_SIZE = 44;
 
-    public static WoffFont createBlankFont() {
-        Woff1Font font = new Woff1Font();
-        font.header = WoffHeader.createWoff1Header();
-        return font;
+    Woff1Font() {
     }
 
     public void addFontTable(byte[] data, WoffConstants.TableFlagType flag, long checksum) {
@@ -23,14 +24,6 @@ public class Woff1Font extends WoffFont {
     byte[] getRawData() throws IOException {
         calculateOffsets();
         return super.getRawData();
-    }
-    
-    byte[] getCompressedDataBlock() throws IOException {
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
-        for (FontTable tableOn : tables)
-            writer.write(tableOn.getCompressedTableData());
-
-        return writer.toByteArray();
     }
 
     private void calculateOffsets() throws IOException {
@@ -44,4 +37,43 @@ public class Woff1Font extends WoffFont {
         }
     }
 
+    public boolean detectFormat(byte[] fontFile) {
+        return FontVerterUtils.bytesStartsWith(fontFile, "wOFF");
+    }
+
+    public static class Woff1FontTable extends FontTable {
+        static final int WOFF1_TABLE_DIRECTORY_ENTRY_SIZE = 20;
+
+        private int offset;
+        long checksum;
+
+        public Woff1FontTable(byte[] table, WoffConstants.TableFlagType flag) {
+            super(table, flag);
+        }
+
+        protected byte[] compress(byte[] bytes) throws IOException {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            DeflaterOutputStream compressStream = new DeflaterOutputStream(out);
+            compressStream.write(bytes);
+            compressStream.close();
+
+            return out.toByteArray();
+        }
+
+        public byte[] getDirectoryData() throws IOException {
+            WoffOutputStream writer = new WoffOutputStream();
+
+            writer.writeString(flag.toString());
+            writer.writeInt(offset);
+            writer.writeInt(getCompressedTableData().length - paddingAdded);
+            writer.writeInt(tableData.length);
+            writer.writeUnsignedInt((int) checksum);
+
+            return writer.toByteArray();
+        }
+
+        public void setOffset(int offset) {
+            this.offset = offset;
+        }
+    }
 }

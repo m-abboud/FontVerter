@@ -2,21 +2,28 @@ package org.fontverter.io;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class ByteBindingSerializer {
-    private ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+    private ByteDataOutputStream writer;
+    private ByteBindingsReader propReader = new ByteBindingsReader();
 
     public byte[] serialize(Object object) throws ByteSerializerException {
         try {
+            writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
             Class type = object.getClass();
-            List<Object> properties = getProperties(type);
+            List<AccessibleObject> properties = propReader.getProperties(type);
 
-            for (Object propertyOn : properties)
-                serializeProperty(object, propertyOn);
+            try {
+                for (AccessibleObject propertyOn : properties)
+                    serializeProperty(object, propertyOn);
+            } catch (Exception e) {
+                throw new ByteSerializerException(e);
+            }
 
             writer.flush();
         } catch (IOException ex) {
@@ -25,97 +32,26 @@ public class ByteBindingSerializer {
         return writer.toByteArray();
     }
 
-    private void serializeProperty(Object object, Object propertyOn) throws ByteSerializerException {
-        try {
-            if (propertyOn instanceof Method)
-                serializeMethod(object, (Method) propertyOn);
-            else if (propertyOn instanceof Field)
-                serializeField(object, (Field) propertyOn);
-        } catch (Exception e) {
-            throw new ByteSerializerException(e);
-        }
-    }
-
-    private List<Object> getProperties(Class type) throws ByteSerializerException {
-        List<Object> properties = new LinkedList<Object>();
-
-        for (Field fieldOn : type.getDeclaredFields()) {
-            if (fieldOn.isAnnotationPresent(ByteDataProperty.class))
-                properties.add(fieldOn);
-        }
-        for (Method methodOn : type.getDeclaredMethods()) {
-            if (methodOn.isAnnotationPresent(ByteDataProperty.class))
-                properties.add(methodOn);
-        }
-
-        sortProperties(properties);
-
-        return properties;
-    }
-
-    private void sortProperties(List<Object> properties) {
-        Collections.sort(properties, new Comparator<Object>() {
-            public int compare(Object obj1, Object obj2) {
-                try {
-                    int order1 = getPropertyAnnotation(obj1).order();
-                    int order2 = getPropertyAnnotation(obj2).order();
-
-                    return order1 < order2 ? -1 : order1 == order2 ? 0 : 1;
-                } catch (ByteSerializerException e) {
-                    return 0;
-                }
-            }
-        });
-    }
-
-    private ByteDataProperty getPropertyAnnotation(Object property) throws ByteSerializerException {
-        if (property instanceof Field)
-            return ((Field) property).getAnnotation(ByteDataProperty.class);
-        else if (property instanceof Method)
-            return ((Method) property).getAnnotation(ByteDataProperty.class);
-
-        throw new ByteSerializerException("Could not find annotation for property " + property.toString());
-    }
-
-    private void serializeMethod(Object object, Method method) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        if (!method.isAnnotationPresent(ByteDataProperty.class))
+    private void serializeProperty(Object object, AccessibleObject propertyOn) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        if (!propertyOn.isAnnotationPresent(ByteDataProperty.class))
             return;
 
-        method.setAccessible(true);
-        Annotation annotation = method.getAnnotation(ByteDataProperty.class);
+        propertyOn.setAccessible(true);
+        Annotation annotation = propertyOn.getAnnotation(ByteDataProperty.class);
         ByteDataProperty property = (ByteDataProperty) annotation;
-        if (isIgnoreProperty(property, object))
+        if (propReader.isIgnoreProperty(property, object))
             return;
 
-        Object retValue = method.invoke(object);
-        writeValue(property, retValue);
+        Object propValue;
+        if (propertyOn instanceof Method)
+            propValue = ((Method)propertyOn).invoke(object);
+        else if (propertyOn instanceof Field)
+            propValue = ((Field)propertyOn).get(object);
+        else
+            throw new ByteSerializerException("Byte property binding on unknown type");
+
+        writeValue(property, propValue);
     }
-
-    private void serializeField(Object object, Field field)
-            throws IllegalAccessException, IOException, NoSuchMethodException, InvocationTargetException {
-        if (!field.isAnnotationPresent(ByteDataProperty.class))
-            return;
-
-        field.setAccessible(true);
-        Annotation annotation = field.getAnnotation(ByteDataProperty.class);
-        ByteDataProperty property = (ByteDataProperty) annotation;
-        if (isIgnoreProperty(property, object))
-            return;
-
-        Object fieldValue = field.get(object);
-        writeValue(property, fieldValue);
-    }
-
-    private boolean isIgnoreProperty(ByteDataProperty property, Object object)
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if (property.ignoreIf().isEmpty())
-            return false;
-
-        Method method = object.getClass().getMethod(property.ignoreIf());
-        method.setAccessible(true);
-        return (Boolean) method.invoke(object);
-    }
-
 
     private void writeValue(ByteDataProperty property, Object fieldValue) throws IOException {
         switch (property.dataType()) {
@@ -143,7 +79,7 @@ public class ByteBindingSerializer {
             case BYTE_ARRAY:
                 writer.write((byte[]) fieldValue);
                 break;
-            case LONGDATETIME:
+            case LONG_DATE_TIME:
                 Calendar date = (Calendar) fieldValue;
                 writer.writeLong(date.getTimeInMillis() / 1000);
                 break;

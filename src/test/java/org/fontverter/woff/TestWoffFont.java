@@ -1,4 +1,6 @@
-import org.fontverter.woff.WoffInputStream;
+package org.fontverter.woff;
+
+import org.fontverter.io.ByteDataInputStream;
 import org.fontverter.woff.WoffOutputStream;
 import org.junit.Assert;
 import org.junit.Test;
@@ -7,10 +9,10 @@ import java.io.IOException;
 
 public class TestWoffFont {
     @Test
-    public void givenOneByteUIntBase128_woffInputStreamReadsCorrectly() throws Exception {
+    public void givenOneByteUIntBase128_ByteDataInputStreamReadsCorrectly() throws Exception {
         byte data[] = new byte[] {0x3F};
 
-        WoffInputStream in = new WoffInputStream(data);
+        ByteDataInputStream in = new ByteDataInputStream(data);
         int readerResult = in.readUIntBase128();
 
         Assert.assertEquals(63, readerResult);
@@ -63,7 +65,7 @@ public class TestWoffFont {
     public void oneByteUIntBase128_withInvalidSigBit_throwsException()throws Exception {
         byte data[] = new byte[] {(byte) 0x81};
 
-        WoffInputStream in = new WoffInputStream(data);
+        ByteDataInputStream in = new ByteDataInputStream(data);
         int readerResult = in.readUIntBase128();
     }
 
@@ -71,7 +73,7 @@ public class TestWoffFont {
     public void twoByteUIntBase128_lastByteInvalidSigBit_throwsException()throws Exception {
         byte data[] = new byte[] {(byte) 0x81, (byte) 0x83};
 
-        WoffInputStream in = new WoffInputStream(data);
+        ByteDataInputStream in = new ByteDataInputStream(data);
         int readerResult = in.readUIntBase128();
     }
 
@@ -83,7 +85,7 @@ public class TestWoffFont {
     }
 
     private int readUIntBase128(byte[] data) throws IOException {
-        WoffInputStream in = new WoffInputStream(data);
+        ByteDataInputStream in = new ByteDataInputStream(data);
         return in.readUIntBase128();
     }
 }

@@ -29,10 +29,10 @@ public class HeadTable extends OpenTypeTable
     @ByteDataProperty(dataType = DataType.USHORT)
     private int unitsPerEm;
 
-    @ByteDataProperty(dataType = DataType.LONGDATETIME)
+    @ByteDataProperty(dataType = DataType.LONG_DATE_TIME)
     private Calendar created;
 
-    @ByteDataProperty(dataType = DataType.LONGDATETIME)
+    @ByteDataProperty(dataType = DataType.LONG_DATE_TIME)
     private Calendar modified;
 
     @ByteDataProperty(dataType = DataType.SHORT)

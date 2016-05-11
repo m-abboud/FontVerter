@@ -7,12 +7,15 @@ import org.meteogroup.jbrotli.Brotli;
 import org.meteogroup.jbrotli.BrotliStreamCompressor;
 import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.zip.DeflaterOutputStream;
 
-public class FontTable {
-    protected final byte[] tableData;
+public abstract class FontTable {
     protected final TableFlagType flag;
+    protected final byte[] tableData;
     protected byte[] cachedCompressedData;
+
     protected int paddingAdded = 0;
 
     public FontTable(byte[] table, TableFlagType flag) {
@@ -20,32 +23,18 @@ public class FontTable {
         this.flag = flag;
     }
 
-    public byte[] getDirectoryData() throws IOException {
-        WoffOutputStream writer = new WoffOutputStream();
-        writer.writeUnsignedInt8(flag.getValue());
-        // tag would be here but spec says optional and it's same as flag
-        writer.writeUIntBase128(tableData.length);
-        writer.writeUIntBase128(getCompressedTableData().length - paddingAdded);
+    protected abstract byte[] compress(byte[] data) throws IOException;
 
-        return writer.toByteArray();
-    }
+    protected abstract byte[] getDirectoryData() throws IOException;
 
     public byte[] getCompressedTableData() throws IOException {
-        if (cachedCompressedData == null)
-            cachedCompressedData = brotliCompress(tableData);
+        if (cachedCompressedData == null) {
+            cachedCompressedData = compress(tableData);
+            if (origLength() < cachedCompressedData.length)
+                cachedCompressedData = tableData;
+        }
 
         return padTableData(cachedCompressedData);
-    }
-
-    private static byte[] brotliCompress(byte[] bytes) throws IOException {
-        BrotliLibraryLoader.loadBrotli();
-
-        BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(Brotli.DEFAULT_PARAMETER);
-        return streamCompressor.compressArray(bytes, true);
-    }
-
-    public int origLength() {
-        return tableData.length;
     }
 
     protected byte[] padTableData(byte[] tableData) {
@@ -54,4 +43,9 @@ public class FontTable {
             paddingAdded = padding.length;
         return ArrayUtils.addAll(tableData, padding);
     }
+
+    public int origLength() {
+        return tableData.length;
+    }
+
 }
