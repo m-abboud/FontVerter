@@ -2,10 +2,8 @@ package org.fontverter.woff;
 
 import org.fontverter.io.ByteBindingSerializer;
 import org.fontverter.io.ByteDataProperty;
-import org.fontverter.io.ByteSerializerException;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 public class WoffHeader {
     static final int WOFF_1_SIGNATURE = 0x774F4646;
@@ -45,7 +43,7 @@ public class WoffHeader {
     short numTables;
 
     @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
-    static final short reserved = 0;
+    short reserved = 0;
 
     @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
     int totalSfntSize;
@@ -83,7 +81,27 @@ public class WoffHeader {
     }
 
     public boolean isVersionOne() {
+        clean();
         return majorVersion == 1;
+    }
+
+
+    // !! fixme waiiit I think majorVersion might be the font version not woff version?
+    private void clean() {
+        majorVersion = getWoffSignatureVersion();
+    }
+
+    short getWoffSignatureVersion() {
+        if (signature == WOFF_1_SIGNATURE)
+            return 1;
+        else if (signature == WOFF_2_SIGNATURE)
+            return 2;
+
+        return -1;
+    }
+
+    public boolean isSignatureValid() {
+        return signature == WOFF_2_SIGNATURE || signature == WOFF_1_SIGNATURE;
     }
 }
 

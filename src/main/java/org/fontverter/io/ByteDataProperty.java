@@ -19,4 +19,6 @@ public @interface ByteDataProperty {
     boolean ignore() default false;
 
     int order() default -1;
+
+    int byteLength() default -1;
 }

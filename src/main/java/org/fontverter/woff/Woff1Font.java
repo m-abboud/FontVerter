@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.DeflaterOutputStream;
 
-import static org.fontverter.woff.Woff1Font.Woff1FontTable.WOFF1_TABLE_DIRECTORY_ENTRY_SIZE;
+import static org.fontverter.woff.Woff1Font.Woff1Table.WOFF1_TABLE_DIRECTORY_ENTRY_SIZE;
 
 
 public class Woff1Font extends WoffFont {
@@ -15,8 +15,12 @@ public class Woff1Font extends WoffFont {
     Woff1Font() {
     }
 
+    public WoffTable createTable() {
+        return new Woff1Table(new byte[0], WoffConstants.TableFlagType.arbitrary);
+    }
+
     public void addFontTable(byte[] data, WoffConstants.TableFlagType flag, long checksum) {
-        Woff1FontTable table = new Woff1FontTable(data, flag);
+        Woff1Table table = new Woff1Table(data, flag);
         table.checksum = checksum;
         tables.add(table);
     }
@@ -30,10 +34,11 @@ public class Woff1Font extends WoffFont {
         // must calculate table record offsets before we write any table data
         // start data offsets after sfnt header and table records
         int offset = tables.size() * WOFF1_TABLE_DIRECTORY_ENTRY_SIZE + WOFF1_HEADER_SIZE;
-        for (FontTable table : tables) {
-            Woff1FontTable tableOn = (Woff1FontTable) table;
+
+        for (WoffTable table : tables) {
+            Woff1Table tableOn = (Woff1Table) table;
             tableOn.setOffset(offset);
-            offset += tableOn.getCompressedTableData().length;
+            offset += tableOn.getCompressedData().length;
         }
     }
 
@@ -41,13 +46,12 @@ public class Woff1Font extends WoffFont {
         return FontVerterUtils.bytesStartsWith(fontFile, "wOFF");
     }
 
-    public static class Woff1FontTable extends FontTable {
+    public static class Woff1Table extends WoffTable {
         static final int WOFF1_TABLE_DIRECTORY_ENTRY_SIZE = 20;
-
-        private int offset;
+        int offset;
         long checksum;
 
-        public Woff1FontTable(byte[] table, WoffConstants.TableFlagType flag) {
+        public Woff1Table(byte[] table, WoffConstants.TableFlagType flag) {
             super(table, flag);
         }
 
@@ -65,7 +69,7 @@ public class Woff1Font extends WoffFont {
 
             writer.writeString(flag.toString());
             writer.writeInt(offset);
-            writer.writeInt(getCompressedTableData().length - paddingAdded);
+            writer.writeInt(getCompressedData().length - paddingAdded);
             writer.writeInt(tableData.length);
             writer.writeUnsignedInt((int) checksum);
 

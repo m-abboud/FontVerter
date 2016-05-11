@@ -39,6 +39,21 @@ public class WoffConstants {
             return null;
         }
 
+
+        public static TableFlagType fromString(String str) {
+            for(TableFlagType type : TableFlagType.values()) {
+                String typeName = type.name().trim();
+                if(typeName.equals("OS/2"))
+                    return OS2;
+
+                if(type.name().equals(str))
+                    return type;
+            }
+
+            return arbitrary;
+        }
+
+
         public String toString() {
             String name = this.name();
             if(name.equals("OS2"))

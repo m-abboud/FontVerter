@@ -3,23 +3,21 @@ package org.fontverter.woff;
 import org.apache.commons.lang3.ArrayUtils;
 import org.fontverter.FontVerterUtils;
 import org.fontverter.woff.WoffConstants.TableFlagType;
-import org.meteogroup.jbrotli.Brotli;
-import org.meteogroup.jbrotli.BrotliStreamCompressor;
-import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.zip.DeflaterOutputStream;
 
-public abstract class FontTable {
-    protected final TableFlagType flag;
+public abstract class WoffTable {
+    int compressedLength;
+    int originalLength;
+    protected TableFlagType flag;
     protected final byte[] tableData;
-    protected byte[] cachedCompressedData;
+    protected byte[] compressedData;
 
     protected int paddingAdded = 0;
 
-    public FontTable(byte[] table, TableFlagType flag) {
+    public WoffTable(byte[] table, TableFlagType flag) {
         this.tableData = table;
+        originalLength = table.length;
         this.flag = flag;
     }
 
@@ -27,14 +25,14 @@ public abstract class FontTable {
 
     protected abstract byte[] getDirectoryData() throws IOException;
 
-    public byte[] getCompressedTableData() throws IOException {
-        if (cachedCompressedData == null) {
-            cachedCompressedData = compress(tableData);
-            if (origLength() < cachedCompressedData.length)
-                cachedCompressedData = tableData;
+    public byte[] getCompressedData() throws IOException {
+        if (compressedData == null) {
+            compressedData = compress(tableData);
+            if (origLength() < compressedData.length)
+                compressedData = tableData;
         }
 
-        return padTableData(cachedCompressedData);
+        return padTableData(compressedData);
     }
 
     protected byte[] padTableData(byte[] tableData) {

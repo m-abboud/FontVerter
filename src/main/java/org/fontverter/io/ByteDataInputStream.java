@@ -1,10 +1,15 @@
 package org.fontverter.io;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 public class ByteDataInputStream extends DataInputStream {
+    private final SeekableByteArrayInputStream byteInput;
+    Charset encoding = ByteDataOutputStream.OPEN_TYPE_CHARSET;
+
     public ByteDataInputStream(byte[] data) {
-        super(new ByteArrayInputStream(data));
+        super(new SeekableByteArrayInputStream(data));
+        byteInput = (SeekableByteArrayInputStream) in;
     }
 
     public long readUnsignedInt() throws IOException
@@ -16,6 +21,23 @@ public class ByteDataInputStream extends DataInputStream {
         if (byte4 < 0)
             throw new EOFException();
         return (byte1 << 24) + (byte2 << 16) + (byte3 << 8) + (byte4 << 0);
+    }
+
+    public String readString(int length) throws IOException {
+        byte[] bytes = readBytes(length);
+
+        return new String(bytes, encoding);
+    }
+
+    public byte[] readBytes(int length) throws IOException {
+        byte[] bytes = new byte[length];
+        for(int i = 0; i<bytes.length; i++)
+            bytes[i] = (byte) in.read();
+        return bytes;
+    }
+
+    public void seek(int offset) {
+        byteInput.seek(offset);
     }
 
     // converted from pseduo C like reader code from woff spec
@@ -40,5 +62,15 @@ public class ByteDataInputStream extends DataInputStream {
         }
 
         throw new IOException("UIntBase128 sequence exceeds 5 bytes");
+    }
+
+    protected static class SeekableByteArrayInputStream extends ByteArrayInputStream {
+        public SeekableByteArrayInputStream(byte[] buf) {
+            super(buf);
+        }
+
+        public void seek(int n) {
+            pos = n;
+        }
     }
 }
