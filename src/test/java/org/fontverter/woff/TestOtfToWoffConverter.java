@@ -1,11 +1,9 @@
 package org.fontverter.woff;
 
 import org.apache.commons.io.FileUtils;
-import org.fontverter.FontAdapter;
-import org.fontverter.FontVerter;
+import org.apache.commons.lang3.ArrayUtils;
+import org.fontverter.*;
 import org.fontverter.FontVerter.FontFormat;
-import org.fontverter.FontVerterConfig;
-import org.fontverter.TestUtils;
 import org.fontverter.woff.WoffConstants.TableFlagType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -62,29 +60,28 @@ public class TestOtfToWoffConverter {
 
     @Test
     public void convertCffToWoff2_sfntSizeSameAsOtfFontSize() throws Exception {
-        WoffFont parsedFont = (WoffFont) FontVerter.convertFont(TestUtils.TEST_PATH + "test.cff", FontFormat.WOFF2);
-        int otfLength = parsedFont.getFonts().get(0).getData().length;
+        WoffFont convertedFont = (WoffFont) FontVerter.convertFont(TestUtils.TEST_PATH + "test.cff", FontFormat.WOFF2);
+        int otfLength = convertedFont.getFonts().get(0).getData().length;
 
         WoffParser parser = new WoffParser();
-        WoffFont reparsedFont = parser.parse(parsedFont.getData());
+        WoffFont reparsedFont = parser.parse(convertedFont.getData());
 
         Assert.assertEquals(otfLength, reparsedFont.header.totalSfntSize);
     }
 
     private WoffFont convertAndReparseWoff2(String cffFile) throws Exception {
-        FontAdapter woffFont = FontVerter.convertFont(TestUtils.TEST_PATH + cffFile, FontFormat.WOFF2);
-        byte[] fontData = woffFont.getData();
+        Woff2Font convertedFont = (Woff2Font) FontVerter.convertFont(TestUtils.TEST_PATH + cffFile, FontFormat.WOFF2);
+        byte[] fontData = convertedFont.getData();
+
         saveTempFile(fontData, "FontVerter+SimpleTestFont.woff2");
-
-        File outputFile = new File("C:\\projects\\Pdf2Dom - type1c-fonts\\FontVerter+SimpleTestFont.woff2");
-        if (outputFile.exists())
-            outputFile.delete();
-
-        FileUtils.writeByteArrayToFile(outputFile, fontData);
 
         // parse bytes and rebuild font obj for validation so know data is written right
         WoffParser parser = new WoffParser();
-        return parser.parse(fontData);
+
+        // readd underlying opentype font for validator
+        Woff2Font reparseFont = (Woff2Font) parser.parse(fontData);
+        reparseFont.getFonts().add(convertedFont.fonts.get(0));
+        return convertedFont;
     }
 
 

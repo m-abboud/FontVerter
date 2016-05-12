@@ -68,7 +68,7 @@ public class TestWoffFont {
         ByteDataInputStream in = new ByteDataInputStream(out.toByteArray());
 
         int[] split = in.readSplitBits(6);
-        int flag = split[0];
+        int flag = split[1];
 
         Assert.assertEquals(4, flag);
     }

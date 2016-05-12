@@ -1,5 +1,6 @@
 package org.fontverter.woff;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.fontverter.*;
 import org.fontverter.io.ByteDataOutputStream;
 
@@ -51,6 +52,7 @@ public abstract class WoffFont implements FontAdapter {
                 return c1.compareTo(c2);
             }
         });
+
         out.write(header.getData());
         out.write(getTableDirectoryData());
         out.write(getCompressedDataBlock());

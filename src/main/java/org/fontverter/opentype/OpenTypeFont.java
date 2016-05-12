@@ -34,7 +34,6 @@ public class OpenTypeFont {
         font.os2 = font.initTable(OS2WinMetricsTable.createDefaultTable());
         font.hhea = font.initTable(HorizontalHeadTable.createDefaultTable());
         font.mxap = font.initTable(MaximumProfileTable.createDefaultTable());
-//        font.mxap = font.initTable(MaximumProfileTablev.createDefaultTable());
 
         font.post = font.initTable(PostScriptTable.createDefaultTable());
         font.cmap = font.initTable(CmapTable.createDefaultTable());

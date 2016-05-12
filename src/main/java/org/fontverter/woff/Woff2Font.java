@@ -1,5 +1,6 @@
 package org.fontverter.woff;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.fontverter.FontVerterUtils;
 import org.fontverter.io.ByteDataOutputStream;
 import org.meteogroup.jbrotli.Brotli;
@@ -7,11 +8,15 @@ import org.meteogroup.jbrotli.BrotliStreamCompressor;
 import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static org.fontverter.woff.WoffConstants.TableFlagType.*;
 import static org.fontverter.woff.WoffConstants.TableFlagType.glyf;
 
 public class Woff2Font extends WoffFont {
+    private byte[] cachedCompressedBlock;
+
     public WoffTable createTable() {
         return new Woff2Font.Woff2Table(new byte[0], arbitrary);
     }
@@ -26,14 +31,28 @@ public class Woff2Font extends WoffFont {
     }
 
     byte[] getCompressedDataBlock() throws IOException {
-        return brotliCompress(super.getCompressedDataBlock());
+        if (cachedCompressedBlock == null)
+            cachedCompressedBlock = brotliCompress(super.getCompressedDataBlock());
+
+        return cachedCompressedBlock;
+    }
+
+    byte[] getRawData() throws IOException {
+        byte[] bytes = super.getRawData();
+        byte[] pad = FontVerterUtils.tablePaddingNeeded(bytes);
+        bytes = ArrayUtils.addAll(bytes, pad);
+        return bytes;
     }
 
     private byte[] brotliCompress(byte[] bytes) {
         BrotliLibraryLoader.loadBrotli();
-        BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(Brotli.DEFAULT_PARAMETER);
 
-        return streamCompressor.compressArray(bytes, true);
+        Brotli.Parameter param = new Brotli.Parameter(Brotli.Mode.TEXT, 100, 1, 0);
+        BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(param);
+        byte[] compressed = streamCompressor.compressArray(bytes, true);
+        streamCompressor.close();
+
+        return compressed;
     }
 
     public static class Woff2Table extends WoffTable {
@@ -41,6 +60,7 @@ public class Woff2Font extends WoffFont {
 
         public Woff2Table(byte[] table, WoffConstants.TableFlagType flag) {
             super(table, flag);
+//            tableData = padTableData(tableData);
         }
 
         protected byte[] compress(byte[] bytes) throws IOException {

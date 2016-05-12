@@ -63,6 +63,6 @@ public class FontVerterUtils {
         if (nBits > 8)
             throw new IOException("Number of bits exceeds 8");
 
-        return inByte & (nBits + 1);
+        return inByte & (0x1F);
     }
 }

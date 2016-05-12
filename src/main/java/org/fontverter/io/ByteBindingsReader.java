@@ -42,7 +42,15 @@ class ByteBindingsReader {
         return (Boolean) method.invoke(object);
     }
 
-    private void sortProperties(List<AccessibleObject> properties) {
+    private void sortProperties(List<AccessibleObject> properties) throws ByteSerializerException {
+        boolean hasorder = false;
+        for (AccessibleObject propOn : properties) {
+            if(getPropertyAnnotation(propOn).order() != -1)
+                hasorder = true;
+
+        }
+        if(!hasorder)
+            return;
         Collections.sort(properties, new Comparator<Object>() {
             public int compare(Object obj1, Object obj2) {
                 try {

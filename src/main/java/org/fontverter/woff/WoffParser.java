@@ -90,10 +90,10 @@ public class WoffParser {
     }
 
     private void parseV2DirectoryEntry(Woff2Font.Woff2Table table) throws IOException {
-        int[] rawFlag = input.readSplitBits(6);
+        int[] rawFlag = input.readSplitBits(2);
 
-        table.flag = TableFlagType.fromInt(rawFlag[0]);
-        table.setTransform(rawFlag[1]);
+        table.setTransform(rawFlag[0]);
+        table.flag = TableFlagType.fromInt(rawFlag[1]);
 
         if (table.flag.getValue() == 63 ) {
             String tagStr = new String(ByteBuffer.allocate(4).putInt(input.readInt()).array());
@@ -103,8 +103,7 @@ public class WoffParser {
         table.originalLength = input.readUIntBase128();
 
         // transformLength present IFF non null transform ie something before brotli compress
-        // also checking if readable as UInt128 2 b sure, prolyl not really needed and bug elsewhere, stupid fonts
-        if (table.isTableTransformed() && isNextUInt128())
+        if (table.isTableTransformed())
             table.transformLength = input.readUIntBase128();
         if (table.transformLength == 0)
             table.transformLength = table.originalLength;

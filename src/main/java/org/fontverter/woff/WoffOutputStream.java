@@ -41,8 +41,10 @@ public class WoffOutputStream extends ByteDataOutputStream {
         String transBinary = Integer.toBinaryString(transform);
         if(transBinary.length() < 2)
             transBinary = StringUtils.repeat("0", 2 - transBinary.length()) + transBinary;
+        if(binary.length() < 6)
+            binary = StringUtils.repeat("0", 6 - binary.length()) + binary;
 
-        binary = binary + transBinary;
+        binary = transBinary + binary;
         byte byteOn = (Byte.parseByte(binary, 2));
         write(byteOn);
     }
