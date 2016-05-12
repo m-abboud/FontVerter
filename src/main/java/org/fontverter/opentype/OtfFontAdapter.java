@@ -29,7 +29,7 @@ public class OtfFontAdapter implements FontAdapter {
     }
 
     public FontConverter createConverterForType(FontFormat fontFormat) throws FontNotSupportedException {
-        if (fontFormat == FontFormat.WOFF)
+        if (fontFormat == FontFormat.WOFF1)
             return new OtfToWoffConverter();
 
         throw new FontNotSupportedException("Font conversion not supported");

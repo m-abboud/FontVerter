@@ -122,8 +122,6 @@ public class OpenTypeFont {
         int offset = tables.size() * OpenTypeTable.TABLE_RECORD_SIZE + OpenTypeFont.SFNT_HEADER_SIZE;
         for (OpenTypeTable tableOn : tables) {
             tableOn.setOffset(offset);
-            log.debug("{} Offset Calc: {}", tableOn.getName(), offset);
-
             offset += tableOn.getData().length;
         }
     }

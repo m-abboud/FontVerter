@@ -10,7 +10,7 @@ import static org.fontverter.woff.Woff1Font.Woff1Table.WOFF1_TABLE_DIRECTORY_ENT
 
 
 public class Woff1Font extends WoffFont {
-    private static final int WOFF1_HEADER_SIZE = 44;
+    static final int WOFF1_HEADER_SIZE = 44;
 
     Woff1Font() {
     }
@@ -33,13 +33,17 @@ public class Woff1Font extends WoffFont {
     private void calculateOffsets() throws IOException {
         // must calculate table record offsets before we write any table data
         // start data offsets after sfnt header and table records
-        int offset = tables.size() * WOFF1_TABLE_DIRECTORY_ENTRY_SIZE + WOFF1_HEADER_SIZE;
+        int offset = tableDirectoryOffsetStart();
 
         for (WoffTable table : tables) {
             Woff1Table tableOn = (Woff1Table) table;
             tableOn.setOffset(offset);
             offset += tableOn.getCompressedData().length;
         }
+    }
+
+    int tableDirectoryOffsetStart() {
+        return tables.size() * WOFF1_TABLE_DIRECTORY_ENTRY_SIZE + WOFF1_HEADER_SIZE;
     }
 
     public boolean detectFormat(byte[] fontFile) {
@@ -53,6 +57,10 @@ public class Woff1Font extends WoffFont {
 
         public Woff1Table(byte[] table, WoffConstants.TableFlagType flag) {
             super(table, flag);
+        }
+
+        public byte[] getCompressedData() throws IOException {
+            return padTableData(super.getCompressedData());
         }
 
         protected byte[] compress(byte[] bytes) throws IOException {

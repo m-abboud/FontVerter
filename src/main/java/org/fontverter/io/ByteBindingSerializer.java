@@ -44,9 +44,9 @@ public class ByteBindingSerializer {
 
         Object propValue;
         if (propertyOn instanceof Method)
-            propValue = ((Method)propertyOn).invoke(object);
+            propValue = ((Method) propertyOn).invoke(object);
         else if (propertyOn instanceof Field)
-            propValue = ((Field)propertyOn).get(object);
+            propValue = ((Field) propertyOn).get(object);
         else
             throw new ByteSerializerException("Byte property binding on unknown type");
 

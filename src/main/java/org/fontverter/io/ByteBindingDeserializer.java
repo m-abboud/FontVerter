@@ -40,8 +40,8 @@ public class ByteBindingDeserializer {
             return;
 
         Object inValue = readValue(binding);
-        if(propertyOn instanceof Field)
-            ((Field)propertyOn).set(object, inValue);
+        if (propertyOn instanceof Field)
+            ((Field) propertyOn).set(object, inValue);
         else
             throw new IOException("Method property deserialization not implemented");
     }

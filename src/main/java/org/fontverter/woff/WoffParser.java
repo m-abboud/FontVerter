@@ -3,12 +3,23 @@ package org.fontverter.woff;
 import org.fontverter.io.ByteBindingDeserializer;
 import org.fontverter.io.ByteDataInputStream;
 import org.fontverter.woff.Woff1Font.Woff1Table;
+import org.meteogroup.jbrotli.BrotliStreamDeCompressor;
+import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
+import static org.fontverter.woff.WoffConstants.*;
+
+/* todo seperate out to woff1 and woff2 classes */
 public class WoffParser {
     WoffFont font;
+
     private ByteDataInputStream input;
+    private static final Logger log = LoggerFactory.getLogger(WoffParser.class);
 
     public WoffParser() {
     }
@@ -34,15 +45,28 @@ public class WoffParser {
         for (int i = 0; i < font.header.numTables; i++)
             parseDirectoryEntry();
 
+        // todo seperate out v2 class...
+        if (font instanceof Woff1Font) {
+            for (WoffTable tableOn : font.getTables())
+                parseTableData(tableOn);
+        } else
+            parseV2CompressedBlock();
+    }
+
+    private void parseV2CompressedBlock() throws IOException {
+        byte[] compressedBlock = input.readBytes(font.header.totalCompressedSize);
+        compressedBlock = brotliDecompress(compressedBlock);
+        int posOn = 0;
+
         for (WoffTable tableOn : font.getTables())
-            parseTableData(tableOn);
+            tableOn.tableData = Arrays.copyOfRange(compressedBlock, posOn, tableOn.originalLength);
     }
 
     private void parseTableData(WoffTable tableOn) throws IOException {
-        if (tableOn instanceof Woff1Table) {
+        if (tableOn instanceof Woff1Table)
             input.seek(((Woff1Table) tableOn).offset);
-        }
-        tableOn.compressedData = input.readBytes(tableOn.compressedLength);
+
+        tableOn.compressedData = input.readBytes(tableOn.transformLength);
     }
 
     private void parseDirectoryEntry() throws IOException {
@@ -57,35 +81,65 @@ public class WoffParser {
 
     private void parseV1DirectoryEntry(Woff1Table table) throws IOException {
         String tag = input.readString(4);
-        table.flag = WoffConstants.TableFlagType.fromString(tag);
+        table.flag = TableFlagType.fromString(tag);
 
         table.offset = input.readInt();
-        table.compressedLength = input.readInt();
+        table.transformLength = input.readInt();
         table.originalLength = input.readInt();
         table.checksum = input.readUnsignedInt();
     }
 
     private void parseV2DirectoryEntry(Woff2Font.Woff2Table table) throws IOException {
-        int tag = input.read();
-        table.flag = WoffConstants.TableFlagType.fromInt(tag);
+        int[] rawFlag = input.readSplitBits(6);
 
-        // tag field is optional, so try read a Base128 and if it's invalid then
-        // we assume the tag field is there and read it but discard result since flag has it already
+        table.flag = TableFlagType.fromInt(rawFlag[0]);
+        table.setTransform(rawFlag[1]);
+
+        if (table.flag.getValue() == 63 ) {
+            String tagStr = new String(ByteBuffer.allocate(4).putInt(input.readInt()).array());
+            log.error("!! arbitrary flag type not tested" + tagStr);
+        }
+
+        table.originalLength = input.readUIntBase128();
+
+        // transformLength present IFF non null transform ie something before brotli compress
+        // also checking if readable as UInt128 2 b sure, prolyl not really needed and bug elsewhere, stupid fonts
+        if (table.isTableTransformed() && isNextUInt128())
+            table.transformLength = input.readUIntBase128();
+        if (table.transformLength == 0)
+            table.transformLength = table.originalLength;
+
+        log.debug("Woff2 parse table dir read: {} {} o-len:" + table.originalLength + " t-len:" + table.transformLength,
+                table.flag, table.getTransform());
+    }
+
+    private boolean isNextUInt128() throws IOException {
         try {
             input.mark(5);
             input.readUIntBase128();
             input.reset();
+            return true;
         } catch (IOException ex) {
             input.reset();
-            input.readInt();
         }
-
-        table.originalLength = input.readUIntBase128();
-        // fixme woff spec cryptically says only if applicable next to the transformed length field
-        // dunno when not to read it, think it's 0 if not applicable  but dunno if it can ommited completley
-        // ever
-        table.compressedLength = input.readUIntBase128();
-        if (table.compressedLength == 0)
-            table.compressedLength = table.originalLength;
+        return false;
     }
+
+    private byte[] brotliDecompress(byte[] bytes) {
+        ByteBuffer inBuffer = ByteBuffer.allocate(bytes.length);
+        ByteBuffer outBuffer = ByteBuffer.allocate(bytes.length * 2);
+        inBuffer.put(bytes);
+        inBuffer.limit(bytes.length);
+        inBuffer.position(0);
+
+        BrotliLibraryLoader.loadBrotli();
+        BrotliStreamDeCompressor streamCompressor = new BrotliStreamDeCompressor();
+        int decompressLength = streamCompressor.deCompress(inBuffer, outBuffer);
+
+        byte[] outBytes = new byte[decompressLength];
+        outBuffer.get(outBytes);
+        return outBytes;
+    }
+
+
 }

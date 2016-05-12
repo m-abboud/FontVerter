@@ -95,8 +95,6 @@ public class CmapTable extends OpenTypeTable {
         int offset = subTables.size() * CMAP_RECORD_BYTE_SIZE + CMAP_HEADER_SIZE;
         for (CmapSubTable tableOn : subTables) {
             tableOn.setSubTableOffset(offset);
-            log.debug("{} Cmap sub table Offset Calc: ", offset);
-
             offset += tableOn.getData().length;
         }
     }
@@ -210,7 +208,7 @@ public class CmapTable extends OpenTypeTable {
             ByteDataOutputStream lengthWriter = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
             lengthWriter.writeUnsignedShort(data.length);
             byte[] lengthData = lengthWriter.toByteArray();
-            data[2] =  lengthData[0];
+            data[2] = lengthData[0];
             data[3] = lengthData[1];
         }
 
@@ -246,7 +244,7 @@ public class CmapTable extends OpenTypeTable {
 
         private int getLength() {
             // + 1 to size for appearant padding need
-            return FORMAT4_HEADER_SIZE + ((charCodeToGlyphId.size() ) * 8);
+            return FORMAT4_HEADER_SIZE + ((charCodeToGlyphId.size()) * 8);
         }
 
         public void addGlyphMapping(int characterCode, int glyphId) {
@@ -268,11 +266,11 @@ public class CmapTable extends OpenTypeTable {
             return deltas;
         }
 
-        private List<Integer> getGlyphStarts () {
+        private List<Integer> getGlyphStarts() {
             List<Integer> starts = new ArrayList<Integer>();
             int lastCharCode = -1;
 
-            for (Map.Entry<Integer, Integer> entryOn :  getOrderedCharCodeToGlyphIds()) {
+            for (Map.Entry<Integer, Integer> entryOn : getOrderedCharCodeToGlyphIds()) {
                 int curCharCode = entryOn.getKey();
                 if (curCharCode != lastCharCode + 1)
                     starts.add(curCharCode);
@@ -283,7 +281,7 @@ public class CmapTable extends OpenTypeTable {
             return starts;
         }
 
-        private List<Integer> getGlyphEnds () {
+        private List<Integer> getGlyphEnds() {
             List<Integer> ends = new ArrayList<Integer>();
             int lastCharCode = -1;
             List<Map.Entry<Integer, Integer>> entries = getOrderedCharCodeToGlyphIds();
@@ -296,7 +294,7 @@ public class CmapTable extends OpenTypeTable {
             }
 
             // add last one not caught in loop
-            if(entries.size() > 1)
+            if (entries.size() > 1)
                 ends.add(entries.get(entries.size() - 1).getKey());
 
             return ends;

@@ -57,10 +57,11 @@ public class CffFontAdapter implements FontAdapter {
     public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
         if (fontFormat == FontVerter.FontFormat.OTF)
             return new CFFToOpenTypeConverter(this);
-        if (fontFormat == FontVerter.FontFormat.WOFF)
+        if (fontFormat == FontVerter.FontFormat.WOFF1)
             return new CombinedFontConverter(new CFFToOpenTypeConverter(this), new OtfToWoffConverter());
+        else
+            return new CombinedFontConverter(new CFFToOpenTypeConverter(this), new OtfToWoffConverter.OtfToWoff2Converter());
 
-        throw new FontNotSupportedException("CFF to " + fontFormat + " conversion is not supported");
     }
 
     public CFFFont getFont() {

@@ -9,7 +9,7 @@ public class CharsetConverter {
         Map<Integer, Integer> idToEncoding = new HashMap<Integer, Integer>();
         Map<Integer, Integer> usedCodes = new HashMap<Integer, Integer>();
 
-        for(Map.Entry<Integer, String> nameSetOn : idToNames.entrySet()) {
+        for (Map.Entry<Integer, String> nameSetOn : idToNames.entrySet()) {
             int charCode = nameToCode(nameSetOn.getValue(), encoding, usedCodes);
             int glyphId = nameSetOn.getKey();
 
@@ -19,12 +19,12 @@ public class CharsetConverter {
         return idToEncoding;
     }
 
-    private static int nameToCode(String name,Encoding encoding, Map<Integer, Integer> usedCodes) {
+    private static int nameToCode(String name, Encoding encoding, Map<Integer, Integer> usedCodes) {
         int code = 0;
         for (Map.Entry<Integer, String> entryOn : encoding.getCodeToNameMap().entrySet()) {
             int codeOn = entryOn.getKey();
 
-            if(entryOn.getValue().equals(name) && !usedCodes.containsKey(codeOn))
+            if (entryOn.getValue().equals(name) && !usedCodes.containsKey(codeOn))
                 code = entryOn.getKey();
         }
 

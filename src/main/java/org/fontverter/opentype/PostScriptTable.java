@@ -2,8 +2,7 @@ package org.fontverter.opentype;
 
 import org.fontverter.io.ByteDataProperty;
 
-public class PostScriptTable extends OpenTypeTable
-{
+public class PostScriptTable extends OpenTypeTable {
     @ByteDataProperty(dataType = ByteDataProperty.DataType.FIXED32)
     private float formatType;
 
@@ -34,13 +33,11 @@ public class PostScriptTable extends OpenTypeTable
     private String[] glyphNames = null;
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "post";
     }
 
-    public static PostScriptTable createDefaultTable()
-    {
+    public static PostScriptTable createDefaultTable() {
         PostScriptTable table = new PostScriptTable();
         table.formatType = 3.0f;
         table.italicAngle = 0.0f;

@@ -41,12 +41,12 @@ public class WoffConstants {
 
 
         public static TableFlagType fromString(String str) {
-            for(TableFlagType type : TableFlagType.values()) {
+            for (TableFlagType type : TableFlagType.values()) {
                 String typeName = type.name().trim();
-                if(typeName.equals("OS/2"))
+                if (typeName.equals("OS/2"))
                     return OS2;
 
-                if(type.name().equals(str))
+                if (type.name().equals(str))
                     return type;
             }
 
@@ -56,12 +56,12 @@ public class WoffConstants {
 
         public String toString() {
             String name = this.name();
-            if(name.equals("OS2"))
+            if (name.equals("OS2"))
                 name = "OS/2";
 
             // flag has to be 4 bytes long so add padding if only 3 chars
-            if(name.length() < 4)
-                name += StringUtils.repeat(' ',4 - name.length());
+            if (name.length() < 4)
+                name += StringUtils.repeat(' ', 4 - name.length());
             return name;
         }
     }

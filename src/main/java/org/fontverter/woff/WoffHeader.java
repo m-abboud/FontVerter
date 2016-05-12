@@ -75,7 +75,8 @@ public class WoffHeader {
     public void calculateValues(WoffFont woffFont) throws IOException {
         length = woffFont.getRawData().length;
         numTables = (short) woffFont.getTables().size();
-        totalCompressedSize = woffFont.getCompressedDataBlock().length;
+
+        totalCompressedSize = woffFont.getCompressedSize();
         totalSfntSize = woffFont.getFonts().get(0).getData().length;
         flavorSfntVersion = 0x4F54544F;
     }

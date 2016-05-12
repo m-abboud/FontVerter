@@ -7,10 +7,10 @@ import org.fontverter.woff.WoffConstants.TableFlagType;
 import java.io.IOException;
 
 public abstract class WoffTable {
-    int compressedLength;
+    int transformLength;
     int originalLength;
     protected TableFlagType flag;
-    protected final byte[] tableData;
+    protected byte[] tableData;
     protected byte[] compressedData;
 
     protected int paddingAdded = 0;
@@ -32,7 +32,7 @@ public abstract class WoffTable {
                 compressedData = tableData;
         }
 
-        return padTableData(compressedData);
+        return compressedData;
     }
 
     protected byte[] padTableData(byte[] tableData) {

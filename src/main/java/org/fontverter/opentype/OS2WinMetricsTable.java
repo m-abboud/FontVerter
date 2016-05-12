@@ -4,8 +4,7 @@ import org.fontverter.io.ByteDataOutputStream;
 
 import java.io.IOException;
 
-class OS2WinMetricsTable extends OpenTypeTable
-{
+class OS2WinMetricsTable extends OpenTypeTable {
     private int version;
     private short averageCharWidth;
     private int weightClass;
@@ -45,13 +44,11 @@ class OS2WinMetricsTable extends OpenTypeTable
     private int usMaxContext;
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "OS/2";
     }
 
-    public byte[] getUnpaddedData() throws IOException
-    {
+    public byte[] getUnpaddedData() throws IOException {
         ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
         out.writeUnsignedShort(version);
         out.writeShort(averageCharWidth);
@@ -83,13 +80,11 @@ class OS2WinMetricsTable extends OpenTypeTable
         out.writeShort(typoLineGap);
         out.writeUnsignedShort(winAscent);
         out.writeUnsignedShort(winDescent);
-        if (version >= 1)
-        {
+        if (version >= 1) {
             out.writeUnsignedInt((int) codePageRange1);
             out.writeUnsignedInt((int) codePageRange2);
         }
-        if (version >= 2)
-        {
+        if (version >= 2) {
             out.writeShort(sxHeight);
             out.writeShort(sCapHeight);
             out.writeUnsignedShort(usDefaultChar);
@@ -99,8 +94,7 @@ class OS2WinMetricsTable extends OpenTypeTable
         return out.toByteArray();
     }
 
-    public static OS2WinMetricsTable createDefaultTable()
-    {
+    public static OS2WinMetricsTable createDefaultTable() {
         OS2WinMetricsTable table = new OS2WinMetricsTable();
         table.version = 3;
         table.averageCharWidth = 1304;

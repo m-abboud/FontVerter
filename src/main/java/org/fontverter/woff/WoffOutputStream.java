@@ -2,12 +2,15 @@ package org.fontverter.woff;
 
 import org.apache.commons.lang3.StringUtils;
 import org.fontverter.io.ByteDataOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WoffOutputStream extends ByteDataOutputStream {
+    private static Logger log = LoggerFactory.getLogger(WoffOutputStream.class);
     public WoffOutputStream() {
         super(OPEN_TYPE_CHARSET);
     }
@@ -32,4 +35,16 @@ public class WoffOutputStream extends ByteDataOutputStream {
         for (byte byteOn : bytes)
             write(byteOn);
     }
+
+    public void writeFlagByte(int flag, int transform) throws IOException {
+        String binary = Integer.toBinaryString(flag);
+        String transBinary = Integer.toBinaryString(transform);
+        if(transBinary.length() < 2)
+            transBinary = StringUtils.repeat("0", 2 - transBinary.length()) + transBinary;
+
+        binary = binary + transBinary;
+        byte byteOn = (Byte.parseByte(binary, 2));
+        write(byteOn);
+    }
+
 }

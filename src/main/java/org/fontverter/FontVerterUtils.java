@@ -51,4 +51,18 @@ public class FontVerterUtils {
 
         return padding;
     }
+
+    public static int readUpperBits(int inByte, int nBits) throws IOException {
+        if (nBits > 8)
+            throw new IOException("Number of bits exceeds 8");
+
+        return inByte >> (8 - nBits);
+    }
+
+    public static int readLowerBits(int inByte, int nBits) throws IOException {
+        if (nBits > 8)
+            throw new IOException("Number of bits exceeds 8");
+
+        return inByte & (nBits + 1);
+    }
 }

@@ -83,7 +83,7 @@ class NameRecord {
     }
 
     private Charset getEncoding() {
-        if(platformID == OtfNameConstants.WINDOWS_PLATFORM_ID)
+        if (platformID == OtfNameConstants.WINDOWS_PLATFORM_ID)
             return Charset.forName("UTF-16");
         return Charset.forName("ISO_8859_1");
     }

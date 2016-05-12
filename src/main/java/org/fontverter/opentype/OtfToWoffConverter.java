@@ -2,8 +2,6 @@ package org.fontverter.opentype;
 
 import org.fontverter.FontAdapter;
 import org.fontverter.FontConverter;
-import org.fontverter.FontVerterConfig;
-import org.fontverter.woff.Woff1Font;
 import org.fontverter.woff.WoffConstants.TableFlagType;
 import org.fontverter.woff.WoffFont;
 
@@ -14,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OtfToWoffConverter implements FontConverter {
     OpenTypeFont otfFont;
     private WoffFont woffFont;
+    protected  int woffVersion = 1;
 
     private static Map<Class, TableFlagType> tablesToFlags = new ConcurrentHashMap<Class, TableFlagType>();
 
@@ -33,8 +32,7 @@ public class OtfToWoffConverter implements FontConverter {
     }
 
     public FontAdapter convertFont(FontAdapter font) throws IOException {
-        otfFont = ((OtfFontAdapter)font).getFont();
-        int woffVersion = FontVerterConfig.globalConfig().getWoffVersion();
+        otfFont = ((OtfFontAdapter) font).getFont();
         woffFont = WoffFont.createBlankFont(woffVersion);
         woffFont.addFont(font);
         addFontTables();
@@ -43,9 +41,8 @@ public class OtfToWoffConverter implements FontConverter {
     }
 
     private void addFontTables() throws IOException {
-        for(OpenTypeTable tableOn : otfFont.tables)
+        for (OpenTypeTable tableOn : otfFont.tables)
             woffFont.addFontTable(tableOn.getUnpaddedData(), getTableFlag(tableOn), tableOn.getChecksum());
-//        woffFont.addFontTable(otfFont.createSfntHeader(), TableFlagType.s);
     }
 
     private TableFlagType getTableFlag(OpenTypeTable table) {
@@ -53,5 +50,11 @@ public class OtfToWoffConverter implements FontConverter {
             return tablesToFlags.get(table.getClass());
 
         return TableFlagType.arbitrary;
+    }
+
+    public static class OtfToWoff2Converter extends OtfToWoffConverter {
+        public OtfToWoff2Converter() {
+            woffVersion = 2;
+        }
     }
 }

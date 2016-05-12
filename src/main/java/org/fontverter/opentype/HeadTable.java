@@ -9,8 +9,7 @@ import java.util.GregorianCalendar;
 
 import static org.fontverter.io.ByteDataProperty.*;
 
-public class HeadTable extends OpenTypeTable
-{
+public class HeadTable extends OpenTypeTable {
     @ByteDataProperty(dataType = DataType.FIXED32)
     private float version;
 
@@ -62,13 +61,11 @@ public class HeadTable extends OpenTypeTable
     @ByteDataProperty(dataType = DataType.SHORT)
     private short glyphDataFormat;
 
-    public String getName()
-    {
+    public String getName() {
         return "head";
     }
 
-    public static HeadTable createDefaultTable()
-    {
+    public static HeadTable createDefaultTable() {
         HeadTable table = new HeadTable();
         table.version = 1;
         table.fontRevision = 1;
@@ -78,9 +75,9 @@ public class HeadTable extends OpenTypeTable
         table.unitsPerEm = 1000;
 
         table.created = GregorianCalendar.getInstance();
-        table.created.set(1991,3,1);
+        table.created.set(1991, 3, 1);
         table.modified = GregorianCalendar.getInstance();
-        table.modified.set(1991,3,1);
+        table.modified.set(1991, 3, 1);
 
         table.xMin = 26;
         table.yMin = -2;

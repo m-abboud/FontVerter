@@ -1,5 +1,7 @@
 package org.fontverter.io;
 
+import org.fontverter.FontVerterUtils;
+
 import java.io.*;
 import java.nio.charset.Charset;
 
@@ -12,8 +14,7 @@ public class ByteDataInputStream extends DataInputStream {
         byteInput = (SeekableByteArrayInputStream) in;
     }
 
-    public long readUnsignedInt() throws IOException
-    {
+    public long readUnsignedInt() throws IOException {
         long byte1 = read();
         long byte2 = read();
         long byte3 = read();
@@ -31,7 +32,7 @@ public class ByteDataInputStream extends DataInputStream {
 
     public byte[] readBytes(int length) throws IOException {
         byte[] bytes = new byte[length];
-        for(int i = 0; i<bytes.length; i++)
+        for (int i = 0; i < bytes.length; i++)
             bytes[i] = (byte) in.read();
         return bytes;
     }
@@ -40,6 +41,7 @@ public class ByteDataInputStream extends DataInputStream {
         byteInput.seek(offset);
     }
 
+    // maybe liek these 2 should actually be in a WoffInputStream class i dunno
     // converted from pseduo C like reader code from woff spec
     public int readUIntBase128() throws IOException {
         int accum = 0;
@@ -64,6 +66,18 @@ public class ByteDataInputStream extends DataInputStream {
         throw new IOException("UIntBase128 sequence exceeds 5 bytes");
     }
 
+    public int getPosition() {
+        return byteInput.getPosition();
+    }
+
+    public int[] readSplitBits(int numUpperBits) throws IOException {
+        int fulByte = read();
+        int upper = FontVerterUtils.readUpperBits(fulByte, numUpperBits);
+        int lower = FontVerterUtils.readLowerBits(fulByte, 8 - numUpperBits);
+
+        return new int[] {upper, lower};
+    }
+
     protected static class SeekableByteArrayInputStream extends ByteArrayInputStream {
         public SeekableByteArrayInputStream(byte[] buf) {
             super(buf);
@@ -71,6 +85,10 @@ public class ByteDataInputStream extends DataInputStream {
 
         public void seek(int n) {
             pos = n;
+        }
+
+        public int getPosition() {
+            return pos;
         }
     }
 }

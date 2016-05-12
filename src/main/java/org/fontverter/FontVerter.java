@@ -19,7 +19,8 @@ public class FontVerter {
     public enum FontFormat {
         CFF,
         OTF,
-        WOFF
+        WOFF1,
+        WOFF2
     }
 
     public static FontAdapter convertFont(byte[] inputFontData, FontFormat convertTo) throws IOException {

@@ -92,4 +92,8 @@ public abstract class WoffFont implements FontAdapter {
     public List<WoffTable> getTables() {
         return tables;
     }
+
+    public int getCompressedSize() throws IOException {
+        return getCompressedDataBlock().length;
+    }
 }

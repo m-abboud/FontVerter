@@ -8,39 +8,32 @@ import java.nio.charset.Charset;
 public class ByteDataOutputStream extends DataOutputStream {
     public static final Charset OPEN_TYPE_CHARSET = Charset.forName("ISO-8859-1");
 
-    public ByteDataOutputStream(Charset encoding)
-    {
+    public ByteDataOutputStream(Charset encoding) {
         super(new ByteArrayOutputStream());
     }
 
-    public byte[] toByteArray()
-    {
-        return ((ByteArrayOutputStream)out).toByteArray();
+    public byte[] toByteArray() {
+        return ((ByteArrayOutputStream) out).toByteArray();
     }
 
-    public void writeString(String string) throws IOException
-    {
+    public void writeString(String string) throws IOException {
         out.write(string.getBytes(OPEN_TYPE_CHARSET));
     }
 
-    public void writeUnsignedShort(int num) throws IOException
-    {
+    public void writeUnsignedShort(int num) throws IOException {
         writeShort(num);
     }
 
-    public void writeUnsignedInt(int num) throws IOException
-    {
+    public void writeUnsignedInt(int num) throws IOException {
         writeInt(num);
     }
 
-    public void writeUnsignedInt8(int num) throws IOException
-    {
+    public void writeUnsignedInt8(int num) throws IOException {
         byte int8 = (byte) (num >>> 24);
         writeByte(int8);
     }
 
-    public void write32Fixed(float num) throws IOException
-    {
+    public void write32Fixed(float num) throws IOException {
         // DataOutputStream.writeFloat won't do it right for 16x16 float at least for OTF
         writeShort((int) num);
         float decimalOnlyVal = (num - (int) num);

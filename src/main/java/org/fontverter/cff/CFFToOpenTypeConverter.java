@@ -22,7 +22,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
     }
 
     public FontAdapter convertFont(FontAdapter font) throws IOException {
-        this.cffFont = (CffFontAdapter)font;
+        this.cffFont = (CffFontAdapter) font;
         return new OtfFontAdapter(generateFont());
     }
 
@@ -43,7 +43,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
 
     private void convertGlyphIdToCodeMap() throws IOException {
         Map<Integer, String> glyphIdsToNames = cffFont.getGlyphIdsToNames();
-        if(glyphIdsToNames.containsKey(0))
+        if (glyphIdsToNames.containsKey(0))
             glyphIdsToNames.remove(0);
 
         Map<Integer, Integer> otfIdToCharCodes =
@@ -65,7 +65,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
         otfFont.hhea.descender = cffFont.getUnderLinePosition().shortValue();
         otfFont.head.setMinX((short) cffFont.getMinX());
         otfFont.head.setMaxX((short) cffFont.getMaxX());
-        
+
         otfFont.head.setMinY((short) cffFont.getMinY());
         otfFont.head.setMaxY((short) cffFont.getMaxY());
     }

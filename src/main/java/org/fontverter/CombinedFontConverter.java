@@ -11,7 +11,7 @@ public class CombinedFontConverter implements FontConverter {
 
     public FontAdapter convertFont(FontAdapter font) throws IOException {
         FontAdapter convertedFont = font;
-        for(FontConverter converterOn : converters)
+        for (FontConverter converterOn : converters)
             convertedFont = converterOn.convertFont(convertedFont);
 
         return convertedFont;
