@@ -1,6 +1,8 @@
 package org.fontverter.opentype;
 
 import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.DataTypeBindingSerializer;
+import org.fontverter.io.DataTypeProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +16,7 @@ import java.util.List;
 public class OpenTypeFont {
     public static final int SFNT_HEADER_SIZE = 12;
 
+    public SfntHeader sfntHeader;
     public List<OpenTypeTable> tables;
     public HeadTable head;
     public HorizontalHeadTable hhea;
@@ -46,6 +49,7 @@ public class OpenTypeFont {
 
     public OpenTypeFont() {
         tables = new ArrayList<OpenTypeTable>();
+        sfntHeader = new SfntHeader();
     }
 
     private <T extends OpenTypeTable> T initTable(T table) {
@@ -104,10 +108,12 @@ public class OpenTypeFont {
 
     private byte[] getRawData() throws IOException {
         ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
-        out.write(createSfntHeader());
+        sfntHeader.setNumTables(tables.size());
+
+        out.write(sfntHeader.getData());
 
         for (OpenTypeTable tableOn : tables)
-            out.write(tableOn.getRecordEntry());
+            out.write(tableOn.getRecordData());
 
         for (OpenTypeTable tableOn : tables)
             out.write(tableOn.getData());
@@ -125,39 +131,52 @@ public class OpenTypeFont {
         }
     }
 
-    byte[] createSfntHeader() throws IOException {
-        ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
-
-        int numTables = tables.size();
-        int searchRange = closestMaxPowerOfTwo(numTables) * 16;
-        int entrySelector = (int) log2(closestMaxPowerOfTwo(numTables));
-        int rangeShift = numTables * 16 - searchRange;
-
-        out.write("OTTO".getBytes(ByteDataOutputStream.OPEN_TYPE_CHARSET));
-        out.writeShort(numTables);
-        out.writeShort(searchRange);
-        out.writeShort(entrySelector);
-        out.writeShort(rangeShift);
-        return out.toByteArray();
-    }
-
-    private int closestMaxPowerOfTwo(double number) {
-        int powerOfTwo = 1;
-        while (powerOfTwo * 2 < number) {
-            powerOfTwo = powerOfTwo * 2;
-        }
-        return powerOfTwo;
-    }
-
-    private double log2(int number) {
-        return Math.log(number) / Math.log(2);
-    }
-
     public File getSourceFile() {
         return sourceFile;
     }
 
     public void setSourceFile(File sourceFile) {
         this.sourceFile = sourceFile;
+    }
+
+    public static class SfntHeader {
+        @DataTypeProperty(dataType = DataTypeProperty.DataType.STRING, byteLength = 4)
+        public String sfntFlavor = "OTTO";
+
+        @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
+        public int numTables;
+
+        @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
+        public int searchRange;
+
+        @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
+        public int entrySelector;
+
+        @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
+        public int rangeShift;
+
+        public void setNumTables(int numTables) {
+            this.numTables = numTables;
+            searchRange = closestMaxPowerOfTwo(numTables) * 16;
+            rangeShift = numTables * 16 - searchRange;
+            entrySelector = (int) log2(closestMaxPowerOfTwo(numTables));
+        }
+
+        private int closestMaxPowerOfTwo(double number) {
+            int powerOfTwo = 1;
+            while (powerOfTwo * 2 < number)
+                powerOfTwo = powerOfTwo * 2;
+
+            return powerOfTwo;
+        }
+
+        private double log2(int number) {
+            return Math.log(number) / Math.log(2);
+        }
+
+        byte[] getData() throws IOException {
+            DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
+            return serializer.serialize(this);
+        }
     }
 }

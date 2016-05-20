@@ -1,12 +1,12 @@
 package org.fontverter.opentype;
 
-import org.fontverter.io.ByteSerializerException;
-import org.fontverter.io.ByteDataProperty;
-import org.fontverter.io.ByteBindingSerializer;
+import org.fontverter.io.DataTypeSerializerException;
+import org.fontverter.io.DataTypeProperty;
+import org.fontverter.io.DataTypeBindingSerializer;
 
 import java.nio.charset.Charset;
 
-import static org.fontverter.io.ByteDataProperty.*;
+import static org.fontverter.io.DataTypeProperty.*;
 
 class NameRecord {
     static final int NAME_RECORD_SIZE = 12;
@@ -31,24 +31,24 @@ class NameRecord {
         return record;
     }
 
-    @ByteDataProperty(dataType = DataType.USHORT, order = 0)
+    @DataTypeProperty(dataType = DataType.USHORT, order = 0)
     int platformID;
 
-    @ByteDataProperty(dataType = DataType.USHORT, order = 1)
+    @DataTypeProperty(dataType = DataType.USHORT, order = 1)
     int encodingID;
 
-    @ByteDataProperty(dataType = DataType.USHORT, order = 2)
+    @DataTypeProperty(dataType = DataType.USHORT, order = 2)
     int languageID;
 
-    @ByteDataProperty(dataType = DataType.USHORT, order = 3)
+    @DataTypeProperty(dataType = DataType.USHORT, order = 3)
     int nameID;
 
-    @ByteDataProperty(dataType = DataType.USHORT, order = 4)
+    @DataTypeProperty(dataType = DataType.USHORT, order = 4)
     int getLength() {
         return getStringData().length;
     }
 
-    @ByteDataProperty(dataType = DataType.USHORT, order = 5)
+    @DataTypeProperty(dataType = DataType.USHORT, order = 5)
     int offset;
 
     private NameRecord(String name) {
@@ -92,8 +92,8 @@ class NameRecord {
         this.string = stringData;
     }
 
-    public byte[] getRecordData() throws ByteSerializerException {
-        ByteBindingSerializer serializer = new ByteBindingSerializer();
+    public byte[] getRecordData() throws DataTypeSerializerException {
+        DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
         return serializer.serialize(this);
     }
 }

@@ -3,7 +3,6 @@ package org.fontverter.cff;
 import org.fontverter.CharsetConverter;
 import org.fontverter.FontAdapter;
 import org.fontverter.FontConverter;
-import org.fontverter.io.ByteSerializerException;
 import org.fontverter.opentype.*;
 
 import java.io.IOException;

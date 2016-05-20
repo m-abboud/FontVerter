@@ -1,33 +1,33 @@
 package org.fontverter.opentype;
 
-import org.fontverter.io.ByteDataProperty;
+import org.fontverter.io.DataTypeProperty;
 
 public class PostScriptTable extends OpenTypeTable {
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.FIXED32)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.FIXED32)
     private float formatType;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.FIXED32)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.FIXED32)
     private float italicAngle;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     private short underlinePosition;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     private short underlineThickness;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.ULONG)
     private long isFixedPitch;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.ULONG)
     private long minMemType42;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.ULONG)
     private long maxMemType42;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.ULONG)
     private long mimMemType1;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.ULONG)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.ULONG)
     private long maxMemType1;
 
     private String[] glyphNames = null;

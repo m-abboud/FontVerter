@@ -41,7 +41,6 @@ public class ByteDataInputStream extends DataInputStream {
         byteInput.seek(offset);
     }
 
-    // maybe liek these 2 should actually be in a WoffInputStream class i dunno
     // converted from pseduo C like reader code from woff spec
     public int readUIntBase128() throws IOException {
         int accum = 0;
@@ -66,6 +65,13 @@ public class ByteDataInputStream extends DataInputStream {
         throw new IOException("UIntBase128 sequence exceeds 5 bytes");
     }
 
+    public float readFixed32() throws IOException {
+        float num;
+        num = (float) this.readShort();
+        num = (float) ((double) num + (double) this.readUnsignedShort() / 65536.0D);
+        return num;
+    }
+
     public int getPosition() {
         return byteInput.getPosition();
     }
@@ -75,7 +81,7 @@ public class ByteDataInputStream extends DataInputStream {
         int upper = FontVerterUtils.readUpperBits(fulByte, numUpperBits);
         int lower = FontVerterUtils.readLowerBits(fulByte, 8 - numUpperBits);
 
-        return new int[] {upper, lower};
+        return new int[]{upper, lower};
     }
 
     protected static class SeekableByteArrayInputStream extends ByteArrayInputStream {

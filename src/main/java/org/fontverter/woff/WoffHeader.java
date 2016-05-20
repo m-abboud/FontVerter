@@ -1,7 +1,7 @@
 package org.fontverter.woff;
 
-import org.fontverter.io.ByteBindingSerializer;
-import org.fontverter.io.ByteDataProperty;
+import org.fontverter.io.DataTypeBindingSerializer;
+import org.fontverter.io.DataTypeProperty;
 
 import java.io.IOException;
 
@@ -26,50 +26,50 @@ public class WoffHeader {
     }
 
     public byte[] getData() throws IOException {
-        ByteBindingSerializer serializer = new ByteBindingSerializer();
+        DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
         return serializer.serialize(this);
     }
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT)
     int signature = WOFF_2_SIGNATURE;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT)
     int flavorSfntVersion;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT)
     int length;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     short numTables;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     short reserved = 0;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT)
     int totalSfntSize;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT, ignoreIf = "isVersionOne")
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT, ignoreIf = "isVersionOne")
     int totalCompressedSize;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     short majorVersion;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     short minorVersion;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT)
     int metaOffset = 0;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT)
     int metaLength = 0;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT)
     int metaOrigLength = 0;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT)
     int privOffset = 0;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.INT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.INT)
     int privLength = 0;
 
     public void calculateValues(WoffFont woffFont) throws IOException {

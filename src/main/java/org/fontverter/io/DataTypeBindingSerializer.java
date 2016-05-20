@@ -8,11 +8,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class ByteBindingSerializer {
+public class DataTypeBindingSerializer {
     private ByteDataOutputStream writer;
-    private ByteBindingsReader propReader = new ByteBindingsReader();
+    private DataTypeBindingsReader propReader = new DataTypeBindingsReader();
 
-    public byte[] serialize(Object object) throws ByteSerializerException {
+    public byte[] serialize(Object object) throws DataTypeSerializerException {
         try {
             writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
             Class type = object.getClass();
@@ -22,23 +22,24 @@ public class ByteBindingSerializer {
                 for (AccessibleObject propertyOn : properties)
                     serializeProperty(object, propertyOn);
             } catch (Exception e) {
-                throw new ByteSerializerException(e);
+                throw new DataTypeSerializerException(e);
             }
 
             writer.flush();
         } catch (IOException ex) {
-            throw new ByteSerializerException(ex);
+            throw new DataTypeSerializerException(ex);
         }
+
         return writer.toByteArray();
     }
 
     private void serializeProperty(Object object, AccessibleObject propertyOn) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        if (!propertyOn.isAnnotationPresent(ByteDataProperty.class))
+        if (!propertyOn.isAnnotationPresent(DataTypeProperty.class))
             return;
 
         propertyOn.setAccessible(true);
-        Annotation annotation = propertyOn.getAnnotation(ByteDataProperty.class);
-        ByteDataProperty property = (ByteDataProperty) annotation;
+        Annotation annotation = propertyOn.getAnnotation(DataTypeProperty.class);
+        DataTypeProperty property = (DataTypeProperty) annotation;
         if (propReader.isIgnoreProperty(property, object))
             return;
 
@@ -48,12 +49,12 @@ public class ByteBindingSerializer {
         else if (propertyOn instanceof Field)
             propValue = ((Field) propertyOn).get(object);
         else
-            throw new ByteSerializerException("Byte property binding on unknown type");
+            throw new DataTypeSerializerException("Byte property binding on unknown type");
 
         writeValue(property, propValue);
     }
 
-    private void writeValue(ByteDataProperty property, Object fieldValue) throws IOException {
+    private void writeValue(DataTypeProperty property, Object fieldValue) throws IOException {
         switch (property.dataType()) {
             case SHORT:
                 writer.writeShort(((Number) fieldValue).shortValue());
@@ -70,6 +71,7 @@ public class ByteBindingSerializer {
             case FIXED32:
                 writer.write32Fixed(((Number) fieldValue).floatValue());
                 break;
+            case UINT:
             case INT:
                 writer.writeInt(((Number) fieldValue).intValue());
                 break;

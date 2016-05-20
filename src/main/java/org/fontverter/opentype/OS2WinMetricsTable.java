@@ -1,6 +1,7 @@
 package org.fontverter.opentype;
 
 import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.DataTypeSerializerException;
 
 import java.io.IOException;
 
@@ -135,5 +136,8 @@ class OS2WinMetricsTable extends OpenTypeTable {
         table.usMaxContext = 1;
 
         return table;
+    }
+
+    public void readData(byte[] data) throws DataTypeSerializerException {
     }
 }

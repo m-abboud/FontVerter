@@ -1,6 +1,6 @@
 package org.fontverter.woff;
 
-import org.fontverter.io.ByteBindingDeserializer;
+import org.fontverter.io.DataTypeBindingDeserializer;
 import org.fontverter.io.ByteDataInputStream;
 import org.fontverter.woff.Woff1Font.Woff1Table;
 import org.meteogroup.jbrotli.BrotliStreamDeCompressor;
@@ -26,7 +26,7 @@ public class WoffParser {
 
     public WoffFont parse(byte[] data) throws IOException {
         this.input = new ByteDataInputStream(data);
-        ByteBindingDeserializer deserializer = new ByteBindingDeserializer();
+        DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
 
         // read header first to figure out what woff font object type we need to create
         WoffHeader header = (WoffHeader) deserializer.deserialize(this.input, WoffHeader.class);

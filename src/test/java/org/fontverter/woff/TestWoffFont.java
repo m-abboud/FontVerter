@@ -93,6 +93,7 @@ public class TestWoffFont {
         WoffOutputStream out = new WoffOutputStream();
         out.writeUIntBase128(oneByteInt);
         byte[] data = out.toByteArray();
+
         return readUIntBase128(data);
     }
 

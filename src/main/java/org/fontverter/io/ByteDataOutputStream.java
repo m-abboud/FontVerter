@@ -17,7 +17,8 @@ public class ByteDataOutputStream extends DataOutputStream {
     }
 
     public void writeString(String string) throws IOException {
-        out.write(string.getBytes(OPEN_TYPE_CHARSET));
+        byte[] bytes = string.getBytes(OPEN_TYPE_CHARSET);
+        out.write(bytes);
     }
 
     public void writeUnsignedShort(int num) throws IOException {

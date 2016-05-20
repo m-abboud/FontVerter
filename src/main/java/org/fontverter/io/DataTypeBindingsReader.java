@@ -9,19 +9,19 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-class ByteBindingsReader {
-    public ByteBindingsReader() {
+class DataTypeBindingsReader {
+    public DataTypeBindingsReader() {
     }
 
-    public List<AccessibleObject> getProperties(Class type) throws ByteSerializerException {
+    public List<AccessibleObject> getProperties(Class type) throws DataTypeSerializerException {
         List<AccessibleObject> properties = new LinkedList<AccessibleObject>();
 
         for (Field fieldOn : type.getDeclaredFields()) {
-            if (fieldOn.isAnnotationPresent(ByteDataProperty.class))
+            if (fieldOn.isAnnotationPresent(DataTypeProperty.class))
                 properties.add(fieldOn);
         }
         for (Method methodOn : type.getDeclaredMethods()) {
-            if (methodOn.isAnnotationPresent(ByteDataProperty.class))
+            if (methodOn.isAnnotationPresent(DataTypeProperty.class))
                 properties.add(methodOn);
         }
 
@@ -32,7 +32,7 @@ class ByteBindingsReader {
 
     /* should be called during (de)serialization rather than in getProperties so
      read fields can be used by ignore methods */
-    public boolean isIgnoreProperty(ByteDataProperty property, Object object)
+    public boolean isIgnoreProperty(DataTypeProperty property, Object object)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         if (property.ignoreIf().isEmpty())
             return false;
@@ -42,7 +42,7 @@ class ByteBindingsReader {
         return (Boolean) method.invoke(object);
     }
 
-    private void sortProperties(List<AccessibleObject> properties) throws ByteSerializerException {
+    private void sortProperties(List<AccessibleObject> properties) throws DataTypeSerializerException {
         boolean hasorder = false;
         for (AccessibleObject propOn : properties) {
             if(getPropertyAnnotation(propOn).order() != -1)
@@ -58,19 +58,19 @@ class ByteBindingsReader {
                     int order2 = getPropertyAnnotation(obj2).order();
 
                     return order1 < order2 ? -1 : order1 == order2 ? 0 : 1;
-                } catch (ByteSerializerException e) {
+                } catch (DataTypeSerializerException e) {
                     return 0;
                 }
             }
         });
     }
 
-    private ByteDataProperty getPropertyAnnotation(Object property) throws ByteSerializerException {
+    private DataTypeProperty getPropertyAnnotation(Object property) throws DataTypeSerializerException {
         if (property instanceof Field)
-            return ((Field) property).getAnnotation(ByteDataProperty.class);
+            return ((Field) property).getAnnotation(DataTypeProperty.class);
         else if (property instanceof Method)
-            return ((Method) property).getAnnotation(ByteDataProperty.class);
+            return ((Method) property).getAnnotation(DataTypeProperty.class);
 
-        throw new ByteSerializerException("Could not find annotation for property " + property.toString());
+        throw new DataTypeSerializerException("Could not find annotation for property " + property.toString());
     }
 }

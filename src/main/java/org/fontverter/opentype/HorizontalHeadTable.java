@@ -1,57 +1,57 @@
 package org.fontverter.opentype;
 
-import org.fontverter.io.ByteDataProperty;
+import org.fontverter.io.DataTypeProperty;
 
 public class HorizontalHeadTable extends OpenTypeTable {
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.FIXED32)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.FIXED32)
     public float version;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short ascender;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short descender;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short lineGap;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
     public int advanceWidthMax;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short minLeftSideBearing;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short minRightSideBearing;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short xMaxExtent;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short caretSlopeRise;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short caretSlopeRun;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short caretOffset;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     private short reserved1;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     private short reserved2;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     private short reserved3;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     private short reserved4;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.SHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     public short metricDataFormat;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
     public int numberOfHMetrics;
 
     @Override

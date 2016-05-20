@@ -9,10 +9,10 @@ import java.io.IOException;
 public abstract class WoffTable {
     int transformLength;
     int originalLength;
+
     protected TableFlagType flag;
     protected byte[] tableData;
     protected byte[] compressedData;
-
     protected int paddingAdded = 0;
 
     public WoffTable(byte[] table, TableFlagType flag) {

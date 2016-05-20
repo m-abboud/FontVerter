@@ -1,5 +1,6 @@
 package org.fontverter.opentype;
 
+import org.fontverter.io.DataTypeSerializerException;
 import org.fontverter.opentype.OpenTypeTable;
 
 public class CffTable extends OpenTypeTable {
@@ -9,11 +10,18 @@ public class CffTable extends OpenTypeTable {
         this.data = data;
     }
 
+    public CffTable() {
+    }
+
     public byte[] getUnpaddedData() {
         return data;
     }
 
     public String getName() {
         return "CFF ";
+    }
+
+    public void readData(byte[] data) throws DataTypeSerializerException {
+        this.data = data;
     }
 }

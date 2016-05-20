@@ -2,7 +2,8 @@ package org.fontverter.opentype;
 
 
 import org.fontverter.io.ByteDataOutputStream;
-import org.fontverter.io.ByteDataProperty;
+import org.fontverter.io.DataTypeProperty;
+import org.fontverter.io.DataTypeSerializerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +20,10 @@ public class CmapTable extends OpenTypeTable {
     private List<CmapSubTable> subTables = new ArrayList<CmapSubTable>();
     private static Format0SubTable macTable;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
     int version;
 
-    @ByteDataProperty(dataType = ByteDataProperty.DataType.USHORT)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
     int numTables() {
         return subTables.size();
     }
@@ -98,6 +99,10 @@ public class CmapTable extends OpenTypeTable {
             offset += tableOn.getData().length;
         }
     }
+
+    public void readData(byte[] data) throws DataTypeSerializerException {
+    }
+
 
     protected static abstract class CmapSubTable {
         public static final int CMAP_RECORD_BYTE_SIZE = 8;
