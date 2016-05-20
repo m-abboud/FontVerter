@@ -34,7 +34,6 @@ public class NameTable extends OpenTypeTable {
         return table;
     }
 
-    @Override
     public String getName() {
         return "name";
     }
@@ -105,7 +104,6 @@ public class NameTable extends OpenTypeTable {
     private void deleteExisting(RecordType type, OtfNameConstants.Language language) {
         List<NameRecord> deleteList = new LinkedList<NameRecord>();
         for (NameRecord recordOn : nameRecords)
-            //recordOn.languageID == language.getValue() &&
             if (recordOn.nameID == type.getValue())
                 deleteList.add(recordOn);
 
