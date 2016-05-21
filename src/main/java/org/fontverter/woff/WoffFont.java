@@ -1,8 +1,7 @@
 package org.fontverter.woff;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.fontverter.*;
-import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.FontDataOutputStream;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public abstract class WoffFont implements FontAdapter {
     }
 
     byte[] getRawData() throws IOException {
-        ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+        FontDataOutputStream out = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
 
         Collections.sort(tables, new Comparator<WoffTable>() {
             public int compare(WoffTable o1, WoffTable o2) {
@@ -61,7 +60,7 @@ public abstract class WoffFont implements FontAdapter {
     }
 
     byte[] getTableDirectoryData() throws IOException {
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         for (WoffTable tableOn : tables)
             writer.write(tableOn.getDirectoryData());
 
@@ -69,7 +68,7 @@ public abstract class WoffFont implements FontAdapter {
     }
 
     byte[] getCompressedDataBlock() throws IOException {
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         for (WoffTable tableOn : tables)
             writer.write(tableOn.getCompressedData());
 

@@ -13,7 +13,7 @@ public class CffTable extends OpenTypeTable {
     public CffTable() {
     }
 
-    public byte[] getUnpaddedData() {
+    protected byte[] generateUnpaddedData() {
         return data;
     }
 

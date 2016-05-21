@@ -17,14 +17,14 @@ public class OpenTypeFontValidator extends RuleValidator<OpenTypeFont> {
     public static class HorizontalHeadTableRules {
         @ValidateRule(message = "Descender should be less than zero")
         public boolean descender(OpenTypeFont font) {
-            return font.hhea.descender < 0;
+            return font.getHhea().descender < 0;
         }
     }
 
     public static class NameTableRules {
         @ValidateRule(message = "Version string does not match Open Type spec")
         public String versionStringSyntax(OpenTypeFont font) {
-            String version = font.name.getName(RecordType.VERSION_STRING);
+            String version = font.getName().getName(RecordType.VERSION_STRING);
 
             Matcher versionRegex = Pattern.compile("^Version [1-9][0-9]*[.][0-9]*").matcher(version);
             if (!versionRegex.matches())

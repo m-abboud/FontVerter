@@ -34,12 +34,12 @@ public class TestFontVerter {
         OtfFontAdapter font = (OtfFontAdapter) FontVerter.convertFont(file, FontVerter.FontFormat.OTF);
 
         File outputFile = new File(tempOutputPath + "FontVerter+SimpleTestFont.otf");
-        if(outputFile.exists())
+        if (outputFile.exists())
             outputFile.delete();
         FileUtils.writeByteArrayToFile(outputFile, font.getFont().getFontData());
         font.getFont().setSourceFile(outputFile);
 
         TestUtils.runAllValidators(font.getFont());
-        Assert.assertTrue(font.getFont().cmap.getGlyphCount() > 3);
+        Assert.assertTrue(font.getFont().getCmap().getGlyphCount() > 3);
     }
 }

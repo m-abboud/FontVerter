@@ -9,22 +9,23 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class DataTypeBindingSerializer {
-    private ByteDataOutputStream writer;
+    private FontDataOutputStream writer;
     private DataTypeBindingsReader propReader = new DataTypeBindingsReader();
 
     public byte[] serialize(Object object) throws DataTypeSerializerException {
-        try {
-            writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
-            Class type = object.getClass();
-            List<AccessibleObject> properties = propReader.getProperties(type);
+        writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
+        Class type = object.getClass();
+        List<AccessibleObject> properties = propReader.getProperties(type);
 
+        for (AccessibleObject propertyOn : properties) {
             try {
-                for (AccessibleObject propertyOn : properties)
-                    serializeProperty(object, propertyOn);
+                serializeProperty(object, propertyOn);
             } catch (Exception e) {
-                throw new DataTypeSerializerException(e);
+                throw new DataTypeSerializerException("Error serializing property: " + propertyOn.toString(), e);
             }
+        }
 
+        try {
             writer.flush();
         } catch (IOException ex) {
             throw new DataTypeSerializerException(ex);

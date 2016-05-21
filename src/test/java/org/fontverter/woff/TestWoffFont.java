@@ -1,7 +1,6 @@
 package org.fontverter.woff;
 
-import org.fontverter.FontVerterUtils;
-import org.fontverter.io.ByteDataInputStream;
+import org.fontverter.io.FontDataInputStream;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +11,7 @@ public class TestWoffFont {
     public void givenOneByteUIntBase128_ByteDataInputStreamReadsCorrectly() throws Exception {
         byte data[] = new byte[]{0x3F};
 
-        ByteDataInputStream in = new ByteDataInputStream(data);
+        FontDataInputStream in = new FontDataInputStream(data);
         int readerResult = in.readUIntBase128();
 
         Assert.assertEquals(63, readerResult);
@@ -65,7 +64,7 @@ public class TestWoffFont {
     public void givenFlagEnum_writtenAs6BitFlagValue_2bittransform_thenInputReadsCorrect() throws Exception {
         WoffOutputStream out = new WoffOutputStream();
         out.writeFlagByte(WoffConstants.TableFlagType.maxp.getValue(), 0);
-        ByteDataInputStream in = new ByteDataInputStream(out.toByteArray());
+        FontDataInputStream in = new FontDataInputStream(out.toByteArray());
 
         int[] split = in.readSplitBits(6);
         int flag = split[1];
@@ -77,7 +76,7 @@ public class TestWoffFont {
     public void oneByteUIntBase128_withInvalidSigBit_throwsException() throws Exception {
         byte data[] = new byte[]{(byte) 0x81};
 
-        ByteDataInputStream in = new ByteDataInputStream(data);
+        FontDataInputStream in = new FontDataInputStream(data);
         int readerResult = in.readUIntBase128();
     }
 
@@ -85,7 +84,7 @@ public class TestWoffFont {
     public void twoByteUIntBase128_lastByteInvalidSigBit_throwsException() throws Exception {
         byte data[] = new byte[]{(byte) 0x81, (byte) 0x83};
 
-        ByteDataInputStream in = new ByteDataInputStream(data);
+        FontDataInputStream in = new FontDataInputStream(data);
         int readerResult = in.readUIntBase128();
     }
 
@@ -98,7 +97,7 @@ public class TestWoffFont {
     }
 
     private int readUIntBase128(byte[] data) throws IOException {
-        ByteDataInputStream in = new ByteDataInputStream(data);
+        FontDataInputStream in = new FontDataInputStream(data);
         return in.readUIntBase128();
     }
 }

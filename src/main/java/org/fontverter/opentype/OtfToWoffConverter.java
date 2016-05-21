@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OtfToWoffConverter implements FontConverter {
     OpenTypeFont otfFont;
     private WoffFont woffFont;
-    protected  int woffVersion = 1;
+    protected int woffVersion = 1;
 
     private static Map<Class, TableFlagType> tablesToFlags = new ConcurrentHashMap<Class, TableFlagType>();
 

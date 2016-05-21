@@ -1,6 +1,7 @@
 package org.fontverter.opentype;
+
 import org.fontverter.FontVerterUtils;
-import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.FontDataOutputStream;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -43,7 +44,7 @@ public class TestOpenTypeTable {
     public void fourBytesOfData_thenTableChecksumIsSumOfLongs() throws Exception {
         // note longs in opentype are 32bit vs java 64
         CannedOpenTypeTable table = new CannedOpenTypeTable();
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         writer.writeInt(1234567);
         table.fillerData = writer.toByteArray();
 
@@ -57,7 +58,7 @@ public class TestOpenTypeTable {
         // note longs in opentype are 32bit vs java 64
         CannedOpenTypeTable table = new CannedOpenTypeTable();
 
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         int[] dataLongs = new int[]{500, 1000, 1234567, 991076541};
         int expectedChecksum = 0;
         for (int intOn : dataLongs) {
@@ -75,7 +76,7 @@ public class TestOpenTypeTable {
     public void _2BytesOfData_thenTableChecksumDoesNotThrowException() throws Exception {
         // if internal methods don't pad checksum calc won't be able to read 4 bytes at time
         CannedOpenTypeTable table = new CannedOpenTypeTable();
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         writer.writeUnsignedShort(55);
         table.fillerData = writer.toByteArray();
 
@@ -87,7 +88,7 @@ public class TestOpenTypeTable {
     private class CannedOpenTypeTable extends OpenTypeTable {
         byte[] fillerData;
 
-        public byte[] getUnpaddedData() throws IOException {
+        protected byte[] generateUnpaddedData() throws IOException {
             return fillerData;
         }
 

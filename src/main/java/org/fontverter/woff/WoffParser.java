@@ -1,7 +1,7 @@
 package org.fontverter.woff;
 
 import org.fontverter.io.DataTypeBindingDeserializer;
-import org.fontverter.io.ByteDataInputStream;
+import org.fontverter.io.FontDataInputStream;
 import org.fontverter.woff.Woff1Font.Woff1Table;
 import org.meteogroup.jbrotli.BrotliStreamDeCompressor;
 import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
@@ -18,14 +18,14 @@ import static org.fontverter.woff.WoffConstants.*;
 public class WoffParser {
     WoffFont font;
 
-    private ByteDataInputStream input;
+    private FontDataInputStream input;
     private static final Logger log = LoggerFactory.getLogger(WoffParser.class);
 
     public WoffParser() {
     }
 
     public WoffFont parse(byte[] data) throws IOException {
-        this.input = new ByteDataInputStream(data);
+        this.input = new FontDataInputStream(data);
         DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
 
         // read header first to figure out what woff font object type we need to create
@@ -95,7 +95,7 @@ public class WoffParser {
         table.setTransform(rawFlag[0]);
         table.flag = TableFlagType.fromInt(rawFlag[1]);
 
-        if (table.flag.getValue() == 63 ) {
+        if (table.flag.getValue() == 63) {
             String tagStr = new String(ByteBuffer.allocate(4).putInt(input.readInt()).array());
             log.error("!! arbitrary flag type not tested" + tagStr);
         }

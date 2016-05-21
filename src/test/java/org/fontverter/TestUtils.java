@@ -13,19 +13,21 @@ public class TestUtils {
     public static final String tempOutputPath = "src/test/test-output/";
 
     public static void runAllValidators(OpenTypeFont font) throws Exception {
-        runInternalValidator(font);
+        runFontVerterInternalValidator(font);
+
         try {
             fontboxValidate(font.getSourceFile());
         } catch (IOException ex) {
             // fontbox bug location table is not mandatory for otf with cff type fonts
             // putting patch in soon
-            if(!ex.getMessage().contains("loca is mandatory"))
+            if (!ex.getMessage().contains("loca is mandatory"))
                 throw ex;
         }
+
         jdkFontValidate(font.getSourceFile());
     }
 
-    public static  void runInternalValidator(OpenTypeFont font) throws Exception{
+    public static void runFontVerterInternalValidator(OpenTypeFont font) throws Exception {
         OpenTypeFontValidator validator = new OpenTypeFontValidator();
         validator.validateWithExceptionsThrown(font);
     }
@@ -34,7 +36,7 @@ public class TestUtils {
         Font.createFont(Font.TRUETYPE_FONT, file);
     }
 
-    public static  void fontboxValidate(File file) throws IOException {
+    public static void fontboxValidate(File file) throws IOException {
         // fontbox for validating generated fonts, fontbox has good pdf type font parsing no generation tho
         // but font classes have package local constructors
         OTFParser parser = new OTFParser();

@@ -1,6 +1,6 @@
 package org.fontverter.opentype;
 
-import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.FontDataOutputStream;
 
 import java.io.IOException;
 
@@ -9,11 +9,15 @@ public class HorizontalMetricsTable extends OpenTypeTable {
     private short[] leftSideBearing;
     private short[] nonHorizontalLeftSideBearing;
     private int numHMetrics;
-    private OpenTypeFont font;
+
+    /* big old kludge to handle conversion of tables types that arn't deserializable/parsable yet remove asap*/
+    protected boolean isParsingImplemented() {
+        return false;
+    }
 
     @Override
-    public byte[] getUnpaddedData() throws IOException {
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+    protected byte[] generateUnpaddedData() throws IOException {
+        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
 
         for (int i = 0; i < numHMetrics; i++) {
             writer.writeUnsignedShort(advanceWidth[i]);
@@ -48,7 +52,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         leftSideBearing = new short[]{0, 10, 29, 29, 55};
         advanceWidth = new int[]{1000, 1292, 1251, 1430, 1244};
 
-        int lsbArrCount = font.cmap.getGlyphCount() - numHMetrics;
+        int lsbArrCount = font.getCmap().getGlyphCount() - numHMetrics;
         if (lsbArrCount > 0) {
             nonHorizontalLeftSideBearing = new short[lsbArrCount];
             for (int i = 0; i < lsbArrCount; i++)

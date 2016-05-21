@@ -5,10 +5,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public class ByteDataOutputStream extends DataOutputStream {
+/**
+ * Adds special font data type write functionality to data output stream
+ * todo split out into woff/otf specific maybe
+ */
+public class FontDataOutputStream extends DataOutputStream {
     public static final Charset OPEN_TYPE_CHARSET = Charset.forName("ISO-8859-1");
 
-    public ByteDataOutputStream(Charset encoding) {
+    public FontDataOutputStream(Charset encoding) {
         super(new ByteArrayOutputStream());
     }
 

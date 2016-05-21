@@ -1,6 +1,6 @@
 package org.fontverter.opentype;
 
-import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.FontDataOutputStream;
 import org.fontverter.io.DataTypeSerializerException;
 
 import java.io.IOException;
@@ -49,8 +49,8 @@ class OS2WinMetricsTable extends OpenTypeTable {
         return "OS/2";
     }
 
-    public byte[] getUnpaddedData() throws IOException {
-        ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+    protected byte[] generateUnpaddedData() throws IOException {
+        FontDataOutputStream out = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         out.writeUnsignedShort(version);
         out.writeShort(averageCharWidth);
         out.writeUnsignedShort(weightClass);
@@ -138,6 +138,7 @@ class OS2WinMetricsTable extends OpenTypeTable {
         return table;
     }
 
-    public void readData(byte[] data) throws DataTypeSerializerException {
+    protected boolean isParsingImplemented() {
+        return false;
     }
 }

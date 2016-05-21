@@ -1,7 +1,5 @@
 package org.fontverter.io;
 
-import org.fontverter.opentype.OpenTypeTable;
-
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -10,13 +8,13 @@ import java.util.*;
 
 public class DataTypeBindingDeserializer {
     private DataTypeBindingsReader propReader = new DataTypeBindingsReader();
-    private ByteDataInputStream input;
+    private FontDataInputStream input;
 
     public Object deserialize(byte[] data, Class toClass) throws DataTypeSerializerException {
-        return deserialize(new ByteDataInputStream(data), toClass);
+        return deserialize(new FontDataInputStream(data), toClass);
     }
 
-    public Object deserialize(ByteDataInputStream dataInput, Class toClass) throws DataTypeSerializerException {
+    public Object deserialize(FontDataInputStream dataInput, Class toClass) throws DataTypeSerializerException {
         try {
             return deserialize(dataInput, toClass.newInstance());
         } catch (Exception ex) {
@@ -24,29 +22,29 @@ public class DataTypeBindingDeserializer {
         }
     }
 
-    public Object deserialize(ByteDataInputStream dataInput, Object toObj) throws DataTypeSerializerException {
+    public Object deserialize(FontDataInputStream dataInput, Object toObj) throws DataTypeSerializerException {
         try {
-            Class toClass = toObj.getClass();
             input = dataInput;
+
+            Class toClass = toObj.getClass();
             List<AccessibleObject> properties = propReader.getProperties(toClass);
 
-            Object outObj = toClass.newInstance();
             for (AccessibleObject propertyOn : properties) {
                 try {
-                    deserializeProperty(propertyOn, outObj);
+                    deserializeProperty(propertyOn, toObj);
                 } catch (Exception ex) {
                     throw new DataTypeSerializerException(propertyOn.toString() + " " + toObj.getClass().getCanonicalName(), ex);
                 }
             }
 
-            return outObj;
+            return toObj;
         } catch (Exception ex) {
             throw new DataTypeSerializerException(toObj.getClass().getCanonicalName(), ex);
         }
     }
 
     public Object deserialize(byte[] data, Object toObj) throws DataTypeSerializerException {
-        return deserialize(new ByteDataInputStream(data), toObj);
+        return deserialize(new FontDataInputStream(data), toObj);
     }
 
     private void deserializeProperty(AccessibleObject propertyOn, Object object) throws Exception {
@@ -94,7 +92,7 @@ public class DataTypeBindingDeserializer {
                 return input.readUIntBase128();
         }
 
-        throw new IOException("deserialize not implemented");
+        throw new IOException("Deserialize not implemented for peroperty type: " + property.dataType());
     }
 
 }

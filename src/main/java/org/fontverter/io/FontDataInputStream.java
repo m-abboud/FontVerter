@@ -5,11 +5,15 @@ import org.fontverter.FontVerterUtils;
 import java.io.*;
 import java.nio.charset.Charset;
 
-public class ByteDataInputStream extends DataInputStream {
+/**
+ * Adds special font data type read functionality to data input stream
+ * todo split out into woff/otf specific maybe
+ */
+public class FontDataInputStream extends DataInputStream {
     private final SeekableByteArrayInputStream byteInput;
-    Charset encoding = ByteDataOutputStream.OPEN_TYPE_CHARSET;
+    Charset encoding = FontDataOutputStream.OPEN_TYPE_CHARSET;
 
-    public ByteDataInputStream(byte[] data) {
+    public FontDataInputStream(byte[] data) {
         super(new SeekableByteArrayInputStream(data));
         byteInput = (SeekableByteArrayInputStream) in;
     }

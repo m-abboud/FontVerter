@@ -2,14 +2,11 @@ package org.fontverter.woff;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.fontverter.FontVerterUtils;
-import org.fontverter.io.ByteDataOutputStream;
 import org.meteogroup.jbrotli.Brotli;
 import org.meteogroup.jbrotli.BrotliStreamCompressor;
 import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
 
 import static org.fontverter.woff.WoffConstants.TableFlagType.*;
 import static org.fontverter.woff.WoffConstants.TableFlagType.glyf;

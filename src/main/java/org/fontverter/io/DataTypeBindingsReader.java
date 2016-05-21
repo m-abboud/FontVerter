@@ -45,12 +45,13 @@ class DataTypeBindingsReader {
     private void sortProperties(List<AccessibleObject> properties) throws DataTypeSerializerException {
         boolean hasorder = false;
         for (AccessibleObject propOn : properties) {
-            if(getPropertyAnnotation(propOn).order() != -1)
+            if (getPropertyAnnotation(propOn).order() != -1)
                 hasorder = true;
 
         }
-        if(!hasorder)
+        if (!hasorder)
             return;
+
         Collections.sort(properties, new Comparator<Object>() {
             public int compare(Object obj1, Object obj2) {
                 try {

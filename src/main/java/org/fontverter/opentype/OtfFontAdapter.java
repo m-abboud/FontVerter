@@ -24,8 +24,12 @@ public class OtfFontAdapter implements FontAdapter {
         return FontVerterUtils.bytesStartsWith(fontFile, "OTTO");
     }
 
-    public void read(byte[] fontFile) {
-        font = OpenTypeFont.createBlankFont();
+    public void read(byte[] fontFile) throws IOException{
+        try {
+            font = new OpenTypeParser().parse(fontFile);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 
     public FontConverter createConverterForType(FontFormat fontFormat) throws FontNotSupportedException {

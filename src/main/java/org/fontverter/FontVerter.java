@@ -2,7 +2,6 @@ package org.fontverter;
 
 import org.apache.commons.io.FileUtils;
 import org.fontverter.cff.CffFontAdapter;
-import org.fontverter.opentype.OtfFontAdapter;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,8 @@ public class FontVerter {
 
         for (Class<? extends FontAdapter> adapterOn : adapters) {
             FontAdapter adapter = tryReadFontAdapter(fontData, adapterOn);
-            if (adapter != null) return adapter;
+            if (adapter != null)
+                return adapter;
         }
 
         FontAdapter adapter = new CffFontAdapter();
@@ -65,6 +65,7 @@ public class FontVerter {
     private static FontAdapter tryReadFontAdapter(byte[] fontData, Class<? extends FontAdapter> adapterOn) throws IOException {
         try {
             FontAdapter adapter = adapterOn.newInstance();
+
             if (adapter.detectFormat(fontData)) {
                 adapter.read(fontData);
                 return adapter;
@@ -73,6 +74,7 @@ public class FontVerter {
             log.debug("Error creating font adapter {} Message: {}", adapterOn.getName(), e);
             return null;
         }
+
         return null;
     }
 

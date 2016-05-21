@@ -1,6 +1,7 @@
 package org.fontverter.opentype;
 
-import org.fontverter.io.ByteDataOutputStream;
+import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
+import org.fontverter.io.FontDataOutputStream;
 import org.fontverter.io.DataTypeBindingSerializer;
 import org.fontverter.io.DataTypeProperty;
 import org.slf4j.Logger;
@@ -19,13 +20,6 @@ public class OpenTypeFont {
     public SfntHeader sfntHeader;
     public List<OpenTypeTable> tables;
     public HeadTable head;
-    public HorizontalHeadTable hhea;
-    public MaximumProfileTable mxap;
-    public HorizontalMetricsTable hmtx;
-    public OS2WinMetricsTable os2;
-    public PostScriptTable post;
-    public CmapTable cmap;
-    public NameTable name;
 
     private static Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
     private File sourceFile;
@@ -34,15 +28,15 @@ public class OpenTypeFont {
         OpenTypeFont font = new OpenTypeFont();
         font.head = font.initTable(HeadTable.createDefaultTable());
 
-        font.os2 = font.initTable(OS2WinMetricsTable.createDefaultTable());
-        font.hhea = font.initTable(HorizontalHeadTable.createDefaultTable());
-        font.mxap = font.initTable(MaximumProfileTable.createDefaultTable());
+        font.initTable(OS2WinMetricsTable.createDefaultTable());
+        font.initTable(HorizontalHeadTable.createDefaultTable());
+        font.initTable(MaximumProfileTable.createDefaultTable());
 
-        font.post = font.initTable(PostScriptTable.createDefaultTable());
-        font.cmap = font.initTable(CmapTable.createDefaultTable());
-        font.hmtx = font.initTable(HorizontalMetricsTable.createDefaultTable(font));
+        font.initTable(PostScriptTable.createDefaultTable());
+        font.initTable(CmapTable.createDefaultTable());
+        font.initTable(HorizontalMetricsTable.createDefaultTable(font));
 
-        font.name = font.initTable(NameTable.createDefaultTable());
+        font.initTable(NameTable.createDefaultTable());
         font.normalizeTables();
         return font;
     }
@@ -96,18 +90,18 @@ public class OpenTypeFont {
 
         // head checksum has to be very last after other checksums + offsets calculated so just grab full byte
         // output to calc instead of trying to re-edit the byte array at the right place
-        head.checksumAdjustment(getRawData());
+        getHead().checksumAdjustment(getRawData());
     }
 
     private void normalizeTables() {
-        mxap.setNumGlyphs(cmap.getGlyphCount());
+        getMxap().setNumGlyphs(getCmap().getGlyphCount());
 
         for (OpenTypeTable tableOn : tables)
             tableOn.normalize();
     }
 
     private byte[] getRawData() throws IOException {
-        ByteDataOutputStream out = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+        FontDataOutputStream out = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         sfntHeader.setNumTables(tables.size());
 
         out.write(sfntHeader.getData());
@@ -137,6 +131,92 @@ public class OpenTypeFont {
 
     public void setSourceFile(File sourceFile) {
         this.sourceFile = sourceFile;
+    }
+
+    public HeadTable getHead() {
+        return findTableType(HeadTable.class);
+    }
+
+    public void setHead(HeadTable head) {
+        setTable(head);
+    }
+
+    public HorizontalHeadTable getHhea() {
+        return findTableType(HorizontalHeadTable.class);
+    }
+
+    public void setHhea(HorizontalHeadTable hhea) {
+        setTable(hhea);
+    }
+
+    public HorizontalMetricsTable getHmtx() {
+        return findTableType(HorizontalMetricsTable.class);
+    }
+
+    public void setHmtx(HorizontalMetricsTable hmtx) {
+        setTable(hmtx);
+    }
+
+    public OS2WinMetricsTable getOs2() {
+        return findTableType(OS2WindowsMetricsTable.class);
+    }
+
+    public void setOs2(OS2WinMetricsTable os2) {
+        setTable(os2);
+    }
+
+    public PostScriptTable getPost() {
+        return findTableType(PostScriptTable.class);
+    }
+
+    public void setPost(PostScriptTable post) {
+        setTable(post);
+    }
+
+    public CmapTable getCmap() {
+        return findTableType(CmapTable.class);
+    }
+
+    public void setCmap(CmapTable cmap) {
+        setTable(cmap);
+    }
+
+    public MaximumProfileTable getMxap() {
+        return findTableType(MaximumProfileTable.class);
+    }
+
+    public void setMxap(MaximumProfileTable mxap) {
+        setTable(mxap);
+    }
+
+    public NameTable getName() {
+        return findTableType(NameTable.class);
+    }
+
+    public void setName(NameTable name) {
+        setTable(name);
+    }
+
+    private <T extends OpenTypeTable> T findTableType(Class type) {
+        for (OpenTypeTable tableOn : tables) {
+            if (tableOn.getClass() == type)
+                return (T) tableOn;
+        }
+
+        return null;
+    }
+
+    private void setTable(OpenTypeTable toAdd) {
+        OpenTypeTable existingTable = null;
+        for (OpenTypeTable tableOn : tables) {
+            if (tableOn.getClass() == toAdd.getClass())
+                existingTable = tableOn;
+        }
+
+        if (existingTable != null)
+            tables.remove(existingTable);
+
+        tables.add(toAdd);
     }
 
     public static class SfntHeader {

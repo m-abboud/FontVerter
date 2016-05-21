@@ -1,6 +1,6 @@
 package org.fontverter.opentype;
 
-import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.FontDataOutputStream;
 import org.fontverter.opentype.OtfNameConstants.RecordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,14 +11,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.fontverter.opentype.NameRecord.NAME_RECORD_SIZE;
+import static org.fontverter.opentype.OtfNameConstants.*;
 
 public class NameTable extends OpenTypeTable {
     static final int NAME_TABLE_HEADER_SIZE = 6;
     private static Logger log = LoggerFactory.getLogger(NameTable.class);
+    private static final Language defaultLanguage = Language.UNITED_STATES;
 
     private List<NameRecord> nameRecords = new ArrayList<NameRecord>();
     private int formatSelector = 0;
-    private OtfNameConstants.Language defaultLanguage = OtfNameConstants.Language.UNITED_STATES;
 
     public static NameTable createDefaultTable() {
         NameTable table = new NameTable();
@@ -34,54 +35,13 @@ public class NameTable extends OpenTypeTable {
         return table;
     }
 
+    /* big old kludge to handle conversion of tables types that arn't deserializable/parsable yet remove asap*/
+    protected boolean isParsingImplemented() {
+        return false;
+    }
+
     public String getName() {
         return "name";
-    }
-
-    public void setFontFamily(String family) {
-        addName(family, OtfNameConstants.RecordType.FONT_FAMILY, defaultLanguage);
-    }
-
-    public void setCopyright(String name) {
-        addName(name, OtfNameConstants.RecordType.COPYRIGHT, defaultLanguage);
-    }
-
-    public void setFontSubFamily(String name) {
-        addName(name, OtfNameConstants.RecordType.FONT_SUB_FAMILY, defaultLanguage);
-    }
-
-    public void setFontFullName(String name) {
-        addName(name, OtfNameConstants.RecordType.FULL_FONT_NAME, defaultLanguage);
-    }
-
-    public void setUniqueId(String name) {
-        addName(name, OtfNameConstants.RecordType.UNIQUE_FONT_ID, defaultLanguage);
-    }
-
-    public void setPostScriptName(String name) {
-        addName(name, OtfNameConstants.RecordType.POSTSCRIPT_NAME, defaultLanguage);
-    }
-
-    public void setVersion(String name) {
-        addName(formatVersion(name), OtfNameConstants.RecordType.VERSION_STRING, defaultLanguage);
-    }
-
-    private String formatVersion(String version) {
-        String versionNumber = "";
-
-        Matcher versionRegex = Pattern.compile("[1-9][0-9]*[.][0-9]*").matcher(version);
-        if (versionRegex.find())
-            versionNumber = versionRegex.group(0);
-
-        if (versionNumber.isEmpty()) {
-            Matcher noPeriodVersionRegex = Pattern.compile("[0-9]*").matcher(version);
-            versionNumber = noPeriodVersionRegex.group(0) + ".0";
-        }
-
-        if (versionNumber.isEmpty())
-            versionNumber = "1.1";
-
-        return "Version " + versionNumber;
     }
 
     public String getName(RecordType type) {
@@ -92,7 +52,7 @@ public class NameTable extends OpenTypeTable {
         return null;
     }
 
-    private void addName(String name, RecordType type, OtfNameConstants.Language language) {
+    private void addName(String name, RecordType type, Language language) {
         deleteExisting(type, language);
         NameRecord windowsRecord = NameRecord.createWindowsRecord(name, type, language);
         nameRecords.add(windowsRecord);
@@ -101,7 +61,7 @@ public class NameTable extends OpenTypeTable {
         nameRecords.add(macRecord);
     }
 
-    private void deleteExisting(RecordType type, OtfNameConstants.Language language) {
+    private void deleteExisting(RecordType type, Language language) {
         List<NameRecord> deleteList = new LinkedList<NameRecord>();
         for (NameRecord recordOn : nameRecords)
             if (recordOn.nameID == type.getValue())
@@ -111,8 +71,8 @@ public class NameTable extends OpenTypeTable {
             nameRecords.remove(recordOn);
     }
 
-    public byte[] getUnpaddedData() throws IOException {
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+    protected byte[] generateUnpaddedData() throws IOException {
+        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         writer.writeUnsignedShort(formatSelector);
         writer.writeUnsignedShort(nameRecords.size());
         writer.writeUnsignedShort(getOffsetToStringStorage());
@@ -150,4 +110,49 @@ public class NameTable extends OpenTypeTable {
         return NAME_TABLE_HEADER_SIZE + (NAME_RECORD_SIZE * nameRecords.size());
     }
 
+    private String formatVersion(String version) {
+        String versionNumber = "";
+
+        Matcher versionRegex = Pattern.compile("[1-9][0-9]*[.][0-9]*").matcher(version);
+        if (versionRegex.find())
+            versionNumber = versionRegex.group(0);
+
+        if (versionNumber.isEmpty()) {
+            Matcher noPeriodVersionRegex = Pattern.compile("[0-9]*").matcher(version);
+            versionNumber = noPeriodVersionRegex.group(0) + ".0";
+        }
+
+        if (versionNumber.isEmpty())
+            versionNumber = "1.1";
+
+        return "Version " + versionNumber;
+    }
+
+    public void setFontFamily(String family) {
+        addName(family, RecordType.FONT_FAMILY, defaultLanguage);
+    }
+
+    public void setCopyright(String name) {
+        addName(name, RecordType.COPYRIGHT, defaultLanguage);
+    }
+
+    public void setFontSubFamily(String name) {
+        addName(name, RecordType.FONT_SUB_FAMILY, defaultLanguage);
+    }
+
+    public void setFontFullName(String name) {
+        addName(name, RecordType.FULL_FONT_NAME, defaultLanguage);
+    }
+
+    public void setUniqueId(String name) {
+        addName(name, RecordType.UNIQUE_FONT_ID, defaultLanguage);
+    }
+
+    public void setPostScriptName(String name) {
+        addName(name, RecordType.POSTSCRIPT_NAME, defaultLanguage);
+    }
+
+    public void setVersion(String name) {
+        addName(formatVersion(name), RecordType.VERSION_STRING, defaultLanguage);
+    }
 }

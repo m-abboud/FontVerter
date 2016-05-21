@@ -1,10 +1,11 @@
 package org.fontverter.opentype;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.fontverter.FontAdapter;
 import org.fontverter.FontVerterUtils;
 import org.fontverter.io.*;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,31 +17,69 @@ import static org.fontverter.io.DataTypeProperty.*;
 import static org.fontverter.io.DataTypeProperty.DataType.*;
 
 public abstract class OpenTypeTable {
+    public static class OtfTableRecord {
+        @DataTypeProperty(dataType = STRING, byteLength = 4)
+        public String recordName;
+
+        @DataTypeProperty(dataType = UINT)
+        public long checksum;
+
+        @DataTypeProperty(dataType = DataType.UINT)
+        public long offset;
+
+        @DataTypeProperty(dataType = DataType.UINT)
+        public long length;
+    }
+
     public static final int TABLE_RECORD_SIZE = 16;
+
     private static List<Class> tableTypes;
     private static final Object factoryLock = new Object();
+    private static Logger log = LoggerFactory.getLogger(OpenTypeTable.class);
 
     public OtfTableRecord record;
+    protected OpenTypeFont font;
     private long checksum;
     private int offset;
     private int paddingAdded;
 
+    // big old kludge to handle conversion of tables types that arn't deserializable/parsable yet
+    private byte[] rawParsedData;
+
     public OpenTypeTable() {
     }
 
-    public static OpenTypeTable createFromRecord(OtfTableRecord record)
+    public static OpenTypeTable createFromRecord(OtfTableRecord record, OpenTypeFont font)
             throws IllegalAccessException, InstantiationException, IOException {
         initFactoryTableTypes();
 
+        OpenTypeTable createdTable = null;
         for (Class typeOn : tableTypes) {
-            OpenTypeTable table = (OpenTypeTable) typeOn.newInstance();
-            table.record = record;
+            OpenTypeTable tableOn = (OpenTypeTable) typeOn.newInstance();
 
-            if (table.getName().equals(record.recordName))
-                return table;
+            if (tableOn.getName().equals(record.recordName)) {
+                createdTable = tableOn;
+                break;
+            }
         }
 
-        throw new IOException(String.format("OTF table type '%s' not implemented", record.recordName));
+        if (createdTable == null)
+            createdTable = createUnknownTableTypeFallback(record);
+
+        createdTable.record = record;
+        createdTable.font = font;
+
+        return createdTable;
+    }
+
+    private static OpenTypeTable createUnknownTableTypeFallback(OtfTableRecord record) {
+        log.warn(String.format("OTF table type '%s' not implemented, using fallback table parsing.",
+                record.recordName));
+
+        OpenTypeTable table = new UnknownTableType(record.recordName);
+        table.record = record;
+
+        return table;
     }
 
     private static void initFactoryTableTypes() {
@@ -52,7 +91,7 @@ public abstract class OpenTypeTable {
 
                 List<Class> filteredTables = new ArrayList<Class>();
                 for (Class tableTypeOn : tableTypes) {
-                    if (!tableTypeOn.getCanonicalName().contains("Canned"))
+                    if (!tableTypeOn.getCanonicalName().contains("Canned") && tableTypeOn != UnknownTableType.class)
                         filteredTables.add(tableTypeOn);
                 }
 
@@ -68,14 +107,33 @@ public abstract class OpenTypeTable {
         return padTableData(getUnpaddedData());
     }
 
-    public byte[] getUnpaddedData() throws IOException {
+    public final byte[] getUnpaddedData() throws IOException {
+        // big old kludge to handle conversion of tables types that arn't deserializable/parsable yet
+        if (rawParsedData != null)
+            return rawParsedData;
+
+        // open type tables should be padded to be divisible by 4
+        return generateUnpaddedData();
+    }
+
+    protected byte[] generateUnpaddedData() throws IOException {
         DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
         return serializer.serialize(this);
     }
 
     public void readData(byte[] data) throws DataTypeSerializerException {
+        if (!isParsingImplemented()) {
+            rawParsedData = data;
+            return;
+        }
+
         DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
         deserializer.deserialize(data, this);
+    }
+
+    /* big old kludge to handle conversion of tables types that arn't deserializable/parsable yet remove asap*/
+    protected boolean isParsingImplemented() {
+        return true;
     }
 
     public byte[] getRecordData() throws IOException {
@@ -121,18 +179,4 @@ public abstract class OpenTypeTable {
         return checksum;
     }
 
-    public static class OtfTableRecord {
-
-        @DataTypeProperty(dataType = STRING, byteLength = 4)
-        public String recordName;
-
-        @DataTypeProperty(dataType = UINT)
-        public long checksum;
-
-        @DataTypeProperty(dataType = DataType.UINT)
-        public long offset;
-
-        @DataTypeProperty(dataType = DataType.UINT)
-        public long length;
-    }
 }

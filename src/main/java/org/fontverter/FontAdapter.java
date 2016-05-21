@@ -9,5 +9,7 @@ public interface FontAdapter {
 
     void read(byte[] fontFile) throws IOException;
 
+    // todo: tear this method out and move converter stuff to seperate converter package so dependencies
+    // between font types not all messy like?
     FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException;
 }

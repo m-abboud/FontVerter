@@ -1,6 +1,6 @@
 package org.fontverter.opentype;
 
-import org.fontverter.io.ByteDataInputStream;
+import org.fontverter.io.FontDataInputStream;
 import org.fontverter.io.DataTypeBindingDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +10,13 @@ import java.io.IOException;
 import static org.fontverter.opentype.OpenTypeTable.*;
 
 public class OpenTypeParser {
-    private OpenTypeFont font;
-    private ByteDataInputStream input;
-
     private static final Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
 
+    private OpenTypeFont font;
+    private FontDataInputStream input;
+
     public OpenTypeFont parse(byte[] data) throws IOException, InstantiationException, IllegalAccessException {
-        this.input = new ByteDataInputStream(data);
+        this.input = new FontDataInputStream(data);
 
         font = new OpenTypeFont();
 
@@ -38,14 +38,15 @@ public class OpenTypeParser {
             OtfTableRecord record =
                     (OtfTableRecord) deserializer.deserialize(input, OtfTableRecord.class);
 
-            OpenTypeTable table = createFromRecord(record);
-            font.tables.add(table);
+            OpenTypeTable table = createFromRecord(record, font);
+            font.addTable(table);
         }
     }
 
     private void readTableDataEntries() throws IOException {
         for (OpenTypeTable tableOn : font.tables) {
             input.seek(tableOn.getOffset());
+
             int dataReadLength = (int) tableOn.record.length;
             byte[] tableData = input.readBytes(dataReadLength);
 

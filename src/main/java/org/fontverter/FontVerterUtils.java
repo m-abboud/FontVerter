@@ -1,7 +1,7 @@
 package org.fontverter;
 
-import org.fontverter.io.ByteDataInputStream;
-import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.FontDataInputStream;
+import org.fontverter.io.FontDataOutputStream;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -21,7 +21,7 @@ public class FontVerterUtils {
     }
 
     public static boolean bytesStartsWith(byte[] data, String... startsWith) {
-        String dataAsString = new String(data, ByteDataOutputStream.OPEN_TYPE_CHARSET);
+        String dataAsString = new String(data, FontDataOutputStream.OPEN_TYPE_CHARSET);
         for (String matchOn : startsWith)
             if (dataAsString.startsWith(matchOn))
                 return true;
@@ -30,7 +30,7 @@ public class FontVerterUtils {
     }
 
     public static long getTableChecksum(byte[] tableData) throws IOException {
-        ByteDataInputStream is = new ByteDataInputStream(tableData);
+        FontDataInputStream is = new FontDataInputStream(tableData);
 
         long checksum = 0;
         while (is.available() >= 4)

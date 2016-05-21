@@ -1,7 +1,7 @@
 package org.fontverter.opentype;
 
 
-import org.fontverter.io.ByteDataOutputStream;
+import org.fontverter.io.FontDataOutputStream;
 import org.fontverter.io.DataTypeProperty;
 import org.fontverter.io.DataTypeSerializerException;
 import org.slf4j.Logger;
@@ -15,10 +15,11 @@ import static org.fontverter.opentype.CmapTable.CmapSubTable.CMAP_RECORD_BYTE_SI
 public class CmapTable extends OpenTypeTable {
     private static Logger log = LoggerFactory.getLogger(CmapTable.class);
     private static final int CMAP_HEADER_SIZE = 4;
-    private static Format4SubTable windowsTable;
-    private static Format4SubTable uniTable;
+    private Format4SubTable windowsTable;
+    private Format4SubTable unixTable;
+    private Format0SubTable macTable;
+
     private List<CmapSubTable> subTables = new ArrayList<CmapSubTable>();
-    private static Format0SubTable macTable;
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
     int version;
@@ -28,17 +29,21 @@ public class CmapTable extends OpenTypeTable {
         return subTables.size();
     }
 
-    @Override
+    /* big old kludge to handle conversion of tables types that arn't deserializable/parsable yet remove asap*/
+    protected boolean isParsingImplemented() {
+        return false;
+    }
+
     public String getName() {
         return "cmap";
     }
 
     @Override
-    public byte[] getUnpaddedData() throws IOException {
+    protected byte[] generateUnpaddedData() throws IOException {
         calculateOffsets();
 
-        ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
-        writer.write(super.getUnpaddedData());
+        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
+        writer.write(super.generateUnpaddedData());
 
         for (CmapSubTable tableOn : subTables) {
             writer.write(tableOn.getRecordData());
@@ -54,27 +59,27 @@ public class CmapTable extends OpenTypeTable {
         CmapTable table = new CmapTable();
         table.version = 0;
 
-        uniTable = new Format4SubTable();
-        uniTable.setPlatformId(0);
-        uniTable.setEncodingId(3);
-        table.subTables.add(uniTable);
+        table.unixTable = new Format4SubTable();
+        table.unixTable.setPlatformId(0);
+        table.unixTable.setEncodingId(3);
+        table.subTables.add(table.unixTable);
 
-        macTable = new Format0SubTable();
-        macTable.setPlatformId(1);
-        macTable.setEncodingId(0);
-        table.subTables.add(macTable);
+        table.macTable = new Format0SubTable();
+        table.macTable.setPlatformId(1);
+        table.macTable.setEncodingId(0);
+        table.subTables.add(table.macTable);
 
-        windowsTable = new Format4SubTable();
-        windowsTable.setPlatformId(3);
-        windowsTable.setEncodingId(1);
-        table.subTables.add(windowsTable);
+        table.windowsTable = new Format4SubTable();
+        table.windowsTable.setPlatformId(3);
+        table.windowsTable.setEncodingId(1);
+        table.subTables.add(table.windowsTable);
 
         return table;
     }
 
     public void addGlyphMapping(Integer charCode, Integer glyphId) {
         windowsTable.addGlyphMapping(charCode, glyphId);
-        uniTable.addGlyphMapping(charCode, glyphId);
+        unixTable.addGlyphMapping(charCode, glyphId);
     }
 
     public void addGlyphMapping(Map<Integer, Integer> mapping) {
@@ -124,7 +129,7 @@ public class CmapTable extends OpenTypeTable {
         }
 
         public byte[] getRecordData() throws IOException {
-            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
             writer.writeUnsignedShort(platformId);
             writer.writeUnsignedShort(platformEncodingId);
             writer.writeUnsignedInt((int) subTableOffset);
@@ -165,7 +170,7 @@ public class CmapTable extends OpenTypeTable {
 
         @Override
         public byte[] getData() throws IOException {
-            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
 
             writer.writeUnsignedShort((int) formatNumber);
             writer.writeUnsignedShort(getLength());
@@ -210,7 +215,7 @@ public class CmapTable extends OpenTypeTable {
         }
 
         private void setDataHeaderLength(byte[] data) throws IOException {
-            ByteDataOutputStream lengthWriter = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+            FontDataOutputStream lengthWriter = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
             lengthWriter.writeUnsignedShort(data.length);
             byte[] lengthData = lengthWriter.toByteArray();
             data[2] = lengthData[0];
@@ -334,7 +339,7 @@ public class CmapTable extends OpenTypeTable {
 
         @Override
         public byte[] getData() throws IOException {
-            ByteDataOutputStream writer = new ByteDataOutputStream(ByteDataOutputStream.OPEN_TYPE_CHARSET);
+            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
             writer.writeUnsignedShort((int) formatNumber);
             writer.writeUnsignedShort(getLength());
             writer.writeUnsignedShort(getLanguageId());

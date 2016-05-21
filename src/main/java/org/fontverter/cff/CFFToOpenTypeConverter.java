@@ -31,7 +31,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
         otfFont.addTable(new CffTable(cffData));
 
         convertGlyphIdToCodeMap();
-        convertNameRecords(otfFont.name);
+        convertNameRecords(otfFont.getName());
         convertHorizontalLayoutSettings();
 
         // kinda kludgy having to call normalize after font is edited
@@ -48,7 +48,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
         Map<Integer, Integer> otfIdToCharCodes =
                 CharsetConverter.nameMapToEncoding(glyphIdsToNames, cffFont.getEncoding());
 
-        otfFont.cmap.addGlyphMapping(otfIdToCharCodes);
+        otfFont.getCmap().addGlyphMapping(otfIdToCharCodes);
     }
 
     private void convertNameRecords(NameTable name) throws IOException {
@@ -61,7 +61,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
     }
 
     private void convertHorizontalLayoutSettings() throws IOException {
-        otfFont.hhea.descender = cffFont.getUnderLinePosition().shortValue();
+        otfFont.getHhea().descender = cffFont.getUnderLinePosition().shortValue();
         otfFont.head.setMinX((short) cffFont.getMinX());
         otfFont.head.setMaxX((short) cffFont.getMaxX());
 
