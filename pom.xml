@@ -6,7 +6,7 @@
 
     <groupId>org.fontverter</groupId>
     <artifactId>FontVerter</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <licenses>
         <license>
@@ -110,4 +110,10 @@
         </repository>
     </repositories>
 
+    <distributionManagement>
+        <repository>
+            <id>bintray-repo</id>
+            <url>https://api.bintray.com/maven/m-abboud/maven/FontVerter/;publish=1</url>
+        </repository>
+    </distributionManagement>
 </project>

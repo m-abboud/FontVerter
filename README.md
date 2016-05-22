@@ -20,3 +20,19 @@ OTF -> WOFF 1.0 & 2.0
   FontAdapter font = FontVerter.readFont(file);
   ```  
 
+#### Maven
+    <dependencies>
+		<dependency>
+			<groupId>org.fontverter</groupId>
+			<artifactId>FontVerter</artifactId>
+			<version>1.0</version>
+		</dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>bintray-m-abboud-fontverter</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/m-abboud/maven/</url>
+        </repository>
+    </repositories>
