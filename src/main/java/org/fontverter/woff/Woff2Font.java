@@ -38,6 +38,7 @@ public class Woff2Font extends WoffFont {
         byte[] bytes = super.getRawData();
         byte[] pad = FontVerterUtils.tablePaddingNeeded(bytes);
         bytes = ArrayUtils.addAll(bytes, pad);
+
         return bytes;
     }
 
@@ -57,7 +58,6 @@ public class Woff2Font extends WoffFont {
 
         public Woff2Table(byte[] table, WoffConstants.TableFlagType flag) {
             super(table, flag);
-//            tableData = padTableData(tableData);
         }
 
         protected byte[] compress(byte[] bytes) throws IOException {

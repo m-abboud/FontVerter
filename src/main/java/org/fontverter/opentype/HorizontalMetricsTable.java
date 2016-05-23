@@ -10,12 +10,15 @@ public class HorizontalMetricsTable extends OpenTypeTable {
     private short[] nonHorizontalLeftSideBearing;
     private int numHMetrics;
 
+    public String getTableTypeName() {
+        return "hmtx";
+    }
+
     /* big old kludge to handle conversion of tables types that arn't deserializable/parsable yet remove asap*/
     protected boolean isParsingImplemented() {
         return false;
     }
 
-    @Override
     protected byte[] generateUnpaddedData() throws IOException {
         FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
 
@@ -29,10 +32,6 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         return writer.toByteArray();
     }
 
-    @Override
-    public String getName() {
-        return "hmtx";
-    }
 
     public static HorizontalMetricsTable createDefaultTable(OpenTypeFont font) {
         HorizontalMetricsTable table = new HorizontalMetricsTable();
@@ -45,7 +44,6 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         return table;
     }
 
-    @Override
     void normalize() {
         numHMetrics = 5;
 

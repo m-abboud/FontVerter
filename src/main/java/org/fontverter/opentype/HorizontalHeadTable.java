@@ -55,7 +55,7 @@ public class HorizontalHeadTable extends OpenTypeTable {
     public int numberOfHMetrics;
 
     @Override
-    public String getName() {
+    public String getTableTypeName() {
         return "hhea";
     }
 

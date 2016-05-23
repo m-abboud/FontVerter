@@ -17,7 +17,7 @@ public class CffTable extends OpenTypeTable {
         return data;
     }
 
-    public String getName() {
+    public String getTableTypeName() {
         return "CFF ";
     }
 

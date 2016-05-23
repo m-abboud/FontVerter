@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CffFontAdapter implements FontAdapter {
+public class CffFontAdapter implements FVFont {
     private byte[] data = new byte[]{};
     private CFFFont font;
 
@@ -62,6 +62,11 @@ public class CffFontAdapter implements FontAdapter {
         else
             return new CombinedFontConverter(new CFFToOpenTypeConverter(this), new OtfToWoffConverter.OtfToWoff2Converter());
 
+    }
+
+    @Override
+    public String getFontName() {
+        return getFullName();
     }
 
     public CFFFont getFont() {

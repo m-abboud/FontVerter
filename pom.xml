@@ -6,7 +6,7 @@
 
     <groupId>org.fontverter</groupId>
     <artifactId>FontVerter</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -33,7 +33,7 @@
     <dependencies>
         <!--pdfbox for validating generated fonts and cff parsing, fontbox has alright font parsing no
         generation tho and OTF classes with private constructors so can't extend off , windows/chrome will
-        barf on a lot of things it doesn't too-->
+        barf on a lot of things it doesn't too, todo move to test only dependency soon -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
@@ -54,6 +54,8 @@
             <artifactId>jbrotli</artifactId>
             <version>0.4.0</version>
         </dependency>
+        <!-- there's some sort of maven bug or jbrotli maven config issue, with x64 windows it
+             will grab x86 native jar instead. maybe intellij maven integration issue? todo needs investigation -->
         <dependency>
             <groupId>org.meteogroup.jbrotli</groupId>
             <artifactId>jbrotli-native-win32-x86-amd64</artifactId>

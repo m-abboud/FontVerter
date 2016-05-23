@@ -1,5 +1,7 @@
 package org.fontverter.io;
 
+import org.fontverter.io.DataTypeProperty.DataType;
+
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -9,20 +11,35 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-class DataTypeBindingsReader {
-    public DataTypeBindingsReader() {
+import static org.fontverter.io.DataTypeProperty.DataType.*;
+
+class DataTypeAnnotationReader {
+    public DataTypeAnnotationReader() {
     }
 
     public List<AccessibleObject> getProperties(Class type) throws DataTypeSerializerException {
         List<AccessibleObject> properties = new LinkedList<AccessibleObject>();
 
         for (Field fieldOn : type.getDeclaredFields()) {
-            if (fieldOn.isAnnotationPresent(DataTypeProperty.class))
+            if (fieldOn.isAnnotationPresent(DataTypeProperty.class)) {
+                fieldOn.setAccessible(true);
                 properties.add(fieldOn);
+            }
         }
         for (Method methodOn : type.getDeclaredMethods()) {
-            if (methodOn.isAnnotationPresent(DataTypeProperty.class))
+            if (methodOn.isAnnotationPresent(DataTypeProperty.class)) {
+                methodOn.setAccessible(true);
                 properties.add(methodOn);
+            }
+        }
+
+        for (AccessibleObject propertyOn : properties) {
+            DataTypeProperty annotationOn = getPropertyAnnotation(propertyOn);
+
+            boolean isVarLengthType = annotationOn.dataType() == BYTE_ARRAY || annotationOn.dataType() == STRING;
+            if (isVarLengthType && annotationOn.byteLength() < 1)
+                throw new DataTypeSerializerException("byteLength annotation field is required for " +
+                        annotationOn.dataType());
         }
 
         sortProperties(properties);

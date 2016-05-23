@@ -5,8 +5,10 @@ import org.fontverter.*;
 import java.io.IOException;
 
 import static org.fontverter.FontVerter.*;
+import static org.fontverter.opentype.OtfNameConstants.*;
 
-public class OtfFontAdapter implements FontAdapter {
+/* todo merge with OpenTypeFont class */
+public class OtfFontAdapter implements FVFont {
     private OpenTypeFont font;
 
     public OtfFontAdapter(OpenTypeFont font) {
@@ -39,7 +41,12 @@ public class OtfFontAdapter implements FontAdapter {
         throw new FontNotSupportedException("Font conversion not supported");
     }
 
-    public OpenTypeFont getFont() {
+    public OpenTypeFont getUnderlyingFont() {
         return font;
+    }
+
+    @Override
+    public String getFontName() {
+        return font.getNameTable().getName(RecordType.FULL_FONT_NAME);
     }
 }

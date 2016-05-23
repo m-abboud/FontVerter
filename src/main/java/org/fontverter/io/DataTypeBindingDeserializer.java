@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class DataTypeBindingDeserializer {
-    private DataTypeBindingsReader propReader = new DataTypeBindingsReader();
+    private DataTypeAnnotationReader propReader = new DataTypeAnnotationReader();
     private FontDataInputStream input;
 
     public Object deserialize(byte[] data, Class toClass) throws DataTypeSerializerException {
@@ -51,7 +51,6 @@ public class DataTypeBindingDeserializer {
         if (!propertyOn.isAnnotationPresent(DataTypeProperty.class))
             return;
 
-        propertyOn.setAccessible(true);
         Annotation annotation = propertyOn.getAnnotation(DataTypeProperty.class);
         DataTypeProperty binding = (DataTypeProperty) annotation;
         if (propReader.isIgnoreProperty(binding, object))

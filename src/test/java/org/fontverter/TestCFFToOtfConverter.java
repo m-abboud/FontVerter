@@ -36,9 +36,9 @@ public class TestCFFToOtfConverter {
     public void convert_CFF_withDictNameEntries_Then_OTF_hasFontNameRecordsSet() throws Exception {
         OpenTypeFont font = convert("FontVerter+SimpleTestFont");
 
-        Assert.assertEquals("SimpleTestFont", font.getName().getName(FONT_FAMILY));
-        Assert.assertEquals("FontVerter+SimpleTestFont", font.getName().getName(FULL_FONT_NAME));
-        Assert.assertEquals("Medium", font.getName().getName(FONT_SUB_FAMILY));
+        Assert.assertEquals("SimpleTestFont", font.getNameTable().getName(FONT_FAMILY));
+        Assert.assertEquals("FontVerter+SimpleTestFont", font.getNameTable().getName(FULL_FONT_NAME));
+        Assert.assertEquals("Medium", font.getNameTable().getName(FONT_SUB_FAMILY));
     }
 
     @Test

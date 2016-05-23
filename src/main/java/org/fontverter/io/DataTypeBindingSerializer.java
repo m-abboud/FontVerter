@@ -10,7 +10,7 @@ import java.util.*;
 
 public class DataTypeBindingSerializer {
     private FontDataOutputStream writer;
-    private DataTypeBindingsReader propReader = new DataTypeBindingsReader();
+    private DataTypeAnnotationReader propReader = new DataTypeAnnotationReader();
 
     public byte[] serialize(Object object) throws DataTypeSerializerException {
         writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
@@ -34,11 +34,11 @@ public class DataTypeBindingSerializer {
         return writer.toByteArray();
     }
 
-    private void serializeProperty(Object object, AccessibleObject propertyOn) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    private void serializeProperty(Object object, AccessibleObject propertyOn)
+            throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (!propertyOn.isAnnotationPresent(DataTypeProperty.class))
             return;
 
-        propertyOn.setAccessible(true);
         Annotation annotation = propertyOn.getAnnotation(DataTypeProperty.class);
         DataTypeProperty property = (DataTypeProperty) annotation;
         if (propReader.isIgnoreProperty(property, object))

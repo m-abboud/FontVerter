@@ -15,7 +15,7 @@ public class TestFontVerter {
     @Test
     public void givenCffFile_detectsCffFontFormat() throws IOException {
         File file = new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.cff");
-        FontAdapter font = FontVerter.readFont(file);
+        FVFont font = FontVerter.readFont(file);
 
         Assert.assertEquals(CffFontAdapter.class, font.getClass());
     }
@@ -23,7 +23,7 @@ public class TestFontVerter {
     @Test
     public void givenOtfFile_detectsCffFontFormat() throws IOException {
         File file = new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
-        FontAdapter font = FontVerter.readFont(file);
+        FVFont font = FontVerter.readFont(file);
 
         Assert.assertEquals(OtfFontAdapter.class, font.getClass());
     }
@@ -36,10 +36,10 @@ public class TestFontVerter {
         File outputFile = new File(tempOutputPath + "FontVerter+SimpleTestFont.otf");
         if (outputFile.exists())
             outputFile.delete();
-        FileUtils.writeByteArrayToFile(outputFile, font.getFont().getFontData());
-        font.getFont().setSourceFile(outputFile);
+        FileUtils.writeByteArrayToFile(outputFile, font.getUnderlyingFont().getFontData());
+        font.getUnderlyingFont().setSourceFile(outputFile);
 
-        TestUtils.runAllValidators(font.getFont());
-        Assert.assertTrue(font.getFont().getCmap().getGlyphCount() > 3);
+        TestUtils.runAllValidators(font.getUnderlyingFont());
+        Assert.assertTrue(font.getUnderlyingFont().getCmap().getGlyphCount() > 3);
     }
 }

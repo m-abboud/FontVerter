@@ -8,15 +8,15 @@ Bare CFF -> OpenType/OTF and WOFF 1.0 & 2.0
 OTF -> WOFF 1.0 & 2.0
 
 # Usage
-##### Converting a font to OTF
+##### Converting a font (in this case to OTF)
   ```java
-  FontAdapter font = FontVerter.convertFont(inputFontFile, FontVerter.FontFormat.OTF);
+  FVFont font = FontVerter.convertFont(inputFontFile, FontVerter.FontFormat.OTF);
   FileUtils.writeByteArrayToFile(new File("MyFont.otf"), font.getData());
   ```
-##### Parsing an arbitrary font file
+##### Reading a font file
   ```java
   File file = new File("FontVerter+SimpleTestFont.otf");
-  FontAdapter font = FontVerter.readFont(file);
+  FVFont font = FontVerter.readFont(file);
   ```  
 
 #### Maven

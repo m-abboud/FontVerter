@@ -21,7 +21,7 @@ public class TestOtfToWoffConverter {
 
     @Test
     public void convertOtf_toWoff1_validatorPasses() throws Exception {
-        FontAdapter woffFont = FontVerter.convertFont(TEST_PATH + "FontVerter+SimpleTestFont.otf", FontFormat.WOFF1);
+        FVFont woffFont = FontVerter.convertFont(TEST_PATH + "FontVerter+SimpleTestFont.otf", FontFormat.WOFF1);
         byte[] fontData = woffFont.getData();
         saveTempFile(fontData, "FontVerter+SimpleTestFont.woff");
 
@@ -41,7 +41,7 @@ public class TestOtfToWoffConverter {
 
     @Test
     public void convertCff_ToOtf_ToWoff1_validatorPasses() throws Exception {
-        FontAdapter woffFont = FontVerter.convertFont(TEST_PATH + "test.cff", FontFormat.WOFF1);
+        FVFont woffFont = FontVerter.convertFont(TEST_PATH + "test.cff", FontFormat.WOFF1);
         byte[] fontData = woffFont.getData();
         saveTempFile(fontData, "FontVerter+SimpleTestFont.woff");
 

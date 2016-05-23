@@ -57,7 +57,7 @@ public abstract class OpenTypeTable {
         for (Class typeOn : tableTypes) {
             OpenTypeTable tableOn = (OpenTypeTable) typeOn.newInstance();
 
-            if (tableOn.getName().equals(record.recordName)) {
+            if (tableOn.getTableTypeName().equals(record.recordName)) {
                 createdTable = tableOn;
                 break;
             }
@@ -100,7 +100,8 @@ public abstract class OpenTypeTable {
         }
     }
 
-    public abstract String getName();
+    /* overly descriptive method name to avoid confusion with other getName methods */
+    public abstract String getTableTypeName();
 
     public final byte[] getData() throws IOException {
         // open type tables should be padded to be divisible by 4
@@ -140,7 +141,7 @@ public abstract class OpenTypeTable {
         byte[] data = getData();
 
         OtfTableRecord record = new OtfTableRecord();
-        record.recordName = getName();
+        record.recordName = getTableTypeName();
         record.length = data.length - paddingAdded;
         record.checksum = (int) checksum;
         record.offset = getOffset();

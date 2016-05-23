@@ -9,8 +9,8 @@ public class CombinedFontConverter implements FontConverter {
         this.converters = converters;
     }
 
-    public FontAdapter convertFont(FontAdapter font) throws IOException {
-        FontAdapter convertedFont = font;
+    public FVFont convertFont(FVFont font) throws IOException {
+        FVFont convertedFont = font;
         for (FontConverter converterOn : converters)
             convertedFont = converterOn.convertFont(convertedFont);
 

@@ -16,7 +16,7 @@ public class MaximumProfileTable extends OpenTypeTable {
     protected int numGlyphs;
 
     @Override
-    public String getName() {
+    public String getTableTypeName() {
         return "maxp";
     }
 

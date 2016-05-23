@@ -1,7 +1,7 @@
 package org.fontverter.cff;
 
 import org.fontverter.CharsetConverter;
-import org.fontverter.FontAdapter;
+import org.fontverter.FVFont;
 import org.fontverter.FontConverter;
 import org.fontverter.opentype.*;
 
@@ -20,7 +20,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
         this.cffFont = CffFontAdapter.parse(cffdata);
     }
 
-    public FontAdapter convertFont(FontAdapter font) throws IOException {
+    public FVFont convertFont(FVFont font) throws IOException {
         this.cffFont = (CffFontAdapter) font;
         return new OtfFontAdapter(generateFont());
     }
@@ -31,7 +31,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
         otfFont.addTable(new CffTable(cffData));
 
         convertGlyphIdToCodeMap();
-        convertNameRecords(otfFont.getName());
+        convertNameRecords(otfFont.getNameTable());
         convertHorizontalLayoutSettings();
 
         // kinda kludgy having to call normalize after font is edited

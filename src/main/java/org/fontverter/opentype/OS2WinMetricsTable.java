@@ -1,98 +1,127 @@
 package org.fontverter.opentype;
 
+import org.fontverter.io.DataTypeProperty;
 import org.fontverter.io.FontDataOutputStream;
 import org.fontverter.io.DataTypeSerializerException;
 
 import java.io.IOException;
 
+import static org.fontverter.io.DataTypeProperty.*;
+
 class OS2WinMetricsTable extends OpenTypeTable {
+    @DataTypeProperty(dataType = DataType.USHORT)
     private int version;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short averageCharWidth;
+
+    @DataTypeProperty(dataType = DataType.USHORT)
     private int weightClass;
+
+    @DataTypeProperty(dataType = DataType.USHORT)
     private int widthClass;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short fsType;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short subscriptXSize;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short subscriptYSize;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short subscriptXOffset;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short subscriptYOffset;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short superscriptXSize;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short superscriptYSize;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short superscriptXOffset;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short superscriptYOffset;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short strikeoutSize;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private short strikeoutPosition;
+
+    @DataTypeProperty(dataType = DataType.USHORT)
     private int familyClass;
+
+    @DataTypeProperty(dataType = DataType.BYTE_ARRAY, byteLength = 10)
     private byte[] panose = new byte[10];
+
+    @DataTypeProperty(dataType = DataType.UINT)
     private long unicodeRange1;
+
+    @DataTypeProperty(dataType = DataType.UINT)
     private long unicodeRange2;
+
+    @DataTypeProperty(dataType = DataType.UINT)
     private long unicodeRange3;
+
+    @DataTypeProperty(dataType = DataType.UINT)
     private long unicodeRange4;
+
+    @DataTypeProperty(dataType = DataType.STRING, byteLength = 4)
     private String achVendId;
+
+    @DataTypeProperty(dataType = DataType.USHORT)
     private int fsSelection;
+
+    @DataTypeProperty(dataType = DataType.USHORT)
     private int firstCharIndex;
+
+    @DataTypeProperty(dataType = DataType.USHORT)
     private int lastCharIndex;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private int typoAscender;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private int typoDescender;
+
+    @DataTypeProperty(dataType = DataType.SHORT)
     private int typoLineGap;
+
+    @DataTypeProperty(dataType = DataType.USHORT)
     private int winAscent;
+
+    @DataTypeProperty(dataType = DataType.USHORT)
     private int winDescent;
+
+    @DataTypeProperty(dataType = DataType.UINT, ignoreIf = "isVersion1OrHigher")
     private long codePageRange1;
+
+    @DataTypeProperty(dataType = DataType.UINT, ignoreIf = "isVersion1OrHigher")
     private long codePageRange2;
+
+    @DataTypeProperty(dataType = DataType.SHORT, ignoreIf = "isVersion2OrHigher")
     private int sxHeight;
+
+    @DataTypeProperty(dataType = DataType.SHORT, ignoreIf = "isVersion2OrHigher")
     private int sCapHeight;
+
+    @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "isVersion2OrHigher")
     private int usDefaultChar;
+
+    @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "isVersion2OrHigher")
     private int usBreakChar;
+
+    @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "isVersion2OrHigher")
     private int usMaxContext;
 
-    @Override
-    public String getName() {
+    public String getTableTypeName() {
         return "OS/2";
-    }
-
-    protected byte[] generateUnpaddedData() throws IOException {
-        FontDataOutputStream out = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        out.writeUnsignedShort(version);
-        out.writeShort(averageCharWidth);
-        out.writeUnsignedShort(weightClass);
-        out.writeUnsignedShort(widthClass);
-        out.writeShort(fsType);
-        out.writeShort(subscriptXSize);
-        out.writeShort(subscriptYSize);
-        out.writeShort(subscriptXOffset);
-        out.writeShort(subscriptYOffset);
-        out.writeShort(superscriptXSize);
-        out.writeShort(superscriptYSize);
-        out.writeShort(superscriptXOffset);
-        out.writeShort(superscriptYOffset);
-        out.writeShort(strikeoutSize);
-        out.writeShort(strikeoutPosition);
-        out.writeUnsignedShort(familyClass);
-        out.write(panose);
-        out.writeUnsignedInt((int) unicodeRange1);
-        out.writeUnsignedInt((int) unicodeRange2);
-        out.writeUnsignedInt((int) unicodeRange3);
-        out.writeUnsignedInt((int) unicodeRange4);
-        out.writeString(achVendId);
-        out.writeUnsignedShort(fsSelection);
-        out.writeUnsignedShort(firstCharIndex);
-        out.writeUnsignedShort(lastCharIndex);
-        out.writeShort(typoAscender);
-        out.writeShort(typoDescender);
-        out.writeShort(typoLineGap);
-        out.writeUnsignedShort(winAscent);
-        out.writeUnsignedShort(winDescent);
-        if (version >= 1) {
-            out.writeUnsignedInt((int) codePageRange1);
-            out.writeUnsignedInt((int) codePageRange2);
-        }
-        if (version >= 2) {
-            out.writeShort(sxHeight);
-            out.writeShort(sCapHeight);
-            out.writeUnsignedShort(usDefaultChar);
-            out.writeUnsignedShort(usBreakChar);
-            out.writeUnsignedShort(usMaxContext);
-        }
-        return out.toByteArray();
     }
 
     public static OS2WinMetricsTable createDefaultTable() {
@@ -138,7 +167,11 @@ class OS2WinMetricsTable extends OpenTypeTable {
         return table;
     }
 
-    protected boolean isParsingImplemented() {
-        return false;
+    public boolean isVersion1OrHigher() {
+        return version >= 1;
+    }
+
+    public boolean isVersion2OrHigher() {
+        return version >= 2;
     }
 }

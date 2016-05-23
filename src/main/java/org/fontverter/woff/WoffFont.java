@@ -9,10 +9,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public abstract class WoffFont implements FontAdapter {
+public abstract class WoffFont implements FVFont {
     protected WoffHeader header;
     protected List<WoffTable> tables = new ArrayList<WoffTable>();
-    protected List<FontAdapter> fonts = new ArrayList<FontAdapter>();
+    protected List<FVFont> fonts = new ArrayList<FVFont>();
 
     public static WoffFont createBlankFont(int version) {
         WoffFont font;
@@ -82,11 +82,11 @@ public abstract class WoffFont implements FontAdapter {
         throw new FontNotSupportedException("Font conversion not supported");
     }
 
-    public void addFont(FontAdapter adapter) {
+    public void addFont(FVFont adapter) {
         fonts.add(adapter);
     }
 
-    public List<FontAdapter> getFonts() {
+    public List<FVFont> getFonts() {
         return fonts;
     }
 
@@ -96,5 +96,12 @@ public abstract class WoffFont implements FontAdapter {
 
     public int getCompressedSize() throws IOException {
         return getCompressedDataBlock().length;
+    }
+
+    public String getFontName() {
+        if(fonts.size() == 0)
+            return "Unknown Font Name";
+
+        return fonts.get(0).getFontName();
     }
 }

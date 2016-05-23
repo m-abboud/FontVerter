@@ -34,7 +34,7 @@ public class CmapTable extends OpenTypeTable {
         return false;
     }
 
-    public String getName() {
+    public String getTableTypeName() {
         return "cmap";
     }
 

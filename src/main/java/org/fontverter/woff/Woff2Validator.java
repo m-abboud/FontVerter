@@ -7,8 +7,6 @@ import org.fontverter.validator.ValidateRule;
 
 import java.io.IOException;
 
-import static org.fontverter.woff.Woff2Font.Woff2Table;
-
 public class Woff2Validator extends RuleValidator<Woff2Font> {
     public Woff2Validator() {
         addRuleDefinition(new HeaderRules());
@@ -17,7 +15,7 @@ public class Woff2Validator extends RuleValidator<Woff2Font> {
     public static class HeaderRules {
         @ValidateRule(message = "total sfnt size figure sketchy")
         public String totalSfntSize(Woff2Font font) throws IOException {
-            OpenTypeFont otfFOnt = ((OtfFontAdapter) font.getFonts().get(0)).getFont();
+            OpenTypeFont otfFOnt = ((OtfFontAdapter) font.getFonts().get(0)).getUnderlyingFont();
             int reportedTotal = otfFOnt.getFontData().length;
             int total = 12 + (font.getTables().size() * 16);
 

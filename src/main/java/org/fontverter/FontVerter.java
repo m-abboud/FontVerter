@@ -22,49 +22,49 @@ public class FontVerter {
         WOFF2
     }
 
-    public static FontAdapter convertFont(byte[] inputFontData, FontFormat convertTo) throws IOException {
-        FontAdapter inputFont = readFont(inputFontData);
+    public static FVFont convertFont(byte[] inputFontData, FontFormat convertTo) throws IOException {
+        FVFont inputFont = readFont(inputFontData);
         FontConverter converter = inputFont.createConverterForType(convertTo);
 
         return converter.convertFont(inputFont);
     }
 
-    public static FontAdapter convertFont(File inputFontData, FontFormat convertTo) throws IOException {
+    public static FVFont convertFont(File inputFontData, FontFormat convertTo) throws IOException {
         byte[] data = FileUtils.readFileToByteArray(inputFontData);
         return convertFont(data, convertTo);
     }
 
-    public static FontAdapter convertFont(String inputFontData, FontFormat convertTo) throws IOException {
+    public static FVFont convertFont(String inputFontData, FontFormat convertTo) throws IOException {
         byte[] data = FileUtils.readFileToByteArray(new File(inputFontData));
         return convertFont(data, convertTo);
     }
 
-    public static FontAdapter readFont(byte[] fontData) throws IOException {
+    public static FVFont readFont(byte[] fontData) throws IOException {
         registerFontAdapters();
 
-        for (Class<? extends FontAdapter> adapterOn : adapters) {
-            FontAdapter adapter = tryReadFontAdapter(fontData, adapterOn);
+        for (Class<? extends FVFont> adapterOn : adapters) {
+            FVFont adapter = tryReadFontAdapter(fontData, adapterOn);
             if (adapter != null)
                 return adapter;
         }
 
-        FontAdapter adapter = new CffFontAdapter();
+        FVFont adapter = new CffFontAdapter();
         adapter.read(fontData);
         return adapter;
     }
 
-    public static FontAdapter readFont(File fontFile) throws IOException {
+    public static FVFont readFont(File fontFile) throws IOException {
         byte[] data = FileUtils.readFileToByteArray(fontFile);
         return readFont(data);
     }
 
-    public static FontAdapter readFont(String fontFile) throws IOException {
+    public static FVFont readFont(String fontFile) throws IOException {
         return readFont(new File(fontFile));
     }
 
-    private static FontAdapter tryReadFontAdapter(byte[] fontData, Class<? extends FontAdapter> adapterOn) throws IOException {
+    private static FVFont tryReadFontAdapter(byte[] fontData, Class<? extends FVFont> adapterOn) throws IOException {
         try {
-            FontAdapter adapter = adapterOn.newInstance();
+            FVFont adapter = adapterOn.newInstance();
 
             if (adapter.detectFormat(fontData)) {
                 adapter.read(fontData);
@@ -82,7 +82,7 @@ public class FontVerter {
         synchronized (adapterLock) {
             if (adapters == null) {
                 Reflections reflections = new Reflections("org.fontverter");
-                Set<Class<? extends FontAdapter>> adapterClasses = reflections.getSubTypesOf(FontAdapter.class);
+                Set<Class<? extends FVFont>> adapterClasses = reflections.getSubTypesOf(FVFont.class);
                 adapters = adapterClasses.toArray(new Class[adapterClasses.size()]);
             }
         }

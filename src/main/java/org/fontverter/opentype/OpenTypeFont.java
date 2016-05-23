@@ -1,6 +1,5 @@
 package org.fontverter.opentype;
 
-import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.fontverter.io.FontDataOutputStream;
 import org.fontverter.io.DataTypeBindingSerializer;
 import org.fontverter.io.DataTypeProperty;
@@ -60,7 +59,7 @@ public class OpenTypeFont {
         // then still needs to be added here for seperate data entries
         Collections.sort(tables, new Comparator<OpenTypeTable>() {
             public int compare(OpenTypeTable left, OpenTypeTable right) {
-                return left.getName().compareTo(right.getName());
+                return left.getTableTypeName().compareTo(right.getTableTypeName());
             }
         });
 
@@ -158,7 +157,7 @@ public class OpenTypeFont {
     }
 
     public OS2WinMetricsTable getOs2() {
-        return findTableType(OS2WindowsMetricsTable.class);
+        return findTableType(OS2WinMetricsTable.class);
     }
 
     public void setOs2(OS2WinMetricsTable os2) {
@@ -189,7 +188,7 @@ public class OpenTypeFont {
         setTable(mxap);
     }
 
-    public NameTable getName() {
+    public NameTable getNameTable() {
         return findTableType(NameTable.class);
     }
 

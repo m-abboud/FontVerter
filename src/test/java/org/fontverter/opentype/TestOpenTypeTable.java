@@ -96,7 +96,7 @@ public class TestOpenTypeTable {
             return FontVerterUtils.getTableChecksum(getData());
         }
 
-        public String getName() {
+        public String getTableTypeName() {
             return "test";
         }
     }

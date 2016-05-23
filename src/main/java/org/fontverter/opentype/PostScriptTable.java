@@ -33,7 +33,7 @@ public class PostScriptTable extends OpenTypeTable {
     private String[] glyphNames = null;
 
     @Override
-    public String getName() {
+    public String getTableTypeName() {
         return "post";
     }
 
