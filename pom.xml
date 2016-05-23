@@ -6,7 +6,7 @@
 
     <groupId>org.fontverter</groupId>
     <artifactId>FontVerter</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
 
     <licenses>
         <license>
