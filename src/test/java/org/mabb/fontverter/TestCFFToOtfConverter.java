@@ -5,10 +5,13 @@ import org.mabb.fontverter.cff.CFFToOpenTypeConverter;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mabb.fontverter.opentype.OtfNameConstants;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
+import static org.mabb.fontverter.opentype.OtfNameConstants.*;
 import static org.mabb.fontverter.opentype.OtfNameConstants.RecordType.*;
 
 public class TestCFFToOtfConverter {
@@ -58,12 +61,37 @@ public class TestCFFToOtfConverter {
         Assert.assertEquals(793, font.head.getyMax());
     }
 
+
+    @Test
+    public void convertCffWithEmptyVersion_givesOtfWithFillerVersion() throws Exception {
+        OpenTypeFont font = convert("cff/DCKDHE+Omsym6");
+
+        Assert.assertEquals("Version 1.1", font.getNameTable().getName(RecordType.VERSION_STRING));
+    }
+
+    @Test
+    public void convertAndValidateAllTestCffFonts() throws Exception {
+        File dir = new File(TestUtils.TEST_PATH + "cff/");
+        List<File> cffFiles = (List<File>) FileUtils.listFiles(dir, new String[]{"cff"}, true);
+        Assert.assertTrue(cffFiles.size() > 2);
+
+        for (File file : cffFiles) {
+            OpenTypeFont font = convertAndSaveFile(file);
+            TestUtils.runAllValidators(font);
+        }
+    }
+
+
     public static OpenTypeFont convertAndSaveFile(String fileName) throws Exception {
-        File outputFile = new File(TestUtils.tempOutputPath + fileName + ".otf");
+        return convertAndSaveFile(new File(TestUtils.TEST_PATH + fileName + ".cff"));
+    }
+
+    public static OpenTypeFont convertAndSaveFile(File file) throws Exception {
+        File outputFile = new File(TestUtils.tempOutputPath + file.getName().replace(".cff", ".otf"));
         if (outputFile.exists())
             outputFile.delete();
 
-        OpenTypeFont generatedFont = convert(fileName);
+        OpenTypeFont generatedFont = convert(file);
         byte[] fontData = generatedFont.getFontData();
         FileUtils.writeByteArrayToFile(outputFile, fontData);
         generatedFont.setSourceFile(outputFile);
@@ -72,9 +100,12 @@ public class TestCFFToOtfConverter {
     }
 
     private static OpenTypeFont convert(String fileName) throws IOException {
-        byte[] cff = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + fileName + ".cff"));
+        return convert(new File(TestUtils.TEST_PATH + fileName + ".cff"));
+    }
+
+    private static OpenTypeFont convert(File file) throws IOException {
+        byte[] cff = FileUtils.readFileToByteArray(file);
         CFFToOpenTypeConverter gen = new CFFToOpenTypeConverter(cff);
         return gen.generateFont();
     }
-
 }

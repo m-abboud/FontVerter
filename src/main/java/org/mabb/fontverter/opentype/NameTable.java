@@ -114,8 +114,9 @@ public class NameTable extends OpenTypeTable {
             versionNumber = versionRegex.group(0);
 
         if (versionNumber.isEmpty()) {
-            Matcher noPeriodVersionRegex = Pattern.compile("[0-9]*").matcher(version);
-            versionNumber = noPeriodVersionRegex.group(0) + ".0";
+            Matcher noPeriodVersionRegex = Pattern.compile("[0-9]+").matcher(version);
+            if (noPeriodVersionRegex.find())
+                versionNumber = noPeriodVersionRegex.group(0) + ".0";
         }
 
         if (versionNumber.isEmpty())

@@ -6,7 +6,30 @@
 
     <groupId>org.fontverter</groupId>
     <artifactId>FontVerter</artifactId>
-    <version>1.1</version>
+    <version>1.2.3</version>
+    <name>FontVerter</name>
+    <description>Library for converting various font formats.</description>
+    <url>https://github.com/m-abboud/FontVerter</url>
+
+    <developers>
+        <developer>
+            <name>Matt Abboud</name>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <scm>
+        <url>https://github.com/m-abboud/FontVerter</url>
+        <connection>scm:git:git@github.com:m-abboud/FontVerter.git</connection>
+        <developerConnection>scm:git:git@github.com:m-abboud/FontVerter.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
     <licenses>
         <license>
@@ -26,6 +49,32 @@
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
