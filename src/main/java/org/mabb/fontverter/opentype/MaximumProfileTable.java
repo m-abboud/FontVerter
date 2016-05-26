@@ -36,6 +36,10 @@ public class MaximumProfileTable extends OpenTypeTable {
         this.numGlyphs = numGlyphs;
     }
 
+    protected boolean isParsingImplemented() {
+        return false;
+    }
+
     // todo: commented out since deserializer inhertiance broken
 //    public static class MaximumProfileTableV1 extends MaximumProfileTable {
 //        public static MaximumProfileTable createDefaultTable() {

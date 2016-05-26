@@ -40,7 +40,7 @@ public abstract class OpenTypeTable {
     public OtfTableRecord record;
     protected OpenTypeFont font;
     private long checksum;
-    private int offset;
+    private long offset;
     private int paddingAdded;
 
     // big old kludge to handle conversion of tables types that arn't deserializable/parsable yet
@@ -68,12 +68,13 @@ public abstract class OpenTypeTable {
 
         createdTable.record = record;
         createdTable.font = font;
+        createdTable.offset = record.offset;
 
         return createdTable;
     }
 
     private static OpenTypeTable createUnknownTableTypeFallback(OtfTableRecord record) {
-        log.warn(String.format("OTF table type '%s' not implemented, using fallback table parsing.",
+        log.debug(String.format("OTF table type '%s' not implemented, using fallback blind table parsing.",
                 record.recordName));
 
         OpenTypeTable table = new UnknownTableType(record.recordName);
@@ -163,7 +164,7 @@ public abstract class OpenTypeTable {
     void normalize() {
     }
 
-    public int getOffset() {
+    public long getOffset() {
         return offset;
     }
 

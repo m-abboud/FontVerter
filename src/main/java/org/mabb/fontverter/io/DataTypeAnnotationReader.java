@@ -50,12 +50,24 @@ class DataTypeAnnotationReader {
      read fields can be used by ignore methods */
     public boolean isIgnoreProperty(DataTypeProperty property, Object object)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if (property.ignoreIf().isEmpty())
+        String ignoreIf = property.ignoreIf();
+        if (ignoreIf.isEmpty())
             return false;
 
-        Method method = object.getClass().getMethod(property.ignoreIf());
+        boolean hasNotOperator = false;
+        if (ignoreIf.startsWith("!")) {
+            hasNotOperator = true;
+            ignoreIf = ignoreIf.replace("!", "");
+        }
+
+        Method method = object.getClass().getMethod(ignoreIf);
         method.setAccessible(true);
-        return (Boolean) method.invoke(object);
+        boolean result = (Boolean) method.invoke(object);
+
+        if (hasNotOperator)
+            result = !result;
+
+        return result;
     }
 
     private void sortProperties(List<AccessibleObject> properties) throws DataTypeSerializerException {

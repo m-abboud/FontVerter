@@ -6,7 +6,7 @@
 
     <groupId>org.fontverter</groupId>
     <artifactId>FontVerter</artifactId>
-    <version>1.2.3</version>
+    <version>1.2.4</version>
     <name>FontVerter</name>
     <description>Library for converting various font formats.</description>
     <url>https://github.com/m-abboud/FontVerter</url>

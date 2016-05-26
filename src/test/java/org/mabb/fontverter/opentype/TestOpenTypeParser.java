@@ -26,4 +26,12 @@ public class TestOpenTypeParser {
 
         Assert.assertEquals(9, font.sfntHeader.numTables);
     }
+    @Test
+    public void parse_TTF() throws IOException, IllegalAccessException, InstantiationException {
+        OpenTypeParser parser = new OpenTypeParser();
+        byte[] fontData = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "KJJTAM+TrebuchetMS.ttf"));
+        OpenTypeFont font = parser.parse(fontData);
+
+        Assert.assertEquals(13, font.sfntHeader.numTables);
+    }
 }

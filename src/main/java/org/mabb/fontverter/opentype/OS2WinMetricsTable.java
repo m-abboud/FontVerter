@@ -4,7 +4,7 @@ import org.mabb.fontverter.io.DataTypeProperty;
 
 import static org.mabb.fontverter.io.DataTypeProperty.*;
 
-class OS2WinMetricsTable extends OpenTypeTable {
+public class OS2WinMetricsTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.USHORT)
     private int version;
 
@@ -95,25 +95,25 @@ class OS2WinMetricsTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.USHORT)
     private int winDescent;
 
-    @DataTypeProperty(dataType = DataType.UINT, ignoreIf = "isVersion1OrHigher")
+    @DataTypeProperty(dataType = DataType.UINT, ignoreIf = "!isVersion1OrHigher")
     private long codePageRange1;
 
-    @DataTypeProperty(dataType = DataType.UINT, ignoreIf = "isVersion1OrHigher")
+    @DataTypeProperty(dataType = DataType.UINT, ignoreIf = "!isVersion1OrHigher")
     private long codePageRange2;
 
-    @DataTypeProperty(dataType = DataType.SHORT, ignoreIf = "isVersion2OrHigher")
+    @DataTypeProperty(dataType = DataType.SHORT, ignoreIf = "!isVersion2OrHigher")
     private int sxHeight;
 
-    @DataTypeProperty(dataType = DataType.SHORT, ignoreIf = "isVersion2OrHigher")
+    @DataTypeProperty(dataType = DataType.SHORT, ignoreIf = "!isVersion2OrHigher")
     private int sCapHeight;
 
-    @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "isVersion2OrHigher")
+    @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "!isVersion2OrHigher")
     private int usDefaultChar;
 
-    @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "isVersion2OrHigher")
+    @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "!isVersion2OrHigher")
     private int usBreakChar;
 
-    @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "isVersion2OrHigher")
+    @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "!isVersion2OrHigher")
     private int usMaxContext;
 
     public String getTableTypeName() {
@@ -169,5 +169,9 @@ class OS2WinMetricsTable extends OpenTypeTable {
 
     public boolean isVersion2OrHigher() {
         return version >= 2;
+    }
+
+    public short getAverageCharWidth() {
+        return averageCharWidth;
     }
 }

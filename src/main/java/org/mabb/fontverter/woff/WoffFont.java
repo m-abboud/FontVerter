@@ -103,9 +103,16 @@ public abstract class WoffFont implements FVFont {
     }
 
     public String getFontName() {
-        if(fonts.size() == 0)
+        if (fonts.size() == 0)
             return "Unknown Font Name";
 
         return fonts.get(0).getFontName();
+    }
+
+    public boolean doesPassStrictValidation() {
+        return true;
+    }
+
+    public void normalize() {
     }
 }

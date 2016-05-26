@@ -191,5 +191,10 @@ public class CffFontAdapter implements FVFont {
         return data;
     }
 
+    public boolean doesPassStrictValidation() {
+        return true;
+    }
 
+    public void normalize() {
+    }
 }

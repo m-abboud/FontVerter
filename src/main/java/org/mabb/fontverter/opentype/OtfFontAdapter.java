@@ -1,8 +1,13 @@
 package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.*;
+import org.mabb.fontverter.opentype.validator.OpenTypeStrictValidator;
+import org.mabb.fontverter.validator.RuleValidator;
+import org.mabb.fontverter.validator.RuleValidator.FontValidatorError;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import static org.mabb.fontverter.opentype.OtfNameConstants.*;
 
@@ -22,10 +27,15 @@ public class OtfFontAdapter implements FVFont {
     }
 
     public boolean detectFormat(byte[] fontFile) {
-        return FontVerterUtils.bytesStartsWith(fontFile, "OTTO");
+        String[] headerMagicNums = new String[]{"\u0000\u0001\u0000\u0000", "OTTO"};
+        for (String magicNumOn : headerMagicNums)
+            if (FontVerterUtils.bytesStartsWith(fontFile, magicNumOn))
+                return true;
+
+        return false;
     }
 
-    public void read(byte[] fontFile) throws IOException{
+    public void read(byte[] fontFile) throws IOException {
         try {
             font = new OpenTypeParser().parse(fontFile);
         } catch (Exception e) {
@@ -47,5 +57,21 @@ public class OtfFontAdapter implements FVFont {
     @Override
     public String getFontName() {
         return font.getNameTable().getName(RecordType.FULL_FONT_NAME);
+    }
+
+    public boolean doesPassStrictValidation() {
+        try {
+            OpenTypeStrictValidator validator = new OpenTypeStrictValidator();
+            List<FontValidatorError> errors = validator.validate(font);
+            return  errors.size() == 0;
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public void normalize() {
+        if (font.getOs2() == null)
+            font.setOs2(OS2WinMetricsTable.createDefaultTable());
     }
 }

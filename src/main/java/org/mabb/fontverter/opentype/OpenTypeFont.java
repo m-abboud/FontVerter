@@ -196,6 +196,17 @@ public class OpenTypeFont {
         setTable(name);
     }
 
+    public void removeTable(Class toRemoveType) {
+        OpenTypeTable toRemoveTable = null;
+        for (OpenTypeTable tableOn : tables) {
+            if (tableOn.getClass() == toRemoveType)
+                toRemoveTable = tableOn;
+        }
+
+        if (toRemoveTable != null)
+            tables.remove(toRemoveTable);
+    }
+
     private <T extends OpenTypeTable> T findTableType(Class type) {
         for (OpenTypeTable tableOn : tables) {
             if (tableOn.getClass() == type)
@@ -206,15 +217,7 @@ public class OpenTypeFont {
     }
 
     private void setTable(OpenTypeTable toAdd) {
-        OpenTypeTable existingTable = null;
-        for (OpenTypeTable tableOn : tables) {
-            if (tableOn.getClass() == toAdd.getClass())
-                existingTable = tableOn;
-        }
-
-        if (existingTable != null)
-            tables.remove(existingTable);
-
+        removeTable(toAdd.getClass());
         tables.add(toAdd);
     }
 

@@ -8,11 +8,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 public class FontVerter {
     private static Logger log = LoggerFactory.getLogger(FontVerter.class);
-    private static Class[] adapters;
+    private static List<Class> adapters;
     private static final Object adapterLock = new Object();
 
     public enum FontFormat {
@@ -83,7 +86,19 @@ public class FontVerter {
             if (adapters == null) {
                 Reflections reflections = new Reflections("org.mabb.fontverter");
                 Set<Class<? extends FVFont>> adapterClasses = reflections.getSubTypesOf(FVFont.class);
-                adapters = adapterClasses.toArray(new Class[adapterClasses.size()]);
+                Class[] adapterArr = adapterClasses.toArray(new Class[adapterClasses.size()]);
+                adapters = Arrays.asList(adapterArr);
+
+                // CFF always last to try
+                Class cffAdapter = null;
+                for (Class adapterOn : adapters) {
+                    if (adapterOn.getSimpleName().contains("CffFont"))
+                        cffAdapter = adapterOn;
+                }
+
+                int cffIndex = adapters.indexOf(cffAdapter);
+                adapters.set(cffIndex, adapters.get(adapters.size() - 1));
+                adapters.set(adapters.size() - 1, cffAdapter);
             }
         }
     }

@@ -105,10 +105,6 @@ public class CmapTable extends OpenTypeTable {
         }
     }
 
-    public void readData(byte[] data) throws DataTypeSerializerException {
-    }
-
-
     protected static abstract class CmapSubTable {
         public static final int CMAP_RECORD_BYTE_SIZE = 8;
 

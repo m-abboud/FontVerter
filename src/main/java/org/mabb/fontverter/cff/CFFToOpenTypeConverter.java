@@ -3,10 +3,7 @@ package org.mabb.fontverter.cff;
 import org.mabb.fontverter.CharsetConverter;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontConverter;
-import org.mabb.fontverter.opentype.CffTable;
-import org.mabb.fontverter.opentype.NameTable;
-import org.mabb.fontverter.opentype.OpenTypeFont;
-import org.mabb.fontverter.opentype.OtfFontAdapter;
+import org.mabb.fontverter.opentype.*;
 
 import java.io.IOException;
 import java.util.Map;

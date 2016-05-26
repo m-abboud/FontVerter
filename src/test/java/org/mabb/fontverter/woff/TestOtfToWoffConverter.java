@@ -36,13 +36,13 @@ public class TestOtfToWoffConverter {
 
     @Test
     public void convertCffToWoff_woffFontHasSameNumberOfTables() throws Exception {
-        WoffFont woffFont = (WoffFont) FontVerter.convertFont(TEST_PATH + "test.cff", FontFormat.WOFF1);
+        WoffFont woffFont = (WoffFont) FontVerter.convertFont(TEST_PATH + "cff/test.cff", FontFormat.WOFF1);
         Assert.assertEquals(9, woffFont.getTables().size());
     }
 
     @Test
     public void convertCff_ToOtf_ToWoff1_validatorPasses() throws Exception {
-        FVFont woffFont = FontVerter.convertFont(TEST_PATH + "test.cff", FontFormat.WOFF1);
+        FVFont woffFont = FontVerter.convertFont(TEST_PATH + "cff/test.cff", FontFormat.WOFF1);
         byte[] fontData = woffFont.getData();
         saveTempFile(fontData, "FontVerter+SimpleTestFont.woff");
 
@@ -56,7 +56,7 @@ public class TestOtfToWoffConverter {
 
     @Test
     public void convertCff_ToOtf_ToWoff2_validatorPasses() throws Exception {
-        WoffFont parsedFont = convertAndReparseWoff2("test.cff");
+        WoffFont parsedFont = convertAndReparseWoff2("cff/test.cff");
 
         Woff2Validator validator = new Woff2Validator();
         validator.validateWithExceptionsThrown((Woff2Font) parsedFont);
@@ -64,7 +64,7 @@ public class TestOtfToWoffConverter {
 
     @Test
     public void convertCffToWoff2_thenAllOtfTableTypes_arePresentInWoff2Font() throws Exception {
-        WoffFont parsedFont = convertAndReparseWoff2("test.cff");
+        WoffFont parsedFont = convertAndReparseWoff2("cff/test.cff");
 
         TableFlagType[] flags = new TableFlagType[]{CFF, post, OS2, head, hmtx, cmap, name, hhea, maxp};
         for (TableFlagType flagOn : flags) {
@@ -80,7 +80,7 @@ public class TestOtfToWoffConverter {
 
     @Test
     public void convertCffToWoff2_sfntSizeSameAsOtfFontSize() throws Exception {
-        WoffFont convertedFont = (WoffFont) FontVerter.convertFont(TEST_PATH + "test.cff", FontFormat.WOFF2);
+        WoffFont convertedFont = (WoffFont) FontVerter.convertFont(TEST_PATH + "cff/test.cff", FontFormat.WOFF2);
         int otfLength = convertedFont.getFonts().get(0).getData().length;
 
         WoffParser parser = new WoffParser();

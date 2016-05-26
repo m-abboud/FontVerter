@@ -14,7 +14,7 @@ public class TestFontVerter {
 
     @Test
     public void givenCffFile_detectsCffFontFormat() throws IOException {
-        File file = new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.cff");
+        File file = new File(TestUtils.TEST_PATH + "cff/FontVerter+SimpleTestFont.cff");
         FVFont font = FontVerter.readFont(file);
 
         Assert.assertEquals(CffFontAdapter.class, font.getClass());
@@ -30,7 +30,7 @@ public class TestFontVerter {
 
     @Test
     public void givenCffFont_convertWithFontVerterApi_fontValidatorsPass() throws Exception {
-        File file = new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.cff");
+        File file = new File(TestUtils.TEST_PATH + "cff/FontVerter+SimpleTestFont.cff");
         OtfFontAdapter font = (OtfFontAdapter) FontVerter.convertFont(file, FontVerter.FontFormat.OTF);
 
         File outputFile = new File(tempOutputPath + "FontVerter+SimpleTestFont.otf");

@@ -18,26 +18,26 @@ public class TestCFFToOtfConverter {
 
     @Test
     public void convertSimpleFont_fontValidatorsPass() throws Exception {
-        OpenTypeFont font = convertAndSaveFile("FontVerter+SimpleTestFont");
+        OpenTypeFont font = convertAndSaveFile("cff/FontVerter+SimpleTestFont");
         TestUtils.runAllValidators(font);
     }
 
     @Test
     public void convertFullAlphabetFont_fontValidatorsPass() throws Exception {
-        OpenTypeFont font = convertAndSaveFile("FontVerter+FullAlphabetFont");
+        OpenTypeFont font = convertAndSaveFile("cff/FontVerter+FullAlphabetFont");
         TestUtils.runAllValidators(font);
     }
 
     @Test
     public void convert_CFF_fullAlphabetFont_then_OTF_has94Glyphs() throws Exception {
-        OpenTypeFont font = convert("FontVerter+FullAlphabetFont");
+        OpenTypeFont font = convert("cff/FontVerter+FullAlphabetFont");
         // getNumGlyphs includes padded glyph so -1 for padding,there's 4 actual glyphs
         Assert.assertEquals(94, font.getCmap().getGlyphCount() - 1);
     }
 
     @Test
     public void convert_CFF_withDictNameEntries_Then_OTF_hasFontNameRecordsSet() throws Exception {
-        OpenTypeFont font = convert("FontVerter+SimpleTestFont");
+        OpenTypeFont font = convert("cff/FontVerter+SimpleTestFont");
 
         Assert.assertEquals("SimpleTestFont", font.getNameTable().getName(FONT_FAMILY));
         Assert.assertEquals("FontVerter+SimpleTestFont", font.getNameTable().getName(FULL_FONT_NAME));
@@ -46,14 +46,14 @@ public class TestCFFToOtfConverter {
 
     @Test
     public void convertCFF_OutputHasDescenderValue() throws Exception {
-        OpenTypeFont font = convert("FontVerter+SimpleTestFont");
+        OpenTypeFont font = convert("cff/FontVerter+SimpleTestFont");
 
         Assert.assertEquals(-133, font.getHhea().descender);
     }
 
     @Test
     public void convertCFF_OutputHasBoundingBox() throws Exception {
-        OpenTypeFont font = convert("FontVerter+SimpleTestFont");
+        OpenTypeFont font = convert("cff/FontVerter+SimpleTestFont");
 
         Assert.assertEquals(26, font.head.getxMin());
         Assert.assertEquals(-2, font.head.getyMin());
