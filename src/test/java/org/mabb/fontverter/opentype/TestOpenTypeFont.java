@@ -78,6 +78,12 @@ public class TestOpenTypeFont {
         Assert.assertNotNull(otfFont.getNameTable());
     }
 
+    @Test
+    public void given_TTF_withUnevenCvtTableLength_strictValidatorFails() throws IOException, IllegalAccessException, InstantiationException {
+        FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
+        Assert.assertNotNull(findErrorContaining(font, "cvt "));
+    }
+
     private FontValidatorError findErrorContaining(FVFont font, String containing) {
         Assert.assertFalse(font.doesPassStrictValidation());
         List<FontValidatorError> errors = font.getStrictValidationErrors();

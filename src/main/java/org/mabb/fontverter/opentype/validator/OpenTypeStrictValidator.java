@@ -27,6 +27,19 @@ public class OpenTypeStrictValidator extends OpenTypeFontValidator {
         public boolean postScriptTableExists(OpenTypeFont font) {
             return font.getPost() != null;
         }
+
+        @ValidateRule(message = "cvt table should be even")
+        public String cvtTableValueCountEven(OpenTypeFont font) {
+            if (font.getCvt() == null)
+                return "";
+
+            int remainder = (int) (font.getCvt().record.length % 2);
+            if (remainder != 0)
+                return String.format("Read cvt table length is not divisible by 2. Length: %s",
+                        font.getCvt().getValues().size());
+
+            return "";
+        }
     }
 
 }

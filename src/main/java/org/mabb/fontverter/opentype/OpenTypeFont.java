@@ -236,6 +236,14 @@ public class OpenTypeFont {
         setTable(mxap);
     }
 
+    public ControlValueTable getCvt() {
+        return findTableType(ControlValueTable.class);
+    }
+
+    public void setCvt(ControlValueTable cvt) {
+        setTable(cvt);
+    }
+
     public NameTable getNameTable() {
         return findTableType(NameTable.class);
     }
