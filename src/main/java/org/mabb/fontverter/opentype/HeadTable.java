@@ -89,7 +89,6 @@ public class HeadTable extends OpenTypeTable {
         return table;
     }
 
-
     public void checksumAdjustment(byte[] fontBytes) throws IOException {
         checkSumAdjustment = 0xB1B0AFBA - FontVerterUtils.getTableChecksum(fontBytes);
     }

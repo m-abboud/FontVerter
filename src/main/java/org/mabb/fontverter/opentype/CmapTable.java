@@ -1,6 +1,8 @@
 package org.mabb.fontverter.opentype;
 
 
+import org.mabb.fontverter.CharsetConverter;
+import org.mabb.fontverter.CharsetConverter.GlyphMapping;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.io.DataTypeProperty;
 import org.mabb.fontverter.io.DataTypeSerializerException;
@@ -82,13 +84,9 @@ public class CmapTable extends OpenTypeTable {
         unixTable.addGlyphMapping(charCode, glyphId);
     }
 
-    public void addGlyphMapping(Map<Integer, Integer> mapping) {
-        for (Map.Entry<Integer, Integer> mappingOn : mapping.entrySet()) {
-            int charCode = mappingOn.getKey();
-            int glyphId = mappingOn.getValue();
-
-            addGlyphMapping(charCode, glyphId);
-        }
+    public void addGlyphMapping(List<GlyphMapping> mapping) {
+        for (GlyphMapping mappingOn : mapping)
+            addGlyphMapping(mappingOn.charCode, mappingOn.glyphId);
     }
 
     public int getGlyphCount() {

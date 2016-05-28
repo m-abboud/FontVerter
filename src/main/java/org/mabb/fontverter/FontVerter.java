@@ -51,9 +51,8 @@ public class FontVerter {
                 return adapter;
         }
 
-        FVFont adapter = new CffFontAdapter();
-        adapter.read(fontData);
-        return adapter;
+            throw new IOException("FontVerter could not read the given font file.");
+
     }
 
     public static FVFont readFont(File fontFile) throws IOException {
@@ -74,7 +73,7 @@ public class FontVerter {
                 return adapter;
             }
         } catch (Exception e) {
-            log.debug("Error creating font adapter {} Message: {}", adapterOn.getName(), e);
+            log.warn("Error creating font adapter {} Message: {}", adapterOn.getName(), e);
             return null;
         }
 

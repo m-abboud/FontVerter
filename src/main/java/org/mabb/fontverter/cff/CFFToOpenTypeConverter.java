@@ -1,11 +1,13 @@
 package org.mabb.fontverter.cff;
 
 import org.mabb.fontverter.CharsetConverter;
+import org.mabb.fontverter.CharsetConverter.GlyphMapping;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontConverter;
 import org.mabb.fontverter.opentype.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class CFFToOpenTypeConverter implements FontConverter {
@@ -45,10 +47,10 @@ public class CFFToOpenTypeConverter implements FontConverter {
         if (glyphIdsToNames.containsKey(0))
             glyphIdsToNames.remove(0);
 
-        Map<Integer, Integer> otfIdToCharCodes =
-                CharsetConverter.nameMapToEncoding(glyphIdsToNames, cffFont.getEncoding());
+        List<GlyphMapping> glyphMappings =
+                CharsetConverter.glyphMappingToEncoding(glyphIdsToNames, cffFont.getEncoding());
 
-        otfFont.getCmap().addGlyphMapping(otfIdToCharCodes);
+        otfFont.getCmap().addGlyphMapping(glyphMappings);
     }
 
     private void convertNameRecords(NameTable name) throws IOException {

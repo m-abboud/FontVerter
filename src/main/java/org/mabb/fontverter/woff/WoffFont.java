@@ -6,6 +6,7 @@ import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontConverter;
 import org.mabb.fontverter.FontNotSupportedException;
 import org.mabb.fontverter.FontVerter;
+import org.mabb.fontverter.validator.RuleValidator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -109,10 +110,14 @@ public abstract class WoffFont implements FVFont {
         return fonts.get(0).getFontName();
     }
 
+    public void normalize() {
+    }
+
     public boolean doesPassStrictValidation() {
         return true;
     }
 
-    public void normalize() {
+    public List<RuleValidator.FontValidatorError> getStrictValidationErrors() {
+        return new ArrayList<RuleValidator.FontValidatorError>();
     }
 }

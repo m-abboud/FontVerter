@@ -20,7 +20,7 @@ public class OpenTypeParser {
 
         DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
         // read header first to figure out what woff font object type we need to create
-        font.sfntHeader = (OpenTypeFont.SfntHeader) deserializer.deserialize(this.input, OpenTypeFont.SfntHeader.class);
+        font.sfntHeader = (OpenTypeFont.SfntHeader) deserializer.deserialize(this.input, new OpenTypeFont.SfntHeader());
 
         readTableHeaderEntries();
         readTableDataEntries();

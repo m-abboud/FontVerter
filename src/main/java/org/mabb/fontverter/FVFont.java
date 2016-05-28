@@ -1,7 +1,11 @@
 package org.mabb.fontverter;
 
+import org.mabb.fontverter.validator.RuleValidator;
+import org.mabb.fontverter.validator.RuleValidator.FontValidatorError;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * Less of an adapter and more of a base font class. Silly prefixed name to avoid confusion with jdk Font
@@ -37,6 +41,11 @@ public interface FVFont {
      * @return True if strict validation passes.
      */
     boolean doesPassStrictValidation();
+
+    /**
+     * @return runs strict validator and returns any validation errors with the font.
+     */
+    List<FontValidatorError> getStrictValidationErrors();
 
     /**
      * Fixes any validation issues with the font.

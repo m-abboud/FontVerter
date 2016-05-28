@@ -5,18 +5,19 @@ import org.apache.fontbox.encoding.Encoding;
 import java.util.*;
 
 public class CharsetConverter {
-    public static Map<Integer, Integer> nameMapToEncoding(Map<Integer, String> idToNames, Encoding encoding) {
-        Map<Integer, Integer> idToEncoding = new HashMap<Integer, Integer>();
+    public static List<GlyphMapping> glyphMappingToEncoding(Map<Integer, String> idToNames, Encoding encoding) {
+        List<GlyphMapping> glyphMappings = new ArrayList<GlyphMapping>();
         Map<Integer, Integer> usedCodes = new HashMap<Integer, Integer>();
 
         for (Map.Entry<Integer, String> nameSetOn : idToNames.entrySet()) {
-            int charCode = nameToCode(nameSetOn.getValue(), encoding, usedCodes);
+            String name = nameSetOn.getValue();
+            int charCode = nameToCode(name, encoding, usedCodes);
             int glyphId = nameSetOn.getKey();
 
-            idToEncoding.put(charCode, glyphId);
+            glyphMappings.add(new GlyphMapping(glyphId, charCode, name));
         }
 
-        return idToEncoding;
+        return glyphMappings;
     }
 
     private static int nameToCode(String name, Encoding encoding, Map<Integer, Integer> usedCodes) {
@@ -32,5 +33,17 @@ public class CharsetConverter {
         // a name to it
         usedCodes.put(code, 0);
         return code;
+    }
+
+    public static class GlyphMapping {
+        public final Integer glyphId;
+        public final Integer charCode;
+        public final String name;
+
+        public GlyphMapping(Integer glyphId, Integer charCode, String name) {
+            this.glyphId = glyphId;
+            this.charCode = charCode;
+            this.name = name;
+        }
     }
 }

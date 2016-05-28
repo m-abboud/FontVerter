@@ -16,6 +16,8 @@ public @interface DataTypeProperty {
 
     String ignoreIf() default "";
 
+    String includeIf() default "";
+
     boolean ignore() default false;
 
     int order() default -1;

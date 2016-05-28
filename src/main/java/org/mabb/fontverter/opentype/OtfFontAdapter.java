@@ -4,11 +4,14 @@ import org.mabb.fontverter.*;
 import org.mabb.fontverter.opentype.validator.OpenTypeStrictValidator;
 import org.mabb.fontverter.validator.RuleValidator;
 import org.mabb.fontverter.validator.RuleValidator.FontValidatorError;
+import org.mabb.fontverter.validator.RuleValidator.ValidatorErrorType;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.mabb.fontverter.opentype.OpenTypeFont.SfntHeader.*;
 import static org.mabb.fontverter.opentype.OtfNameConstants.*;
 
 /* todo merge with OpenTypeFont class */
@@ -27,7 +30,7 @@ public class OtfFontAdapter implements FVFont {
     }
 
     public boolean detectFormat(byte[] fontFile) {
-        String[] headerMagicNums = new String[]{"\u0000\u0001\u0000\u0000", "OTTO"};
+        String[] headerMagicNums = new String[]{CFF_FLAVOR, VERSION_1, VERSION_2, VERSION_2_5};
         for (String magicNumOn : headerMagicNums)
             if (FontVerterUtils.bytesStartsWith(fontFile, magicNumOn))
                 return true;
@@ -60,18 +63,33 @@ public class OtfFontAdapter implements FVFont {
     }
 
     public boolean doesPassStrictValidation() {
+        return getStrictValidationErrors().size() == 0;
+    }
+
+    public List<FontValidatorError> getStrictValidationErrors() {
         try {
             OpenTypeStrictValidator validator = new OpenTypeStrictValidator();
-            List<FontValidatorError> errors = validator.validate(font);
-            return  errors.size() == 0;
+            return validator.validate(font);
         } catch(Exception ex) {
             ex.printStackTrace();
-            return false;
+            FontValidatorError error = new FontValidatorError(ValidatorErrorType.ERROR,
+                    String.format("Exception running validator: %s %s", ex.getMessage(), ex.getClass()));
+
+            ArrayList<FontValidatorError> errors = new ArrayList<FontValidatorError>();
+            errors.add(error);
+
+            return errors;
         }
     }
 
     public void normalize() {
         if (font.getOs2() == null)
             font.setOs2(OS2WinMetricsTable.createDefaultTable());
+
+        if (font.getNameTable() == null)
+            font.setName(NameTable.createDefaultTable());
+
+        if (font.getPost() == null)
+            font.setPost(PostScriptTable.createDefaultTable(font.getOpenTypeVersion()));
     }
 }

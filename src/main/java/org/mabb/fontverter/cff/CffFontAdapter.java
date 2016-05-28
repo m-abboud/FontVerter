@@ -6,6 +6,7 @@ import org.apache.fontbox.cff.*;
 import org.apache.fontbox.encoding.Encoding;
 import org.mabb.fontverter.opentype.OtfToWoffConverter;
 import org.mabb.fontverter.*;
+import org.mabb.fontverter.validator.RuleValidator;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -191,10 +192,14 @@ public class CffFontAdapter implements FVFont {
         return data;
     }
 
+    public void normalize() {
+    }
+
     public boolean doesPassStrictValidation() {
         return true;
     }
 
-    public void normalize() {
+    public List<RuleValidator.FontValidatorError> getStrictValidationErrors() {
+        return new ArrayList<RuleValidator.FontValidatorError>();
     }
 }

@@ -15,6 +15,8 @@ public abstract class RuleValidator<T> {
     private List<Object> ruleDefinitions = new ArrayList<Object>();
     List<FontValidatorError> errors = new LinkedList<FontValidatorError>();
 
+    private ValidatorErrorType validateLevel = ValidatorErrorType.ERROR;
+
     public List<FontValidatorError> validate(T toValidate) throws InvocationTargetException, IllegalAccessException {
         errors.clear();
         this.toValidate = toValidate;
@@ -50,6 +52,8 @@ public abstract class RuleValidator<T> {
 
     private void evaluateRule(Method methodOn, Object ruleDef) throws IllegalAccessException, InvocationTargetException {
         ValidateRule annotation = methodOn.getAnnotation(ValidateRule.class);
+        if(annotation.type().getValue() > validateLevel.getValue())
+            return;
 
         Object methodResult = methodOn.invoke(ruleDef, toValidate);
 
@@ -70,8 +74,25 @@ public abstract class RuleValidator<T> {
         }
     }
 
+    public ValidatorErrorType getValidateLevel() {
+        return validateLevel;
+    }
+
+    public void setValidateLevel(ValidatorErrorType validateLevel) {
+        this.validateLevel = validateLevel;
+    }
+
     public enum ValidatorErrorType {
-        ERROR, WARNING, INFO, NONE
+        ERROR(1), WARNING(2), INFO(3), NONE(4);
+        private final int value;
+
+        ValidatorErrorType(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
     public static class FontValidatorError {

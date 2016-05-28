@@ -1,5 +1,6 @@
 package org.mabb.fontverter;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.fontbox.ttf.OTFParser;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.validator.OpenTypeFontValidator;
@@ -42,5 +43,9 @@ public class TestUtils {
         OTFParser parser = new OTFParser();
         org.apache.fontbox.ttf.OpenTypeFont font = parser.parse(file);
         font.getName();
+    }
+
+    public static byte[] readTestFile(String filePath) throws IOException {
+        return FileUtils.readFileToByteArray(new File(TEST_PATH + filePath));
     }
 }

@@ -13,6 +13,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.mabb.fontverter.opentype.OpenTypeFont.SfntHeader.CFF_FLAVOR;
+import static org.mabb.fontverter.opentype.OpenTypeFont.SfntHeader.VERSION_1;
+import static org.mabb.fontverter.opentype.OpenTypeFont.SfntHeader.VERSION_2;
+
+/**
+ * OpenType covers both .otf and .ttfs , .otf is for CFF type fonts and .ttf is used for TrueType outline fonts.
+ * Microsft's OpenType is built on type of the original apple TrueType spec
+ * OpenType spec can be found here: https://www.microsoft.com/typography/otspec/otff.htm
+ * Apple TrueType spec can be found here: https://developer.apple.com/fonts/TrueType-Reference-Manual
+ */
 public class OpenTypeFont {
     public static final int SFNT_HEADER_SIZE = 12;
 
@@ -31,7 +41,7 @@ public class OpenTypeFont {
         font.initTable(HorizontalHeadTable.createDefaultTable());
         font.initTable(MaximumProfileTable.createDefaultTable());
 
-        font.initTable(PostScriptTable.createDefaultTable());
+        font.initTable(PostScriptTable.createDefaultTable(3));
         font.initTable(CmapTable.createDefaultTable());
         font.initTable(HorizontalMetricsTable.createDefaultTable(font));
 
@@ -46,6 +56,7 @@ public class OpenTypeFont {
     }
 
     private <T extends OpenTypeTable> T initTable(T table) {
+        table.font = this;
         tables.add(table);
         return table;
     }
@@ -132,6 +143,43 @@ public class OpenTypeFont {
         this.sourceFile = sourceFile;
     }
 
+    public void removeTable(Class toRemoveType) {
+        OpenTypeTable toRemoveTable = null;
+        for (OpenTypeTable tableOn : tables) {
+            if (tableOn.getClass() == toRemoveType)
+                toRemoveTable = tableOn;
+        }
+
+        if (toRemoveTable != null)
+            tables.remove(toRemoveTable);
+    }
+
+    private <T extends OpenTypeTable> T findTableType(Class type) {
+        for (OpenTypeTable tableOn : tables) {
+            if (tableOn.getClass() == type)
+                return (T) tableOn;
+        }
+
+        return null;
+    }
+
+    private void setTable(OpenTypeTable toAdd) {
+        removeTable(toAdd.getClass());
+        tables.add(toAdd);
+    }
+
+    public boolean isCffType() {
+        return sfntHeader.sfntFlavor.equals(CFF_FLAVOR);
+    }
+
+    public boolean isTrueTypeOutlineType() {
+        return !sfntHeader.sfntFlavor.equals(CFF_FLAVOR);
+    }
+
+    public float getOpenTypeVersion() {
+        return sfntHeader.openTypeVersion();
+    }
+
     public HeadTable getHead() {
         return findTableType(HeadTable.class);
     }
@@ -196,34 +244,14 @@ public class OpenTypeFont {
         setTable(name);
     }
 
-    public void removeTable(Class toRemoveType) {
-        OpenTypeTable toRemoveTable = null;
-        for (OpenTypeTable tableOn : tables) {
-            if (tableOn.getClass() == toRemoveType)
-                toRemoveTable = tableOn;
-        }
+    static class SfntHeader {
+        static String CFF_FLAVOR = "OTTO";
+        static String VERSION_1 = "\u0000\u0001\u0000\u0000";
+        static String VERSION_2 = "\u0000\u0001\u0000\u0000";
+        static String VERSION_2_5 = "\u0000\u0001\u0005\u0000";
 
-        if (toRemoveTable != null)
-            tables.remove(toRemoveTable);
-    }
-
-    private <T extends OpenTypeTable> T findTableType(Class type) {
-        for (OpenTypeTable tableOn : tables) {
-            if (tableOn.getClass() == type)
-                return (T) tableOn;
-        }
-
-        return null;
-    }
-
-    private void setTable(OpenTypeTable toAdd) {
-        removeTable(toAdd.getClass());
-        tables.add(toAdd);
-    }
-
-    public static class SfntHeader {
         @DataTypeProperty(dataType = DataTypeProperty.DataType.STRING, byteLength = 4)
-        public String sfntFlavor = "OTTO";
+        public String sfntFlavor = CFF_FLAVOR;
 
         @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
         public int numTables;
@@ -259,6 +287,19 @@ public class OpenTypeFont {
         byte[] getData() throws IOException {
             DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
             return serializer.serialize(this);
+        }
+
+        float openTypeVersion() {
+            // string version consts are kludge for getting around data type version difference string vs fixed
+            // so don't have to write extra data type annotation logic.
+            if (sfntFlavor.equals(CFF_FLAVOR))
+                return 3;
+            if (sfntFlavor.equals(VERSION_2))
+                return 2;
+            if (sfntFlavor.equals(VERSION_2_5))
+                return 2.5F;
+
+            return 1;
         }
     }
 }

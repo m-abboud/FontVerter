@@ -51,6 +51,17 @@ class DataTypeAnnotationReader {
     public boolean isIgnoreProperty(DataTypeProperty property, Object object)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String ignoreIf = property.ignoreIf();
+        if (!ignoreIf.isEmpty())
+            return runIgnoreFilter(object, ignoreIf);
+
+        String includeIf = property.includeIf();
+        if (!includeIf.isEmpty())
+            return !runIgnoreFilter(object, includeIf);
+
+        return false;
+    }
+
+    private boolean runIgnoreFilter(Object object, String ignoreIf) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (ignoreIf.isEmpty())
             return false;
 

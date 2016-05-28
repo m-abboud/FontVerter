@@ -19,13 +19,15 @@ public class TestOpenTypeParser {
     }
 
     @Test
-    public void parse_OTF_table_directory_gives_sameNumberOfTables() throws IOException, IllegalAccessException, InstantiationException {
+    public void parse_OTF_table_directory_gives_sameNumberOfTables()
+            throws IOException, IllegalAccessException, InstantiationException {
         OpenTypeParser parser = new OpenTypeParser();
         byte[] fontData = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf"));
         OpenTypeFont font = parser.parse(fontData);
 
         Assert.assertEquals(9, font.sfntHeader.numTables);
     }
+
     @Test
     public void parse_TTF() throws IOException, IllegalAccessException, InstantiationException {
         OpenTypeParser parser = new OpenTypeParser();
