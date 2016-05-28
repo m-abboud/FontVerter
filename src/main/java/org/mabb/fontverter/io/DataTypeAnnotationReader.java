@@ -1,5 +1,7 @@
 package org.mabb.fontverter.io;
 
+import org.mabb.fontverter.FontVerterUtils;
+
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -59,6 +61,16 @@ class DataTypeAnnotationReader {
             return !runIgnoreFilter(object, includeIf);
 
         return false;
+    }
+
+    public int getPropertyArrayLength(DataTypeProperty property, Object object)
+            throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+        Field field = FontVerterUtils.findPrivateField(property.arrayLength(), object.getClass());
+        if (field != null)
+            return field.getInt(object);
+        Method method = FontVerterUtils.findPrivateMethod(property.arrayLength(), object.getClass());
+
+        return ((Number)method.invoke(object)).intValue();
     }
 
     private boolean runIgnoreFilter(Object object, String ignoreIf) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {

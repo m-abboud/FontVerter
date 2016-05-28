@@ -5,6 +5,7 @@ import org.mabb.fontverter.io.FontDataOutputStream;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class FontVerterUtils {
     public static Field findPrivateField(String fieldName, Class type) {
@@ -18,6 +19,19 @@ public class FontVerterUtils {
             }
         }
         return mapField;
+    }    
+    public static Method findPrivateMethod(String methodName, Class type) {
+        Method[] methods = type.getDeclaredMethods();
+
+        Method mapMethod = null;
+        for (Method methodOn : methods) {
+            if (methodOn.getName().contains(methodName)) {
+                mapMethod = methodOn;
+                mapMethod.setAccessible(true);
+            }
+        }
+
+        return mapMethod;
     }
 
     public static boolean bytesStartsWith(byte[] data, String... startsWith) {

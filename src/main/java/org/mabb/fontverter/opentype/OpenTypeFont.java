@@ -14,8 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.mabb.fontverter.opentype.OpenTypeFont.SfntHeader.CFF_FLAVOR;
-import static org.mabb.fontverter.opentype.OpenTypeFont.SfntHeader.VERSION_1;
-import static org.mabb.fontverter.opentype.OpenTypeFont.SfntHeader.VERSION_2;
 
 /**
  * OpenType covers both .otf and .ttfs , .otf is for CFF type fonts and .ttf is used for TrueType outline fonts.
@@ -106,8 +104,10 @@ public class OpenTypeFont {
     private void normalizeTables() {
         getMxap().setNumGlyphs(getCmap().getGlyphCount());
 
-        for (OpenTypeTable tableOn : tables)
+        for (OpenTypeTable tableOn : tables) {
+            tableOn.font = this;
             tableOn.normalize();
+        }
     }
 
     private byte[] getRawData() throws IOException {

@@ -9,7 +9,18 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface DataTypeProperty {
     enum DataType {
-        SHORT, USHORT, LONG, ULONG, FIXED32, INT, UINT, STRING, BYTE_ARRAY, LONG_DATE_TIME, UINT_BASE_128;
+        SHORT,
+        USHORT,
+        LONG,
+        ULONG,
+        FIXED32,
+        INT,
+        UINT,
+        STRING,
+        LONG_DATE_TIME,
+        UINT_BASE_128,
+        BYTE_ARRAY,
+        PASCAL_STRING
     }
 
     DataType dataType();
@@ -23,4 +34,8 @@ public @interface DataTypeProperty {
     int order() default -1;
 
     int byteLength() default -1;
+
+    String arrayLength() default "";
+
+    boolean isArray() default false;
 }

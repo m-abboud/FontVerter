@@ -123,7 +123,7 @@ public abstract class OpenTypeTable {
         return serializer.serialize(this);
     }
 
-    public void readData(byte[] data) throws DataTypeSerializerException {
+    public void readData(byte[] data) throws IOException {
         if (!isParsingImplemented()) {
             rawParsedData = data;
             return;

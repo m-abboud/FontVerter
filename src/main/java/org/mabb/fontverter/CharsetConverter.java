@@ -20,6 +20,19 @@ public class CharsetConverter {
         return glyphMappings;
     }
 
+    public static List<GlyphMapping> charCodeToGlyphIdsToEncoding(Map<Integer, Integer> charCodeToGlyphIds, Encoding encoding) {
+        List<GlyphMapping> glyphMappings = new ArrayList<GlyphMapping>();
+        for (Map.Entry<Integer, Integer> entryOn : charCodeToGlyphIds.entrySet()) {
+            Integer charCode = entryOn.getKey();
+            Integer glyphId = entryOn.getValue();
+            String name = encoding.getName(charCode);
+
+            glyphMappings.add(new GlyphMapping(glyphId, charCode, name));
+        }
+
+        return glyphMappings;
+    }
+
     private static int nameToCode(String name, Encoding encoding, Map<Integer, Integer> usedCodes) {
         int code = 0;
         for (Map.Entry<Integer, String> entryOn : encoding.getCodeToNameMap().entrySet()) {

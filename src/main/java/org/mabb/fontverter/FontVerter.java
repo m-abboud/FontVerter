@@ -73,7 +73,7 @@ public class FontVerter {
                 return adapter;
             }
         } catch (Exception e) {
-            log.warn("Error creating font adapter {} Message: {}", adapterOn.getName(), e);
+            log.debug("Error creating font adapter {} Message: {}", adapterOn.getName(), e);
             return null;
         }
 

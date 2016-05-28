@@ -3,8 +3,9 @@ package org.mabb.fontverter.io;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class DataTypeBindingDeserializer {
@@ -57,14 +58,19 @@ public class DataTypeBindingDeserializer {
         if (propReader.isIgnoreProperty(binding, object))
             return;
 
-        Object inValue = readValue(binding);
+        Object inValue = null;
+        if (binding.isArray()) {
+            inValue = readArrayValue((Field) propertyOn, object, binding);
+        } else
+            inValue = readSingleValue(binding);
+
         if (propertyOn instanceof Field)
             ((Field) propertyOn).set(object, inValue);
         else
             throw new IOException("Method property deserialization not implemented" + propertyOn.toString());
     }
 
-    private Object readValue(DataTypeProperty property) throws IOException {
+    private Object readSingleValue(DataTypeProperty property) throws IOException {
         switch (property.dataType()) {
             case SHORT:
                 return input.readShort();
@@ -90,10 +96,30 @@ public class DataTypeBindingDeserializer {
                 return date;
             case UINT_BASE_128:
                 return input.readUIntBase128();
+            case PASCAL_STRING:
+                int strLength = input.readUnsignedByte();
+                return input.readString(strLength);
         }
 
         throw new IOException("Deserialize not implemented for peroperty type: " + property.dataType());
     }
 
+    private Object readArrayValue(Field propertyOn, Object object, DataTypeProperty binding) throws NoSuchFieldException, IllegalAccessException, IOException, InvocationTargetException {
+        int arrayLength = propReader.getPropertyArrayLength(binding, object);
+        if (arrayLength < 0)
+            throw new IOException("Array length must be set for array data types.");
+
+        Object[] array = (Object[]) Array.newInstance(propertyOn.getType().getComponentType(), arrayLength);
+        for (int i = 0; i < arrayLength; i++) {
+            try {
+                array[i] = readSingleValue(binding);
+            } catch (Exception ex) {
+                throw new IOException("Array length ran over input data length. " +
+                        "Index on: " + i + " Array Length: " + arrayLength);
+            }
+        }
+
+        return array;
+    }
 }
 

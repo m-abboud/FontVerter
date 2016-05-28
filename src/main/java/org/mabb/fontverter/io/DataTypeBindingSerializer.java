@@ -2,10 +2,7 @@ package org.mabb.fontverter.io;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 
 public class DataTypeBindingSerializer {
@@ -35,7 +32,7 @@ public class DataTypeBindingSerializer {
     }
 
     private void serializeProperty(Object object, AccessibleObject propertyOn)
-            throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+            throws Exception {
         if (!propertyOn.isAnnotationPresent(DataTypeProperty.class))
             return;
 
@@ -52,7 +49,10 @@ public class DataTypeBindingSerializer {
         else
             throw new DataTypeSerializerException("Byte property binding on unknown type");
 
-        writeValue(property, propValue);
+        if (property.isArray())
+            writeArrayValue((Object[]) propValue, property, object);
+        else
+            writeValue(property, propValue);
     }
 
     private void writeValue(DataTypeProperty property, Object fieldValue) throws IOException {
@@ -86,7 +86,25 @@ public class DataTypeBindingSerializer {
                 Calendar date = (Calendar) fieldValue;
                 writer.writeLong(date.getTimeInMillis() / 1000);
                 break;
+            case PASCAL_STRING:
+                String value = ((String) fieldValue);
+                writer.writeByte(value.length());
+                writer.writeString(value);
+                break;
+            case UINT_BASE_128:
+                throw new IOException("Data type annotation serialization is not implemented for type: " +
+                        property.dataType());
         }
+    }
+
+    private void writeArrayValue(Object[] array, DataTypeProperty binding, Object object)
+            throws NoSuchFieldException, IllegalAccessException, IOException, InvocationTargetException {
+        int arrayLength = propReader.getPropertyArrayLength(binding, object);
+        if (arrayLength < 0)
+            throw new IOException("Array length must be set for array data types.");
+
+        for (int i = 0; i < arrayLength; i++)
+            writeValue(binding, array[i]);
     }
 }
 

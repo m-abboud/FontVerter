@@ -88,6 +88,13 @@ public class FontDataInputStream extends DataInputStream {
         return new int[]{upper, lower};
     }
 
+    public int[] readUnsignedShortArray(int length) throws IOException {
+        int[] readArray = new int[length];
+        for (int i = 0; i < length; i++)
+            readArray[i] = readUnsignedShort();
+
+        return readArray;
+    }
     protected static class SeekableByteArrayInputStream extends ByteArrayInputStream {
         public SeekableByteArrayInputStream(byte[] buf) {
             super(buf);
