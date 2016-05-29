@@ -51,4 +51,9 @@ public interface FVFont {
      * Fixes any validation issues with the font.
      */
     void normalize();
+
+    /**
+     * @return extra information about the font such as the file ending it should use.
+     */
+    FontProperties getProperties();
 }

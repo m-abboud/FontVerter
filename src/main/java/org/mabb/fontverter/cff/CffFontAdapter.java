@@ -202,4 +202,12 @@ public class CffFontAdapter implements FVFont {
     public List<RuleValidator.FontValidatorError> getStrictValidationErrors() {
         return new ArrayList<RuleValidator.FontValidatorError>();
     }
+
+    public FontProperties getProperties() {
+        FontProperties properties = new FontProperties();
+        properties.setMimeType("");
+        properties.setFileEnding("cff");
+        properties.setCssFontFaceFormat("");
+        return properties;
+    }
 }

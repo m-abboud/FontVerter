@@ -1,5 +1,6 @@
 package org.mabb.fontverter.woff;
 
+import org.mabb.fontverter.FontProperties;
 import org.mabb.fontverter.FontVerterUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -48,6 +49,14 @@ public class Woff1Font extends WoffFont {
 
     public boolean detectFormat(byte[] fontFile) {
         return FontVerterUtils.bytesStartsWith(fontFile, "wOFF");
+    }
+
+    public FontProperties getProperties() {
+        FontProperties properties = new FontProperties();
+        properties.setMimeType("application/font-woff");
+        properties.setFileEnding("woff");
+        properties.setCssFontFaceFormat("woff");
+        return properties;
     }
 
     public static class Woff1Table extends WoffTable {

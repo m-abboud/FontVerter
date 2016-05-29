@@ -70,7 +70,7 @@ public class OtfFontAdapter implements FVFont {
         try {
             OpenTypeStrictValidator validator = new OpenTypeStrictValidator();
             return validator.validate(font);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             FontValidatorError error = new FontValidatorError(ValidatorErrorType.ERROR,
                     String.format("Exception running validator: %s %s", ex.getMessage(), ex.getClass()));
@@ -91,5 +91,20 @@ public class OtfFontAdapter implements FVFont {
 
         if (font.getPost() == null)
             font.setPost(PostScriptTable.createDefaultTable(font.getOpenTypeVersion()));
+    }
+
+    public FontProperties getProperties() {
+        FontProperties properties = new FontProperties();
+        if (font.isCffType()) {
+            properties.setMimeType("application/x-font-opentype");
+            properties.setFileEnding("otf");
+            properties.setCssFontFaceFormat("opentype");
+        } else {
+            properties.setMimeType("application/x-font-truetype");
+            properties.setFileEnding("ttf");
+            properties.setCssFontFaceFormat("truetype");
+        }
+
+        return properties;
     }
 }

@@ -1,6 +1,7 @@
 package org.mabb.fontverter.woff;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.mabb.fontverter.FontProperties;
 import org.mabb.fontverter.FontVerterUtils;
 import org.meteogroup.jbrotli.Brotli;
 import org.meteogroup.jbrotli.BrotliStreamCompressor;
@@ -52,6 +53,14 @@ public class Woff2Font extends WoffFont {
         streamCompressor.close();
 
         return compressed;
+    }
+
+    public FontProperties getProperties() {
+        FontProperties properties = new FontProperties();
+        properties.setMimeType("application/font-woff2");
+        properties.setFileEnding("woff");
+        properties.setCssFontFaceFormat("woff2");
+        return properties;
     }
 
     public static class Woff2Table extends WoffTable {
