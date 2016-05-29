@@ -19,10 +19,7 @@ import org.mabb.fontverter.opentype.OpenTypeParser;
 import org.mabb.fontverter.opentype.OtfFontAdapter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PsType0ToOpenTypeConverter {
     private OpenTypeFont otfFont;
@@ -61,10 +58,19 @@ public class PsType0ToOpenTypeConverter {
         // wait todo see if can just not add missing ones?
         if (glyphMappings.size() < originalNumGlyphs - 1) {
             int glyphsNeeded = originalNumGlyphs - glyphMappings.size() - 1;
+            List<Integer> gaps = findGlyphIdGaps(glyphMappings);
+
             for (int i = 0; i < glyphsNeeded; i++) {
                 int code = CharsetConverter.findNextAvailableCharCode(glyphMappings, CFFStandardEncoding.getInstance());
                 String name = CFFStandardEncoding.getInstance().getName(code);
-                int glyphId = findNextMissingGlyphId(glyphMappings);
+
+                int glyphId;
+                if (gaps.size() > 0) {
+                    glyphId = gaps.get(0);
+                    gaps.remove(0);
+                }
+                else
+                    glyphId = glyphMappings.size() + 1;
 
                 glyphMappings.add(new GlyphMapping(glyphId, code, name));
             }
@@ -76,18 +82,23 @@ public class PsType0ToOpenTypeConverter {
         otfFont.setCmap(cmapTable);
     }
 
-    private int findNextMissingGlyphId(List<GlyphMapping> glyphMappings) {
-        for (int i = 1; i < glyphMappings.size(); i++) {
-            boolean found = false;
-            for (GlyphMapping entryOn : glyphMappings)
-                if (entryOn.glyphId == i)
-                    found = true;
+    private List<Integer> findGlyphIdGaps(List<GlyphMapping> glyphMappings) {
+        Collections.sort(glyphMappings, new Comparator<GlyphMapping>() {
+            public int compare(GlyphMapping o1, GlyphMapping o2) {
+                return o1.glyphId < o2.glyphId ? -1 : o1.glyphId.equals(o2.glyphId) ? 0 : 1;
+            }
+        });
 
-            if(!found)
-                return i;
+        List<Integer> gaps = new LinkedList<Integer>();
+        int lastId = 0;
+        for (GlyphMapping entryOn : glyphMappings) {
+            if (entryOn.glyphId != lastId + 1) {
+                for(int i = lastId + 1; i <entryOn.glyphId; i++)
+                    gaps.add(i);
+            }
         }
 
-        return glyphMappings.size() + 1;
+        return gaps;
     }
 
     @SuppressWarnings("unchecked")
