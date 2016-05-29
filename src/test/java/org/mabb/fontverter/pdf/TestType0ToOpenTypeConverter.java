@@ -29,9 +29,6 @@ public class TestType0ToOpenTypeConverter {
         Assert.assertNotNull(otfFont.getCmap());
         Assert.assertEquals(otfFont.getCmap().getGlyphCount(), 69);
 
-        for(CharsetConverter.GlyphMapping entryOn : otfFont.getCmap().getGlyphMappings())
-            System.out.println(entryOn.glyphId);
-
         FileUtils.writeByteArrayToFile(new File("C:\\projects\\Pdf2Dom\\UMAVUG+Garuda-Identity-H.ttf"), font.getData());
     }
 
