@@ -48,7 +48,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
             glyphIdsToNames.remove(0);
 
         List<GlyphMapping> glyphMappings =
-                CharsetConverter.glyphMappingToEncoding(glyphIdsToNames, cffFont.getEncoding());
+                CharsetConverter.glyphIdsToNameToEncoding(glyphIdsToNames, cffFont.getEncoding());
 
         otfFont.getCmap().addGlyphMapping(glyphMappings);
     }

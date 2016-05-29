@@ -13,7 +13,7 @@ public class FontVerterUtils {
 
         Field mapField = null;
         for (Field fieldOn : fields) {
-            if (fieldOn.getName().contains(fieldName)) {
+            if (fieldOn.getName().equals(fieldName)) {
                 mapField = fieldOn;
                 mapField.setAccessible(true);
             }

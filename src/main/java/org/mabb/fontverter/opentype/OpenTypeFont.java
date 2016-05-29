@@ -102,7 +102,8 @@ public class OpenTypeFont {
     }
 
     private void normalizeTables() {
-        getMxap().setNumGlyphs(getCmap().getGlyphCount());
+        if (getCmap() != null && getMxap() != null)
+            getMxap().setNumGlyphs(getCmap().getGlyphCount());
 
         for (OpenTypeTable tableOn : tables) {
             tableOn.font = this;

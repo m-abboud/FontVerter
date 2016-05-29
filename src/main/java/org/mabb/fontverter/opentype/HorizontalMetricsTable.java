@@ -50,6 +50,11 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         leftSideBearing = new short[]{0, 10, 29, 29, 55};
         advanceWidth = new int[]{1000, 1292, 1251, 1430, 1244};
 
+        if (font.getCmap() != null)
+            loadMetrics();
+    }
+
+    private void loadMetrics() {
         int lsbArrCount = font.getCmap().getGlyphCount() - numHMetrics;
         if (lsbArrCount > 0) {
             nonHorizontalLeftSideBearing = new short[lsbArrCount];

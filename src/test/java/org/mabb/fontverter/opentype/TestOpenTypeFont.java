@@ -2,6 +2,8 @@ package org.mabb.fontverter.opentype;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.fontbox.ttf.OTFParser;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mabb.fontverter.FVFont;
@@ -9,6 +11,7 @@ import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.TestUtils;
 import org.mabb.fontverter.validator.RuleValidator;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;

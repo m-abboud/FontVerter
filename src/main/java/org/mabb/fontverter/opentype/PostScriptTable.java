@@ -118,7 +118,17 @@ public class PostScriptTable extends OpenTypeTable {
     }
 
     void normalize() {
+        if (font.getCmap() != null)
+            loadGlyphsFromCmap();
+
+        super.normalize();
+    }
+
+    private void loadGlyphsFromCmap() {
         numGlyphs = font.getCmap().getGlyphCount();
+        if (numGlyphs < 1)
+            return;
+
         font.getCmap().getGlyphMappings();
 
         glyphNameIndex = new Integer[numGlyphs];
@@ -132,6 +142,7 @@ public class PostScriptTable extends OpenTypeTable {
             glyphNames[i] = entryOn.name;
         }
 
-        super.normalize();
+        glyphNameIndex[numGlyphs - 1] = 0;
+        glyphNames[numGlyphs - 1] = ".notdef";
     }
 }

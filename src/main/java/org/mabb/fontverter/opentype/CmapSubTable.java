@@ -118,7 +118,6 @@ abstract class CmapSubTable {
             for (int i = 0; i < getSegmentCount(); i++)
                 writer.writeUnsignedInt(0);
 
-
             byte[] data = writer.toByteArray();
             setDataHeaderLength(data);
             return data;
