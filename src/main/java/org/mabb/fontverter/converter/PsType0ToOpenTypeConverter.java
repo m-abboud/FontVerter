@@ -1,5 +1,6 @@
 package org.mabb.fontverter.converter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fontbox.cff.CFFStandardEncoding;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.pdfbox.pdmodel.font.PDCIDFont;
@@ -13,13 +14,13 @@ import org.mabb.fontverter.CharsetConverter;
 import org.mabb.fontverter.CharsetConverter.GlyphMapping;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontVerterUtils;
-import org.mabb.fontverter.opentype.CmapTable;
-import org.mabb.fontverter.opentype.OpenTypeFont;
-import org.mabb.fontverter.opentype.OpenTypeParser;
+import org.mabb.fontverter.opentype.*;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PsType0ToOpenTypeConverter {
     private OpenTypeFont otfFont;
@@ -42,6 +43,8 @@ public class PsType0ToOpenTypeConverter {
         // that we need to create ourselves from data in the parent type 0 font.
         if (otfFont.getCmap() == null)
             convertCmap();
+        if (otfFont.getNameTable() == null)
+            convertNameRecords();
 
         otfFont.finalizeFont();
 
@@ -58,6 +61,29 @@ public class PsType0ToOpenTypeConverter {
         cmapTable.addGlyphMapping(glyphMappings);
 
         otfFont.setCmap(cmapTable);
+    }
+
+    private void convertNameRecords() {
+        NameTable names = NameTable.createDefaultTable();
+        String fullName = type0Font.getName();
+        String family = type0Font.getName();
+        String subFamily = "Normal";
+
+        Matcher matcher = Pattern.compile("([^-^+]*)(\\+|-)([^-]*)-?([^-]*)?").matcher(type0Font.getName());
+        if (matcher.find()) {
+            family = matcher.group(3);
+
+            String subMatch = matcher.group(4);
+            if (!StringUtils.isEmpty(subMatch) && !subMatch.equals("Identity"))
+                subFamily = subMatch;
+        }
+
+        names.setFontFullName(fullName);
+        names.setPostScriptName(family);
+        names.setFontFamily(family);
+        names.setFontSubFamily(subFamily);
+
+        otfFont.setName(names);
     }
 
     @SuppressWarnings("unchecked")

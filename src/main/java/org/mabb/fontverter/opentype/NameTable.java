@@ -22,7 +22,7 @@ public class NameTable extends OpenTypeTable {
 
         table.setCopyright("Default Copyright");
         table.setFontFamily("DefaultFamily");
-        table.setFontSubFamily("DefaultSubFamily");
+        table.setFontSubFamily("Normal");
         table.setVersion("Version 1.1");
         table.setUniqueId(UUID.randomUUID().toString().replace("-", ""));
         table.setFontFullName("DefaultFontFullName");
