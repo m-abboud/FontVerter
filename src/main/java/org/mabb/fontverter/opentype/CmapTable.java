@@ -142,12 +142,21 @@ public class CmapTable extends OpenTypeTable {
     public int getGlyphCount() {
         if (subTables.size() == 0)
             return 0;
-        return subTables.get(0).glyphCount();
+        // kludge to skip blind parsed subtables and should go off glyf/loca table anyway at least for ttf for maxp size?
+        for (CmapSubTable subTableOn : subTables)
+            if (subTableOn.glyphCount() != 0)
+                return subTableOn.glyphCount();
+
+        return 0;
     }
 
     public List<GlyphMapping> getGlyphMappings() {
         if (subTables.size() == 0)
             return new ArrayList<GlyphMapping>();
+        // kludge to skip blind parsed subtables and not having a abstract glyph mapping thing above the sub tables
+        for (CmapSubTable subTableOn : subTables)
+            if (subTableOn.glyphCount() != 0)
+                return subTableOn.getGlyphMappings();
 
         return subTables.get(0).getGlyphMappings();
     }

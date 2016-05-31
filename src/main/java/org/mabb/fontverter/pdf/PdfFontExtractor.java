@@ -89,6 +89,15 @@ public class PdfFontExtractor extends PDFTextStripper {
         return ((ExtractToPDFBoxFontStrategy) extractStrategy).extractedFonts;
     }
 
+    public List<FVFont> extractToFVFonts(PDDocument pdf) throws IOException {
+        this.extractStrategy = new ExtractFVFontStrategy();
+        Writer output = new StringWriter();
+        writeText(pdf, output);
+        output.close();
+
+        return ((ExtractFVFontStrategy) extractStrategy).extractedFvFonts;
+    }
+
     public void processPage(PDPage page) throws IOException {
         pdpage = page;
         tryExtractPageFonts();
@@ -145,8 +154,12 @@ public class PdfFontExtractor extends PDFTextStripper {
     }
 
     static class ExtractFVFontStrategy extends ExtractFontStrategy {
+        private List<FVFont> extractedFvFonts = new ArrayList<FVFont>();
+
         public void extract(PDFont font) throws IOException {
             extractedFonts.add(font);
+            if(font instanceof PDType0Font)
+                extractedFvFonts.add(convertType0FontToOpenType((PDType0Font) font));
         }
     }
 

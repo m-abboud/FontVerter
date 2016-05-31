@@ -33,10 +33,6 @@ public class TestType0ToOpenTypeConverter {
         Assert.assertEquals(otfFont.getCmap().getGlyphCount(), 69);
 
         FileUtils.writeByteArrayToFile(new File("C:\\projects\\Pdf2Dom\\UMAVUG+Garuda-Identity-H.ttf"), font.getData());
-
-        TTFParser parser = new TTFParser();
-        TrueTypeFont pdFont = parser.parse(new File("C:\\projects\\Pdf2Dom\\UMAVUG+Garuda-Identity-H.ttf"));
-        Assert.assertNotNull(pdFont);
     }
 
     private PDFont extractFont(String pdfFile, String name) throws IOException {
