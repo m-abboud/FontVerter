@@ -39,6 +39,7 @@ public abstract class OpenTypeTable {
 
     public OtfTableRecord record;
     protected OpenTypeFont font;
+    protected byte[] cachedUnpaddedData;
     private long checksum;
     private long offset;
     private int paddingAdded;
@@ -114,8 +115,12 @@ public abstract class OpenTypeTable {
         if (rawParsedData != null)
             return rawParsedData;
 
+        if (cachedUnpaddedData != null)
+            return cachedUnpaddedData;
+
         // open type tables should be padded to be divisible by 4
-        return generateUnpaddedData();
+        cachedUnpaddedData = generateUnpaddedData();
+        return cachedUnpaddedData;
     }
 
     protected byte[] generateUnpaddedData() throws IOException {
@@ -181,4 +186,11 @@ public abstract class OpenTypeTable {
         return checksum;
     }
 
+    /**
+     * Should be called before/after font data generation. While building up the font generateData is called multiple
+     * times to calculate offsets and checksums before writing out the full font.
+     */
+    public void clearDataCache() {
+        cachedUnpaddedData = null;
+    }
 }

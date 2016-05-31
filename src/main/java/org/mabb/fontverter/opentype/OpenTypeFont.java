@@ -153,6 +153,7 @@ public class OpenTypeFont implements FVFont {
     public byte[] getData() throws IOException {
         // offsets and gotta calc checksums before doing final full font checksum so calling the data write out
         // twice to be lazy
+        clearTableDataCache();
         finalizeFont();
 
         // now we for realsies write out the font bytes
@@ -173,6 +174,7 @@ public class OpenTypeFont implements FVFont {
 
         // head checksum has to be very last after other checksums + offsets calculated so just grab full byte
         // output to calc instead of trying to re-edit the byte array at the right place
+        getHead().clearDataCache();
         getHead().checksumAdjustment(getRawData());
     }
 
@@ -209,6 +211,13 @@ public class OpenTypeFont implements FVFont {
             tableOn.setOffset(offset);
             offset += tableOn.getData().length;
         }
+    }
+
+    // Should be called before/after font data generation. While building up the font generateData is called multiple
+    // times to calculate offsets and checksums before writing out the full font.
+    private void clearTableDataCache() {
+        for (OpenTypeTable tableOn : tables)
+            tableOn.clearDataCache();
     }
 
     public File getSourceFile() {

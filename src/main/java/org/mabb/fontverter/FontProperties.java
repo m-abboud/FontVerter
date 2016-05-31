@@ -3,14 +3,7 @@ package org.mabb.fontverter;
 public class FontProperties {
     private String fileEnding;
     private String mimeType;
-
-    public String getCssFontFaceFormat() {
-        return cssFontFaceFormat;
-    }
-
-    public void setCssFontFaceFormat(String cssFontFaceFormat) {
-        this.cssFontFaceFormat = cssFontFaceFormat;
-    }
+    private String cssFontFaceFormat;
 
     public String getFileEnding() {
         return fileEnding;
@@ -28,6 +21,11 @@ public class FontProperties {
         this.mimeType = mimeType;
     }
 
-    private String cssFontFaceFormat;
+    public String getCssFontFaceFormat() {
+        return cssFontFaceFormat;
+    }
 
+    public void setCssFontFaceFormat(String cssFontFaceFormat) {
+        this.cssFontFaceFormat = cssFontFaceFormat;
+    }
 }
