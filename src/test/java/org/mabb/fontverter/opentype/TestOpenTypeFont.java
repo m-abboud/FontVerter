@@ -50,17 +50,6 @@ public class TestOpenTypeFont {
     }
 
     @Test
-    public void parseOtf_thenRegenerateFontData_fontDataIsSameLength() throws IOException {
-        File file = new File(TestUtils.TEST_PATH + "FontVerter+FullAlphabetFont.otf");
-        byte[] data = FileUtils.readFileToByteArray(file);
-        FVFont font = FontVerter.readFont(data);
-
-        Assert.assertEquals(data.length, font.getData().length);
-
-        FileUtils.writeByteArrayToFile(new File(TestUtils.tempOutputPath + "Regen-FullAlphabetFont.otf"), font.getData());
-    }
-
-    @Test
     public void given_TTF_MissingPostScriptTable_strictValidatorFails() throws IOException, IllegalAccessException, InstantiationException {
         FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
         Assert.assertNotNull(findErrorContaining(font, "postscript"));
@@ -71,7 +60,7 @@ public class TestOpenTypeFont {
         OpenTypeFont otfFont = normalizeFont("ttf/GKQXJT+Timetable.ttf");
 
         Assert.assertNotNull(otfFont.getPost());
-        Assert.assertEquals(2F, otfFont.getPost().getVersion(), 0);
+        Assert.assertEquals(1F, otfFont.getPost().getVersion(), 0);
     }
 
     @Test

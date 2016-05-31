@@ -45,7 +45,7 @@ public class OpenTypeParser {
     }
 
     private void readTableDataEntries() throws IOException {
-        for (OpenTypeTable tableOn : font.tables) {
+        for (OpenTypeTable tableOn : font.getTables()) {
             input.seek((int) tableOn.getOffset());
 
             int dataReadLength = (int) tableOn.record.length;

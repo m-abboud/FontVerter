@@ -54,10 +54,10 @@ public class TestCFFToOtfConverter {
     public void convertCFF_OutputHasBoundingBox() throws Exception {
         OpenTypeFont font = convert("cff/FontVerter+SimpleTestFont");
 
-        Assert.assertEquals(26, font.head.getxMin());
-        Assert.assertEquals(-2, font.head.getyMin());
-        Assert.assertEquals(1297, font.head.getxMax());
-        Assert.assertEquals(793, font.head.getyMax());
+        Assert.assertEquals(26, font.getHead().getxMin());
+        Assert.assertEquals(-2, font.getHead().getyMin());
+        Assert.assertEquals(1297, font.getHead().getxMax());
+        Assert.assertEquals(793, font.getHead().getyMax());
     }
 
 

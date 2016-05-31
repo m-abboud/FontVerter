@@ -24,18 +24,15 @@ import static org.mabb.fontverter.opentype.SfntHeader.*;
  * Apple TrueType spec can be found here: https://developer.apple.com/fonts/TrueType-Reference-Manual
  */
 public class OpenTypeFont implements FVFont {
-    public static final int SFNT_HEADER_SIZE = 12;
 
-    public SfntHeader sfntHeader;
-    public List<OpenTypeTable> tables;
-    public HeadTable head;
-
+    SfntHeader sfntHeader;
+    private List<OpenTypeTable> tables;
     private static Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
     private File sourceFile;
 
     public static OpenTypeFont createBlankFont() {
         OpenTypeFont font = new OpenTypeFont();
-        font.head = font.initTable(HeadTable.createDefaultTable());
+        font.initTable(HeadTable.createDefaultTable());
 
         font.initTable(OS2WinMetricsTable.createDefaultTable());
         font.initTable(HorizontalHeadTable.createDefaultTable());
@@ -207,7 +204,7 @@ public class OpenTypeFont implements FVFont {
     private void calculateOffsets(List<OpenTypeTable> tables) throws IOException {
         // must calculate table record offsets before we write any table data
         // start data offsets after sfnt header and table records
-        int offset = tables.size() * OpenTypeTable.TABLE_RECORD_SIZE + OpenTypeFont.SFNT_HEADER_SIZE;
+        int offset = tables.size() * OpenTypeTable.TABLE_RECORD_SIZE + SFNT_HEADER_SIZE;
         for (OpenTypeTable tableOn : tables) {
             tableOn.setOffset(offset);
             offset += tableOn.getData().length;
@@ -329,5 +326,9 @@ public class OpenTypeFont implements FVFont {
 
     public void setName(NameTable name) {
         setTable(name);
+    }
+
+    public List<OpenTypeTable> getTables() {
+        return tables;
     }
 }

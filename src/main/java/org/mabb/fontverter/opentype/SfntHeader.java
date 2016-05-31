@@ -6,10 +6,11 @@ import org.mabb.fontverter.io.DataTypeProperty;
 import java.io.IOException;
 
 class SfntHeader {
-    static String CFF_FLAVOR = "OTTO";
-    static String VERSION_1 = "\u0000\u0001\u0000\u0000";
-    static String VERSION_2 = "\u0000\u0001\u0000\u0000";
-    static String VERSION_2_5 = "\u0000\u0001\u0005\u0000";
+    static final int SFNT_HEADER_SIZE = 12;
+    static final String CFF_FLAVOR = "OTTO";
+    static final String VERSION_1 = "\u0000\u0001\u0000\u0000";
+    static final String VERSION_2 = "\u0000\u0002\u0000\u0000";
+    static final String VERSION_2_5 = "\u0000\u0002\u0005\u0000";
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.STRING, byteLength = 4)
     public String sfntFlavor = CFF_FLAVOR;

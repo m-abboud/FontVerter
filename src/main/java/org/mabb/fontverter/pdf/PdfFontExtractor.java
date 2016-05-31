@@ -26,8 +26,7 @@ public class PdfFontExtractor extends PDFTextStripper {
     public static void main(String[] args) throws IOException {
         String extractPath = "extracted-pdf-fonts/";
 
-        File pdf = new File("C:\\projects\\Pdf2Dom\\src\\test\\resources\\HorariosMadrid_Segovia.pdf");
-//        File pdf = new File("C:\\temp-downloads");
+        File pdf = new File("f");
         if (pdf.isDirectory()) {
             List<File> pdfFiles = (List<File>) FileUtils.listFiles(pdf, new String[]{"pdf"}, true);
             for (File fileOn : pdfFiles)

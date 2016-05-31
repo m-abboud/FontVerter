@@ -65,11 +65,11 @@ public class CFFToOpenTypeConverter implements FontConverter {
 
     private void convertHorizontalLayoutSettings() throws IOException {
         otfFont.getHhea().descender = cffFont.getUnderLinePosition().shortValue();
-        otfFont.head.setMinX((short) cffFont.getMinX());
-        otfFont.head.setMaxX((short) cffFont.getMaxX());
+        otfFont.getHead().setMinX((short) cffFont.getMinX());
+        otfFont.getHead().setMaxX((short) cffFont.getMaxX());
 
-        otfFont.head.setMinY((short) cffFont.getMinY());
-        otfFont.head.setMaxY((short) cffFont.getMaxY());
+        otfFont.getHead().setMinY((short) cffFont.getMinY());
+        otfFont.getHead().setMaxY((short) cffFont.getMaxY());
     }
 
 }

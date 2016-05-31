@@ -1,6 +1,9 @@
 package org.mabb.fontverter.pdf;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.fontbox.ttf.OTFParser;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -30,6 +33,10 @@ public class TestType0ToOpenTypeConverter {
         Assert.assertEquals(otfFont.getCmap().getGlyphCount(), 69);
 
         FileUtils.writeByteArrayToFile(new File("C:\\projects\\Pdf2Dom\\UMAVUG+Garuda-Identity-H.ttf"), font.getData());
+
+        TTFParser parser = new TTFParser();
+        TrueTypeFont pdFont = parser.parse(new File("C:\\projects\\Pdf2Dom\\UMAVUG+Garuda-Identity-H.ttf"));
+        Assert.assertNotNull(pdFont);
     }
 
     private PDFont extractFont(String pdfFile, String name) throws IOException {

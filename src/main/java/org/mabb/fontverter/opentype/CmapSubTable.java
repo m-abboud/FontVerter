@@ -73,14 +73,19 @@ abstract class CmapSubTable {
         // LinkedHashMap important, for keeping ordering the same for loops
         private Map<Integer, Integer> charCodeToGlyphId = new LinkedHashMap<Integer, Integer>();
         private int length = 0;
+        private ArrayList<Integer> deltas;
+        private ArrayList<Integer> ends;
+        private ArrayList<Integer> starts;
+        private ArrayList<Integer> idRangeOffset;
+        private ArrayList<Integer> glyphIndex;
 
         public Format4SubTable() {
             formatNumber = 4;
         }
 
-        @Override
         public byte[] getData() throws IOException {
             FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
+            calculateSegmentArrays();
 
             writer.writeUnsignedShort((int) formatNumber);
             writer.writeUnsignedShort(getLength());
@@ -90,11 +95,6 @@ abstract class CmapSubTable {
             writer.writeUnsignedShort(getSearchRange());
             writer.writeUnsignedShort(getEntrySelector());
             writer.writeUnsignedShort(getRangeShift());
-
-
-            List<Integer> ends = getGlyphEnds();
-            List<Integer> starts = getGlyphStarts();
-            List<Integer> deltas = getGlyphDeltas();
 
             for (Integer endEntryOn : ends)
                 writer.writeUnsignedShort(endEntryOn);
@@ -140,18 +140,32 @@ abstract class CmapSubTable {
             int[] charCodeRangeStarts = input.readUnsignedShortArray(segmentCount);
             int[] idDelta = input.readUnsignedShortArray(segmentCount);
             int[] idRangeOffset = input.readUnsignedShortArray(segmentCount);
+            long glyphIndexStartPos = input.getPosition();
 
-            for (int i = 0; i < segmentCount - 1; i++) {
-                int start = charCodeRangeStarts[i];
-                int end = charCodeRangeEnds[i];
-                int delta = idDelta[i];
+            for (int segOn = 0; segOn < segmentCount - 1; segOn++) {
+                int start = charCodeRangeStarts[segOn];
+                int end = charCodeRangeEnds[segOn];
+                int delta = idDelta[segOn];
+                int offset = idRangeOffset[segOn];
 
                 for (int charCode = start; charCode <= end; charCode++) {
-                    int glyphId = (delta + charCode) % 65536;
-                    charCodeToGlyphId.put(charCode, glyphId);
+                    if (offset == 0) {
+                        int glyphId = (delta + charCode) % 65536;
+                        charCodeToGlyphId.put(charCode, glyphId);
+                    } else {
+                        long glyphOffset = ((offset / 2) + (charCode - start) + (segOn - segmentCount)) * 2;
+                        glyphOffset += glyphIndexStartPos;
+
+                        input.seek((int) glyphOffset);
+                        int glyphArrIndex = input.readUnsignedShort();
+
+                        if (glyphArrIndex != 0) {
+                            glyphArrIndex = (glyphArrIndex + delta) % 65536;
+                            charCodeToGlyphId.put(charCode, glyphArrIndex);
+                        }
+                    }
                 }
             }
-
         }
 
         private void setDataHeaderLength(byte[] data) throws IOException {
@@ -168,7 +182,7 @@ abstract class CmapSubTable {
 
         private int getSegmentCount() {
             // +1 for padding at end of segment arrays
-            return getGlyphEnds().size() + 1;
+            return ends.size() + 1;
         }
 
         private int getSearchRange() {
@@ -200,43 +214,28 @@ abstract class CmapSubTable {
             return CharsetConverter.charCodeToGlyphIdsToEncoding(charCodeToGlyphId, CFFStandardEncoding.getInstance());
         }
 
-        private List<Integer> getGlyphDeltas() {
-            List<Integer> deltas = new ArrayList<Integer>();
+        private void calculateSegmentArrays() {
+            deltas = new ArrayList<Integer>();
+            starts = new ArrayList<Integer>();
+            ends = new ArrayList<Integer>();
+            idRangeOffset = new ArrayList<Integer>();
+            glyphIndex = new ArrayList<Integer>();
 
             int lastCharCode = -1;
-            for (Map.Entry<Integer, Integer> entryOn : getOrderedCharCodeToGlyphIds()) {
-                int curCharCode = entryOn.getKey();
-                if (curCharCode != lastCharCode + 1)
-                    deltas.add(65536 + entryOn.getValue() - curCharCode);
-
-                lastCharCode = curCharCode;
-            }
-
-            return deltas;
-        }
-
-        private List<Integer> getGlyphStarts() {
-            List<Integer> starts = new ArrayList<Integer>();
-            int lastCharCode = -1;
-
-            for (Map.Entry<Integer, Integer> entryOn : getOrderedCharCodeToGlyphIds()) {
-                int curCharCode = entryOn.getKey();
-                if (curCharCode != lastCharCode + 1)
-                    starts.add(curCharCode);
-
-                lastCharCode = curCharCode;
-            }
-
-            return starts;
-        }
-
-        private List<Integer> getGlyphEnds() {
-            List<Integer> ends = new ArrayList<Integer>();
-            int lastCharCode = -1;
+            int lastGlyphId = -1;
             List<Map.Entry<Integer, Integer>> entries = getOrderedCharCodeToGlyphIds();
             for (Map.Entry<Integer, Integer> entryOn : entries) {
                 int curCharCode = entryOn.getKey();
-                if (curCharCode != lastCharCode + 1 && lastCharCode != -1)
+                int curGlyphId = entryOn.getValue();
+
+                boolean needAddSegment = curCharCode != lastCharCode + 1 || lastGlyphId + 1 != curGlyphId;
+
+                if (needAddSegment) {
+                    starts.add(curCharCode);
+                    deltas.add(entryOn.getValue() - curCharCode);
+                }
+
+                if (needAddSegment && lastCharCode != -1)
                     ends.add(lastCharCode);
 
                 lastCharCode = curCharCode;
@@ -245,8 +244,6 @@ abstract class CmapSubTable {
             // add last one not caught in loop
             if (entries.size() > 1)
                 ends.add(entries.get(entries.size() - 1).getKey());
-
-            return ends;
         }
 
         private List<Map.Entry<Integer, Integer>> getOrderedCharCodeToGlyphIds() {
