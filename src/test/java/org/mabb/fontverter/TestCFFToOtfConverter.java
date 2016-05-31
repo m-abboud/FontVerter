@@ -1,7 +1,7 @@
 package org.mabb.fontverter;
 
 import org.apache.commons.io.FileUtils;
-import org.mabb.fontverter.cff.CFFToOpenTypeConverter;
+import org.mabb.fontverter.converter.CFFToOpenTypeConverter;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.junit.Assert;
 import org.junit.Test;

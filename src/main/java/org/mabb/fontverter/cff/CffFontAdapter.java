@@ -4,7 +4,8 @@ package org.mabb.fontverter.cff;
 import org.apache.fontbox.EncodedFont;
 import org.apache.fontbox.cff.*;
 import org.apache.fontbox.encoding.Encoding;
-import org.mabb.fontverter.opentype.OtfToWoffConverter;
+import org.mabb.fontverter.converter.CFFToOpenTypeConverter;
+import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.*;
 import org.mabb.fontverter.validator.RuleValidator;
 

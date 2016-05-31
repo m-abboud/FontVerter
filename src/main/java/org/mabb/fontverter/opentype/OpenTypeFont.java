@@ -1,6 +1,7 @@
 package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.*;
+import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.opentype.validator.OpenTypeStrictValidator;
 import org.mabb.fontverter.validator.RuleValidator;

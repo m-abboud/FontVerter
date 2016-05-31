@@ -1,9 +1,10 @@
-package org.mabb.fontverter.cff;
+package org.mabb.fontverter.converter;
 
 import org.mabb.fontverter.CharsetConverter;
 import org.mabb.fontverter.CharsetConverter.GlyphMapping;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontConverter;
+import org.mabb.fontverter.cff.CffFontAdapter;
 import org.mabb.fontverter.opentype.*;
 
 import java.io.IOException;

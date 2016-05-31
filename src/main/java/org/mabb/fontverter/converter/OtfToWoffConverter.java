@@ -1,7 +1,8 @@
-package org.mabb.fontverter.opentype;
+package org.mabb.fontverter.converter;
 
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontConverter;
+import org.mabb.fontverter.opentype.*;
 import org.mabb.fontverter.woff.WoffConstants.TableFlagType;
 import org.mabb.fontverter.woff.WoffFont;
 
