@@ -1,8 +1,9 @@
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.*;
 import org.mabb.fontverter.io.FontDataOutputStream;
-import org.mabb.fontverter.io.DataTypeBindingSerializer;
-import org.mabb.fontverter.io.DataTypeProperty;
+import org.mabb.fontverter.opentype.validator.OpenTypeStrictValidator;
+import org.mabb.fontverter.validator.RuleValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.mabb.fontverter.opentype.OpenTypeFont.SfntHeader.CFF_FLAVOR;
+import static org.mabb.fontverter.opentype.SfntHeader.*;
 
 /**
  * OpenType covers both .otf and .ttfs , .otf is for CFF type fonts and .ttf is used for TrueType outline fonts.
@@ -21,7 +22,7 @@ import static org.mabb.fontverter.opentype.OpenTypeFont.SfntHeader.CFF_FLAVOR;
  * OpenType spec can be found here: https://www.microsoft.com/typography/otspec/otff.htm
  * Apple TrueType spec can be found here: https://developer.apple.com/fonts/TrueType-Reference-Manual
  */
-public class OpenTypeFont {
+public class OpenTypeFont implements FVFont{
     public static final int SFNT_HEADER_SIZE = 12;
 
     public SfntHeader sfntHeader;
@@ -53,6 +54,82 @@ public class OpenTypeFont {
         sfntHeader = new SfntHeader();
     }
 
+    public boolean detectFormat(byte[] fontFile) {
+        String[] headerMagicNums = new String[]{CFF_FLAVOR, VERSION_1, VERSION_2, VERSION_2_5};
+        for (String magicNumOn : headerMagicNums)
+            if (FontVerterUtils.bytesStartsWith(fontFile, magicNumOn))
+                return true;
+
+        return false;
+    }
+
+    public void read(byte[] fontFile) throws IOException {
+        try {
+            new OpenTypeParser().parse(fontFile, this);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
+    public String getFontName() {
+        return getNameTable().getName(OtfNameConstants.RecordType.FULL_FONT_NAME);
+    }
+
+    public boolean doesPassStrictValidation() {
+        return getStrictValidationErrors().size() == 0;
+    }
+
+    public List<RuleValidator.FontValidatorError> getStrictValidationErrors() {
+        try {
+            OpenTypeStrictValidator validator = new OpenTypeStrictValidator();
+            return validator.validate(this);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            RuleValidator.FontValidatorError error = new RuleValidator.FontValidatorError(RuleValidator.ValidatorErrorType.ERROR,
+                    String.format("Exception running validator: %s %s", ex.getMessage(), ex.getClass()));
+
+            ArrayList<RuleValidator.FontValidatorError> errors = new ArrayList<RuleValidator.FontValidatorError>();
+            errors.add(error);
+
+            return errors;
+        }
+    }
+
+    public void normalize() {
+        if (getOs2() == null)
+            setOs2(OS2WinMetricsTable.createDefaultTable());
+
+        if (getNameTable() == null)
+            setName(NameTable.createDefaultTable());
+
+        if (getPost() == null)
+            setPost(PostScriptTable.createDefaultTable(getOpenTypeVersion()));
+    }
+
+    public FontProperties getProperties() {
+        FontProperties properties = new FontProperties();
+        if (isCffType()) {
+            properties.setMimeType("application/x-font-opentype");
+            properties.setFileEnding("otf");
+            properties.setCssFontFaceFormat("opentype");
+        } else {
+            properties.setMimeType("application/x-font-truetype");
+            properties.setFileEnding("ttf");
+            properties.setCssFontFaceFormat("truetype");
+        }
+
+        return properties;
+    }
+
+    public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
+        if (fontFormat == FontVerter.FontFormat.WOFF1)
+            return new OtfToWoffConverter();
+        if (fontFormat == FontVerter.FontFormat.WOFF2)
+            return new OtfToWoffConverter.OtfToWoff2Converter();
+
+        throw new FontNotSupportedException("Font conversion not supported");
+    }
+
     private <T extends OpenTypeTable> T initTable(T table) {
         table.font = this;
         tables.add(table);
@@ -75,7 +152,7 @@ public class OpenTypeFont {
         return tables;
     }
 
-    public byte[] getFontData() throws IOException {
+    public byte[] getData() throws IOException {
         // offsets and gotta calc checksums before doing final full font checksum so calling the data write out
         // twice to be lazy
         finalizeFont();
@@ -251,64 +328,5 @@ public class OpenTypeFont {
 
     public void setName(NameTable name) {
         setTable(name);
-    }
-
-    static class SfntHeader {
-        static String CFF_FLAVOR = "OTTO";
-        static String VERSION_1 = "\u0000\u0001\u0000\u0000";
-        static String VERSION_2 = "\u0000\u0001\u0000\u0000";
-        static String VERSION_2_5 = "\u0000\u0001\u0005\u0000";
-
-        @DataTypeProperty(dataType = DataTypeProperty.DataType.STRING, byteLength = 4)
-        public String sfntFlavor = CFF_FLAVOR;
-
-        @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
-        public int numTables;
-
-        @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
-        public int searchRange;
-
-        @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
-        public int entrySelector;
-
-        @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
-        public int rangeShift;
-
-        public void setNumTables(int numTables) {
-            this.numTables = numTables;
-            searchRange = closestMaxPowerOfTwo(numTables) * 16;
-            rangeShift = numTables * 16 - searchRange;
-            entrySelector = (int) log2(closestMaxPowerOfTwo(numTables));
-        }
-
-        private int closestMaxPowerOfTwo(double number) {
-            int powerOfTwo = 1;
-            while (powerOfTwo * 2 < number)
-                powerOfTwo = powerOfTwo * 2;
-
-            return powerOfTwo;
-        }
-
-        private double log2(int number) {
-            return Math.log(number) / Math.log(2);
-        }
-
-        byte[] getData() throws IOException {
-            DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
-            return serializer.serialize(this);
-        }
-
-        float openTypeVersion() {
-            // string version consts are kludge for getting around data type version difference string vs fixed
-            // so don't have to write extra data type annotation logic.
-            if (sfntFlavor.equals(CFF_FLAVOR))
-                return 3;
-            if (sfntFlavor.equals(VERSION_2))
-                return 2;
-            if (sfntFlavor.equals(VERSION_2_5))
-                return 2.5F;
-
-            return 1;
-        }
     }
 }

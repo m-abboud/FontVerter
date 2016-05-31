@@ -2,7 +2,7 @@ package org.mabb.fontverter;
 
 import org.apache.commons.io.FileUtils;
 import org.mabb.fontverter.cff.CffFontAdapter;
-import org.mabb.fontverter.opentype.OtfFontAdapter;
+import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,21 +25,21 @@ public class TestFontVerter {
         File file = new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
         FVFont font = FontVerter.readFont(file);
 
-        Assert.assertEquals(OtfFontAdapter.class, font.getClass());
+        Assert.assertEquals(OpenTypeFont.class, font.getClass());
     }
 
     @Test
     public void givenCffFont_convertWithFontVerterApi_fontValidatorsPass() throws Exception {
         File file = new File(TestUtils.TEST_PATH + "cff/FontVerter+SimpleTestFont.cff");
-        OtfFontAdapter font = (OtfFontAdapter) FontVerter.convertFont(file, FontVerter.FontFormat.OTF);
+        OpenTypeFont font = (OpenTypeFont) FontVerter.convertFont(file, FontVerter.FontFormat.OTF);
 
         File outputFile = new File(tempOutputPath + "FontVerter+SimpleTestFont.otf");
         if (outputFile.exists())
             outputFile.delete();
-        FileUtils.writeByteArrayToFile(outputFile, font.getUnderlyingFont().getFontData());
-        font.getUnderlyingFont().setSourceFile(outputFile);
+        FileUtils.writeByteArrayToFile(outputFile, font.getData());
+        font.setSourceFile(outputFile);
 
-        TestUtils.runAllValidators(font.getUnderlyingFont());
-        Assert.assertTrue(font.getUnderlyingFont().getCmap().getGlyphCount() > 3);
+        TestUtils.runAllValidators(font);
+        Assert.assertTrue(font.getCmap().getGlyphCount() > 3);
     }
 }

@@ -24,7 +24,7 @@ public class CFFToOpenTypeConverter implements FontConverter {
 
     public FVFont convertFont(FVFont font) throws IOException {
         this.cffFont = (CffFontAdapter) font;
-        return new OtfFontAdapter(generateFont());
+        return generateFont();
     }
 
     public OpenTypeFont generateFont() throws IOException {

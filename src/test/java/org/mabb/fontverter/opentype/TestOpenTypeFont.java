@@ -36,11 +36,17 @@ public class TestOpenTypeFont {
         FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "Missing-OS2WinTable.otf");
         font.normalize();
 
-        OpenTypeFont otfFont = ((OtfFontAdapter) font).getUnderlyingFont();
+        OpenTypeFont otfFont = ((OpenTypeFont) font);
         Assert.assertTrue(font.doesPassStrictValidation());
         Assert.assertTrue(otfFont.getOs2() != null);
 
         FileUtils.writeByteArrayToFile(new File(TestUtils.tempOutputPath + "Fixed-Missing-OS2WinTable.otf"), font.getData());
+    }
+
+    @Test
+    public void given_OTF_cffTypeFont_fileEndingIsOtf() throws IOException {
+        FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
+        Assert.assertEquals(font.getProperties().getFileEnding(), "otf");
     }
 
     @Test
@@ -82,6 +88,12 @@ public class TestOpenTypeFont {
     }
 
     @Test
+    public void given_TTF_postScriptType_fileEndingIsTtf() throws IOException {
+        FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
+        Assert.assertEquals(font.getProperties().getFileEnding(), "ttf");
+    }
+
+    @Test
     public void given_TTF_withUnevenCvtTableLength_strictValidatorFails() throws IOException, IllegalAccessException, InstantiationException {
         FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
         Assert.assertNotNull(findErrorContaining(font, "cvt "));
@@ -102,7 +114,7 @@ public class TestOpenTypeFont {
     private OpenTypeFont normalizeFont(String fontFile) throws IOException {
         FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + fontFile);
         font.normalize();
-        return ((OtfFontAdapter) font).getUnderlyingFont();
+        return ((OpenTypeFont) font);
     }
 
 }

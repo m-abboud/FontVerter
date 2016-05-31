@@ -16,7 +16,7 @@ import org.mabb.fontverter.FontVerterUtils;
 import org.mabb.fontverter.opentype.CmapTable;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.OpenTypeParser;
-import org.mabb.fontverter.opentype.OtfFontAdapter;
+import org.mabb.fontverter.opentype.OpenTypeFont;
 
 import java.io.IOException;
 import java.util.*;
@@ -45,7 +45,7 @@ public class PsType0ToOpenTypeConverter {
 
         otfFont.finalizeFont();
 
-        return new OtfFontAdapter(otfFont);
+        return otfFont;
     }
 
     private void convertCmap() throws IllegalAccessException {

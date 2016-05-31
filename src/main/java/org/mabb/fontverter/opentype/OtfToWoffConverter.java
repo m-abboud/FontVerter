@@ -32,7 +32,7 @@ public class OtfToWoffConverter implements FontConverter {
     }
 
     public FVFont convertFont(FVFont font) throws IOException {
-        otfFont = ((OtfFontAdapter) font).getUnderlyingFont();
+        otfFont = (OpenTypeFont) font;
         woffFont = WoffFont.createBlankFont(woffVersion);
         woffFont.addFont(font);
         addFontTables();

@@ -10,7 +10,7 @@ import org.mabb.fontverter.CharsetConverter;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.TestUtils;
 import org.mabb.fontverter.opentype.OpenTypeFont;
-import org.mabb.fontverter.opentype.OtfFontAdapter;
+import org.mabb.fontverter.opentype.OpenTypeFont;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class TestType0ToOpenTypeConverter {
 
         FVFont font = PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
         font.normalize();
-        OpenTypeFont otfFont = ((OtfFontAdapter) font).getUnderlyingFont();
+        OpenTypeFont otfFont = ((OpenTypeFont) font);
 
         Assert.assertNotNull(otfFont.getCmap());
         Assert.assertEquals(otfFont.getCmap().getGlyphCount(), 69);

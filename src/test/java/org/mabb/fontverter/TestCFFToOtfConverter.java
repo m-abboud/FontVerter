@@ -5,7 +5,6 @@ import org.mabb.fontverter.cff.CFFToOpenTypeConverter;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mabb.fontverter.opentype.OtfNameConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -92,7 +91,7 @@ public class TestCFFToOtfConverter {
             outputFile.delete();
 
         OpenTypeFont generatedFont = convert(file);
-        byte[] fontData = generatedFont.getFontData();
+        byte[] fontData = generatedFont.getData();
         FileUtils.writeByteArrayToFile(outputFile, fontData);
         generatedFont.setSourceFile(outputFile);
 

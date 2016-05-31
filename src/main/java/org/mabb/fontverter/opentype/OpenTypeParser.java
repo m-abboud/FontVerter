@@ -14,13 +14,16 @@ public class OpenTypeParser {
     private FontDataInputStream input;
 
     public OpenTypeFont parse(byte[] data) throws IOException, InstantiationException, IllegalAccessException {
-        this.input = new FontDataInputStream(data);
+        return parse(data, new OpenTypeFont());
+    }
 
-        font = new OpenTypeFont();
+    public OpenTypeFont parse(byte[] data, OpenTypeFont font) throws IOException, InstantiationException, IllegalAccessException {
+        this.font = font;
+        this.input = new FontDataInputStream(data);
 
         DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
         // read header first to figure out what woff font object type we need to create
-        font.sfntHeader = (OpenTypeFont.SfntHeader) deserializer.deserialize(this.input, new OpenTypeFont.SfntHeader());
+        font.sfntHeader = (SfntHeader) deserializer.deserialize(this.input, new SfntHeader());
 
         readTableHeaderEntries();
         readTableDataEntries();

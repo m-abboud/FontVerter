@@ -60,12 +60,12 @@ public class CffFontAdapter implements FVFont {
             return new CFFToOpenTypeConverter(this);
         if (fontFormat == FontVerter.FontFormat.WOFF1)
             return new CombinedFontConverter(new CFFToOpenTypeConverter(this), new OtfToWoffConverter());
-        else
+        if (fontFormat == FontVerter.FontFormat.WOFF2)
             return new CombinedFontConverter(new CFFToOpenTypeConverter(this), new OtfToWoffConverter.OtfToWoff2Converter());
 
+        throw new FontNotSupportedException("Font conversion not supported");
     }
 
-    @Override
     public String getFontName() {
         return getFullName();
     }

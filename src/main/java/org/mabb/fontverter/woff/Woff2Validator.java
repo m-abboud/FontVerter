@@ -1,7 +1,7 @@
 package org.mabb.fontverter.woff;
 
 import org.mabb.fontverter.opentype.OpenTypeFont;
-import org.mabb.fontverter.opentype.OtfFontAdapter;
+import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.validator.RuleValidator;
 import org.mabb.fontverter.validator.ValidateRule;
 
@@ -15,8 +15,8 @@ public class Woff2Validator extends RuleValidator<Woff2Font> {
     public static class HeaderRules {
         @ValidateRule(message = "total sfnt size figure sketchy")
         public String totalSfntSize(Woff2Font font) throws IOException {
-            OpenTypeFont otfFOnt = ((OtfFontAdapter) font.getFonts().get(0)).getUnderlyingFont();
-            int reportedTotal = otfFOnt.getFontData().length;
+            OpenTypeFont otfFOnt = ((OpenTypeFont) font.getFonts().get(0));
+            int reportedTotal = otfFOnt.getData().length;
             int total = 12 + (font.getTables().size() * 16);
 
             for (WoffTable tableOn : font.getTables())
