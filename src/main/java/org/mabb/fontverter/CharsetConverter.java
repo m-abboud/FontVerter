@@ -1,10 +1,13 @@
 package org.mabb.fontverter;
 
 import org.apache.fontbox.encoding.Encoding;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public class CharsetConverter {
+    private static Logger log = LoggerFactory.getLogger(CharsetConverter.class);
+
     public static List<GlyphMapping> glyphIdsToNameToEncoding(Map<Integer, String> idToNames, Encoding encoding) {
         List<GlyphMapping> glyphMappings = new ArrayList<GlyphMapping>();
         Map<Integer, Integer> usedCodes = new HashMap<Integer, Integer>();
@@ -17,36 +20,14 @@ public class CharsetConverter {
             int charCode = nameToCode(name, encoding, usedCodes);
             int glyphId = nameSetOn.getKey();
 
-            glyphMappings.add(new GlyphMapping(glyphId, charCode, name));
+            if (charCode != 0)
+                glyphMappings.add(new GlyphMapping(glyphId, charCode, name));
+            else
+                log.warn("Could not find character code for glyph name. Name:'{}' GlyphID:'{}'",
+                        nameSetOn.getValue(), nameSetOn.getKey());
         }
 
-        fixNullCharCodes(glyphMappings, encoding);
         return glyphMappings;
-    }
-
-    private static void fixNullCharCodes(List<GlyphMapping> glyphMappings, Encoding encoding) {
-        for (GlyphMapping entryOn : glyphMappings) {
-            if (entryOn.charCode == 0)
-                entryOn.charCode = findNextAvailableCharCode(glyphMappings, encoding);
-        }
-    }
-
-    public static int findNextAvailableCharCode(List<GlyphMapping> glyphMappings, Encoding encoding) {
-        for (int i = 1; i < encoding.getCodeToNameMap().size(); i++) {
-            if (findMappingForCharCode(glyphMappings, i) == null && !encoding.getName(i).equals(".notdef"))
-                return i;
-        }
-
-        return 0;
-    }
-
-    private static GlyphMapping findMappingForCharCode(List<GlyphMapping> glyphMappings, int charCode) {
-        for (GlyphMapping entryOn : glyphMappings) {
-            if (entryOn.charCode == charCode)
-                return entryOn;
-        }
-
-        return null;
     }
 
     public static List<GlyphMapping> charCodeToGlyphIdsToEncoding(Map<Integer, Integer> charCodeToGlyphIds, Encoding encoding) {

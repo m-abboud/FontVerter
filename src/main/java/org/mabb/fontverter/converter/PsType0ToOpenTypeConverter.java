@@ -53,51 +53,11 @@ public class PsType0ToOpenTypeConverter {
         List<GlyphMapping> glyphMappings =
                 CharsetConverter.glyphIdsToNameToEncoding(charToUnicode, CFFStandardEncoding.getInstance());
 
-        // not sure where mssing glyph cmap records coming from? maybe pdfbox not reading correctly.
-        // to fix anyway fudge it by adding missing cmap entries
-        // wait todo see if can just not add missing ones?
-        if (glyphMappings.size() < originalNumGlyphs - 1) {
-            int glyphsNeeded = originalNumGlyphs - glyphMappings.size() - 1;
-            List<Integer> gaps = findGlyphIdGaps(glyphMappings);
-
-            for (int i = 0; i < glyphsNeeded; i++) {
-                int code = CharsetConverter.findNextAvailableCharCode(glyphMappings, CFFStandardEncoding.getInstance());
-                String name = CFFStandardEncoding.getInstance().getName(code);
-
-                int glyphId;
-                if (gaps.size() > 0) {
-                    glyphId = gaps.get(0);
-                    gaps.remove(0);
-                } else
-                    glyphId = glyphMappings.size() + 1;
-
-                glyphMappings.add(new GlyphMapping(glyphId, code, name));
-            }
-        }
-        // todo needa refactor bunch of stuff for different plat/encode/lang table char glyph map reads
+        // todo different platform/encode/langauge handeling?
         CmapTable cmapTable = CmapTable.createDefaultTable();
         cmapTable.addGlyphMapping(glyphMappings);
 
         otfFont.setCmap(cmapTable);
-    }
-
-    private List<Integer> findGlyphIdGaps(List<GlyphMapping> glyphMappings) {
-        Collections.sort(glyphMappings, new Comparator<GlyphMapping>() {
-            public int compare(GlyphMapping o1, GlyphMapping o2) {
-                return o1.glyphId < o2.glyphId ? -1 : o1.glyphId.equals(o2.glyphId) ? 0 : 1;
-            }
-        });
-
-        List<Integer> gaps = new LinkedList<Integer>();
-        int lastId = 0;
-        for (GlyphMapping entryOn : glyphMappings) {
-            if (entryOn.glyphId != lastId + 1) {
-                for (int i = lastId + 1; i < entryOn.glyphId; i++)
-                    gaps.add(i);
-            }
-        }
-
-        return gaps;
     }
 
     @SuppressWarnings("unchecked")

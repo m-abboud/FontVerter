@@ -30,7 +30,7 @@ public class TestType0ToOpenTypeConverter {
         OpenTypeFont otfFont = ((OpenTypeFont) font);
 
         Assert.assertNotNull(otfFont.getCmap());
-        Assert.assertEquals(otfFont.getCmap().getGlyphCount(), 69);
+        Assert.assertEquals(otfFont.getMxap().getNumGlyphs(), 69);
 
         FileUtils.writeByteArrayToFile(new File("C:\\projects\\Pdf2Dom\\UMAVUG+Garuda-Identity-H.ttf"), font.getData());
     }

@@ -157,7 +157,9 @@ public class OpenTypeFont implements FVFont {
         finalizeFont();
 
         // now we for realsies write out the font bytes
-        return getRawData();
+        byte[] data = getRawData();
+        clearTableDataCache();
+        return data;
     }
 
     public void finalizeFont() throws IOException {
@@ -179,7 +181,7 @@ public class OpenTypeFont implements FVFont {
     }
 
     private void normalizeTables() {
-        if (getCmap() != null && getMxap() != null)
+        if (getCmap() != null && getMxap() != null && !getMxap().isFromParsedFont)
             getMxap().setNumGlyphs(getCmap().getGlyphCount());
 
         for (OpenTypeTable tableOn : tables) {

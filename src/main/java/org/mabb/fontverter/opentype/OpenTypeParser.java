@@ -40,6 +40,7 @@ public class OpenTypeParser {
                     (OpenTypeTable.OtfTableRecord) deserializer.deserialize(input, OpenTypeTable.OtfTableRecord.class);
 
             OpenTypeTable table = OpenTypeTable.createFromRecord(record, font);
+            table.isFromParsedFont = true;
             font.addTable(table);
         }
     }

@@ -38,6 +38,7 @@ public abstract class OpenTypeTable {
     private static Logger log = LoggerFactory.getLogger(OpenTypeTable.class);
 
     public OtfTableRecord record;
+    public boolean isFromParsedFont = false;
     protected OpenTypeFont font;
     protected byte[] cachedUnpaddedData;
     private long checksum;

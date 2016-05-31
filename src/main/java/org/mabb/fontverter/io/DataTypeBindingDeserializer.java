@@ -1,5 +1,8 @@
 package org.mabb.fontverter.io;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -9,8 +12,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class DataTypeBindingDeserializer {
+    private static Logger log = LoggerFactory.getLogger(DataTypeBindingDeserializer.class);
+
     private DataTypeAnnotationReader propReader = new DataTypeAnnotationReader();
     private FontDataInputStream input;
+    private boolean recoverFromEOF;
+    private boolean stopDeserializeEarly = false;
 
     public Object deserialize(byte[] data, Class toClass) throws DataTypeSerializerException {
         return deserialize(new FontDataInputStream(data), toClass);
@@ -32,6 +39,9 @@ public class DataTypeBindingDeserializer {
             List<AccessibleObject> properties = propReader.getProperties(toClass);
 
             for (AccessibleObject propertyOn : properties) {
+                if (stopDeserializeEarly)
+                    break;
+
                 try {
                     deserializeProperty(propertyOn, toObj);
                 } catch (Exception ex) {
@@ -110,16 +120,33 @@ public class DataTypeBindingDeserializer {
             throw new IOException("Array length must be set for array data types.");
 
         Object[] array = (Object[]) Array.newInstance(propertyOn.getType().getComponentType(), arrayLength);
+
         for (int i = 0; i < arrayLength; i++) {
             try {
                 array[i] = readSingleValue(binding);
             } catch (Exception ex) {
-                throw new IOException("Array length ran over input data length. " +
-                        "Index on: " + i + " Array Length: " + arrayLength);
+                String message = String.format("Array length ran over input data length." +
+                        " Index on: %d Array Length: %d", i, arrayLength);
+
+                if (isRecoverFromEOF()) {
+                    stopDeserializeEarly = true;
+                    log.debug(message);
+                    return array;
+                }
+
+                throw new IOException(message);
             }
         }
 
         return array;
+    }
+
+    public void setRecoverFromEOF(boolean recoverFromEOF) {
+        this.recoverFromEOF = recoverFromEOF;
+    }
+
+    public boolean isRecoverFromEOF() {
+        return recoverFromEOF;
     }
 }
 

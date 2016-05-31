@@ -1,9 +1,12 @@
 package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.CharsetConverter;
+import org.mabb.fontverter.io.DataTypeBindingDeserializer;
+import org.mabb.fontverter.io.DataTypeBindingSerializer;
 import org.mabb.fontverter.io.DataTypeProperty;
 import org.mabb.fontverter.io.DataTypeProperty.DataType;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.mabb.fontverter.CharsetConverter.*;
@@ -45,7 +48,6 @@ public class PostScriptTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.PASCAL_STRING, isArray = true, includeIf = "isVersion2", arrayLength = "getNumGlyphs")
     private String[] glyphNames = new String[0];
 
-    @Override
     public String getTableTypeName() {
         return "post";
     }
@@ -62,12 +64,15 @@ public class PostScriptTable extends OpenTypeTable {
         table.mimMemType1 = 0;
         table.maxMemType1 = 0;
 
-        if (version == 2) {
-            // todo
-            table.glyphNames = null;
-        }
-
         return table;
+    }
+
+    public void readData(byte[] data) throws IOException {
+        // sometimes read ttf's glypname array goes past the table's data length, see ttfs.pdf/volvo owners manual
+        // unsure of why they do atm, possibly just a corrupt postscript table.
+        DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
+        deserializer.setRecoverFromEOF(true);
+        deserializer.deserialize(data, this);
     }
 
     public float getVersion() {

@@ -42,19 +42,6 @@ public class FontVerter {
         return convertFont(data, convertTo);
     }
 
-    public static FVFont readFont(byte[] fontData) throws IOException {
-        registerFontAdapters();
-
-        for (Class<? extends FVFont> adapterOn : adapters) {
-            FVFont adapter = tryReadFontAdapter(fontData, adapterOn);
-            if (adapter != null)
-                return adapter;
-        }
-
-        throw new IOException("FontVerter could not read the given font file.");
-
-    }
-
     public static FVFont readFont(File fontFile) throws IOException {
         byte[] data = FileUtils.readFileToByteArray(fontFile);
         return readFont(data);
@@ -64,17 +51,46 @@ public class FontVerter {
         return readFont(new File(fontFile));
     }
 
+    public static FVFont readFont(byte[] fontData) throws IOException {
+        registerFontAdapters();
+
+        // loop through and use first one to read without an error
+        for (Class<? extends FVFont> adapterOn : adapters) {
+            FVFont adapter = tryReadFontAdapter(fontData, adapterOn);
+            if (adapter != null)
+                return adapter;
+        }
+
+        // if nothing can read go at it again and use the first one to throw an exception
+        // as the exception message for debugging.
+        try {
+            for (Class<? extends FVFont> adapterOn : adapters) {
+                FVFont adapter = parseFont(fontData, adapterOn);
+                if (adapter != null)
+                    return adapter;
+            }
+        } catch (Exception ex) {
+            throw new IOException("FontVerter could not read the given font file.", ex);
+        }
+
+        throw new IOException("FontVerter could not detect the input font's type.");
+    }
+
+    private static FVFont parseFont(byte[] fontData, Class<? extends FVFont> adapterOn) throws InstantiationException, IllegalAccessException, IOException {
+        FVFont adapter = adapterOn.newInstance();
+        if (adapter.detectFormat(fontData)) {
+            adapter.read(fontData);
+            return adapter;
+        }
+
+        return null;
+    }
+
     private static FVFont tryReadFontAdapter(byte[] fontData, Class<? extends FVFont> adapterOn) throws IOException {
         try {
-            FVFont adapter = adapterOn.newInstance();
-
-            if (adapter.detectFormat(fontData)) {
-                adapter.read(fontData);
-                return adapter;
-            }
+            return parseFont(fontData, adapterOn);
         } catch (Exception e) {
             log.debug("Error creating font adapter {} Message: {}", adapterOn.getName(), e);
-            return null;
         }
 
         return null;

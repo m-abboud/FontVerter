@@ -75,7 +75,6 @@ public class MaximumProfileTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT, includeIf = "isVersionOne")
     private int maxComponentDepth;
 
-    @Override
     public String getTableTypeName() {
         return "maxp";
     }
