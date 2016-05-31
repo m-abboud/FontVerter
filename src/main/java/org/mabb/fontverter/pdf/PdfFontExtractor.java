@@ -87,7 +87,7 @@ public class PdfFontExtractor extends PDFTextStripper {
         writeText(pdf, output);
         output.close();
 
-        return ((ExtractToPDFBoxFontStrategy)extractStrategy).extractedFonts;
+        return ((ExtractToPDFBoxFontStrategy) extractStrategy).extractedFonts;
     }
 
     public void processPage(PDPage page) throws IOException {
@@ -127,6 +127,7 @@ public class PdfFontExtractor extends PDFTextStripper {
 
     static abstract class ExtractFontStrategy {
         protected List<PDFont> extractedFonts = new ArrayList<PDFont>();
+
         public abstract void extract(PDFont font) throws IOException;
 
         protected boolean hasExtractedFont(PDFont font) {
@@ -138,13 +139,13 @@ public class PdfFontExtractor extends PDFTextStripper {
         }
     }
 
-    static class ExtractToPDFBoxFontStrategy extends ExtractFontStrategy{
+    static class ExtractToPDFBoxFontStrategy extends ExtractFontStrategy {
         public void extract(PDFont font) throws IOException {
             extractedFonts.add(font);
         }
     }
 
-    static class ExtractFVFontStrategy extends ExtractFontStrategy{
+    static class ExtractFVFontStrategy extends ExtractFontStrategy {
         public void extract(PDFont font) throws IOException {
             extractedFonts.add(font);
         }

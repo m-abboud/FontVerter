@@ -52,7 +52,7 @@ public abstract class RuleValidator<T> {
 
     private void evaluateRule(Method methodOn, Object ruleDef) throws IllegalAccessException, InvocationTargetException {
         ValidateRule annotation = methodOn.getAnnotation(ValidateRule.class);
-        if(annotation.type().getValue() > validateLevel.getValue())
+        if (annotation.type().getValue() > validateLevel.getValue())
             return;
 
         Object methodResult = methodOn.invoke(ruleDef, toValidate);

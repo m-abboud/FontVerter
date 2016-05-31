@@ -11,6 +11,7 @@ import static org.mabb.fontverter.io.FontDataOutputStream.OPEN_TYPE_CHARSET;
 
 public class ControlValueTable extends OpenTypeTable {
     private List<Short> values = new LinkedList<Short>();
+
     public String getTableTypeName() {
         return "cvt ";
     }
@@ -23,7 +24,7 @@ public class ControlValueTable extends OpenTypeTable {
 
     protected byte[] generateUnpaddedData() throws IOException {
         FontDataOutputStream out = new FontDataOutputStream(OPEN_TYPE_CHARSET);
-        for(Short valueOn : values)
+        for (Short valueOn : values)
             out.writeShort(valueOn);
 
         return out.toByteArray();

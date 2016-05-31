@@ -68,8 +68,7 @@ public class PsType0ToOpenTypeConverter {
                 if (gaps.size() > 0) {
                     glyphId = gaps.get(0);
                     gaps.remove(0);
-                }
-                else
+                } else
                     glyphId = glyphMappings.size() + 1;
 
                 glyphMappings.add(new GlyphMapping(glyphId, code, name));
@@ -93,7 +92,7 @@ public class PsType0ToOpenTypeConverter {
         int lastId = 0;
         for (GlyphMapping entryOn : glyphMappings) {
             if (entryOn.glyphId != lastId + 1) {
-                for(int i = lastId + 1; i <entryOn.glyphId; i++)
+                for (int i = lastId + 1; i < entryOn.glyphId; i++)
                     gaps.add(i);
             }
         }

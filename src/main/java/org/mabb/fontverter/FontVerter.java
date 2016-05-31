@@ -51,7 +51,7 @@ public class FontVerter {
                 return adapter;
         }
 
-            throw new IOException("FontVerter could not read the given font file.");
+        throw new IOException("FontVerter could not read the given font file.");
 
     }
 

@@ -70,7 +70,7 @@ class DataTypeAnnotationReader {
             return field.getInt(object);
         Method method = FontVerterUtils.findPrivateMethod(property.arrayLength(), object.getClass());
 
-        return ((Number)method.invoke(object)).intValue();
+        return ((Number) method.invoke(object)).intValue();
     }
 
     private boolean runIgnoreFilter(Object object, String ignoreIf) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {

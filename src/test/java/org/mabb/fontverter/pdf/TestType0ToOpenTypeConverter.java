@@ -42,8 +42,8 @@ public class TestType0ToOpenTypeConverter {
 
     private PDFont findFont(List<PDFont> fonts, String name) {
         PDFont searchFont = null;
-        for(PDFont fontOn: fonts)
-            if(fontOn.getName().equals(name))
+        for (PDFont fontOn : fonts)
+            if (fontOn.getName().equals(name))
                 searchFont = fontOn;
 
         Assert.assertNotNull(searchFont);

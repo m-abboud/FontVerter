@@ -9,7 +9,6 @@ import java.util.zip.DeflaterOutputStream;
 
 import static org.mabb.fontverter.woff.Woff1Font.Woff1Table.WOFF1_TABLE_DIRECTORY_ENTRY_SIZE;
 
-
 public class Woff1Font extends WoffFont {
     static final int WOFF1_HEADER_SIZE = 44;
 

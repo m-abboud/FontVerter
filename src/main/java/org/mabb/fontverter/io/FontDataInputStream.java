@@ -95,6 +95,7 @@ public class FontDataInputStream extends DataInputStream {
 
         return readArray;
     }
+
     protected static class SeekableByteArrayInputStream extends ByteArrayInputStream {
         public SeekableByteArrayInputStream(byte[] buf) {
             super(buf);

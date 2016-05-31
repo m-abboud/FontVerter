@@ -23,7 +23,7 @@ import static org.mabb.fontverter.opentype.SfntHeader.*;
  * OpenType spec can be found here: https://www.microsoft.com/typography/otspec/otff.htm
  * Apple TrueType spec can be found here: https://developer.apple.com/fonts/TrueType-Reference-Manual
  */
-public class OpenTypeFont implements FVFont{
+public class OpenTypeFont implements FVFont {
     public static final int SFNT_HEADER_SIZE = 12;
 
     public SfntHeader sfntHeader;

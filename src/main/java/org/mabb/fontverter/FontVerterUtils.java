@@ -19,7 +19,8 @@ public class FontVerterUtils {
             }
         }
         return mapField;
-    }    
+    }
+
     public static Method findPrivateMethod(String methodName, Class type) {
         Method[] methods = type.getDeclaredMethods();
 
