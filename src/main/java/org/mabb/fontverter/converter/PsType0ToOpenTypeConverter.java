@@ -41,8 +41,10 @@ public class PsType0ToOpenTypeConverter {
 
         // so the descendant ttf font will usually have some important tables missing from it
         // that we need to create ourselves from data in the parent type 0 font.
-        if (otfFont.getCmap() == null)
-            convertCmap();
+
+        // always build cmap from type0 parent ourselves, cmaps existing in the ttf child tend to have some
+        // issues in certain browsers and apps.
+        convertCmap();
         if (otfFont.getNameTable() == null)
             convertNameRecords();
 
@@ -51,10 +53,21 @@ public class PsType0ToOpenTypeConverter {
         return otfFont;
     }
 
-    private void convertCmap() throws IllegalAccessException {
+    private void convertCmap() throws IllegalAccessException, IOException {
+        List<GlyphMapping> glyphMappings = new ArrayList<GlyphMapping>();
+
         Map<Integer, String> charToUnicode = getType0CharToUnicode();
-        List<GlyphMapping> glyphMappings =
-                CharsetConverter.glyphIdsToNameToEncoding(charToUnicode, CFFStandardEncoding.getInstance());
+        for (Map.Entry<Integer, String> nameSetOn : charToUnicode.entrySet()) {
+            String name = nameSetOn.getValue();
+            int charCode = name.charAt(0);
+            int glyphId = nameSetOn.getKey();
+
+            if(name.length() > 2 || charCode > 0xFFFF)
+                throw new IOException("Multi byte glyph name not supported.");
+
+            if (charCode != 0)
+                glyphMappings.add(new GlyphMapping(glyphId, charCode, name));
+        }
 
         // todo different platform/encode/langauge handeling?
         CmapTable cmapTable = CmapTable.createDefaultTable();

@@ -13,7 +13,7 @@ class NameRecord {
         NameRecord record = new NameRecord(name);
         record.setNameID(type.getValue());
         record.platformID = OtfNameConstants.WINDOWS_PLATFORM_ID;
-        record.encodingID = OtfNameConstants.WINDOWS_ENCODING;
+        record.encodingID = OtfNameConstants.WINDOWS_DEFAULT_ENCODING;
         record.languageID = language.getValue();
 
         return record;
@@ -23,7 +23,7 @@ class NameRecord {
         NameRecord record = new NameRecord(name);
         record.setNameID(type.getValue());
         record.platformID = OtfNameConstants.MAC_PLATFORM_ID;
-        record.encodingID = OtfNameConstants.MAC_ENCODING;
+        record.encodingID = OtfNameConstants.MAC_DEFAULT_ENCODING;
         record.languageID = 0;
 
         return record;

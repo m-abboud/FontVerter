@@ -1,6 +1,5 @@
 package org.mabb.fontverter.woff;
 
-import org.mabb.fontverter.*;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontConverter;
@@ -103,11 +102,11 @@ public abstract class WoffFont implements FVFont {
         return getCompressedDataBlock().length;
     }
 
-    public String getFontName() {
+    public String getName() {
         if (fonts.size() == 0)
             return "Unknown Font Name";
 
-        return fonts.get(0).getFontName();
+        return fonts.get(0).getName();
     }
 
     public void normalize() {

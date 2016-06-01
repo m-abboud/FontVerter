@@ -1,8 +1,13 @@
 package org.mabb.fontverter.opentype;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.mabb.fontverter.io.DataTypeProperty;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import static org.mabb.fontverter.io.DataTypeProperty.*;
+import static org.mabb.fontverter.opentype.OtfNameConstants.*;
 
 public class OS2WinMetricsTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.USHORT)
@@ -116,6 +121,12 @@ public class OS2WinMetricsTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.USHORT, ignoreIf = "!isVersion2OrHigher")
     private int usMaxContext;
 
+    private UnicodeRanges unicodeRanges = new UnicodeRanges();
+    private CodePageRanges codePageRanges = new CodePageRanges();
+
+    public OS2WinMetricsTable() {
+    }
+
     public String getTableTypeName() {
         return "OS/2";
     }
@@ -152,7 +163,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
         table.typoLineGap = 90;
         table.winAscent = 796;
         table.winDescent = 133;
-        table.codePageRange1 = 1;
+        table.codePageRange1 = 0;
         table.codePageRange2 = 0;
         table.sxHeight = 0;
         table.sCapHeight = 769;
@@ -173,5 +184,108 @@ public class OS2WinMetricsTable extends OpenTypeTable {
 
     public short getAverageCharWidth() {
         return averageCharWidth;
+    }
+
+    void normalize() {
+        super.normalize();
+        calcPanose();
+        calcEncodingRanges();
+
+        if (!isFromParsedFont) {
+            winAscent = font.getHhea().ascender;
+            winDescent = font.getHhea().descender;
+        }
+    }
+
+    private void calcPanose() {
+        OtfEncodingType encode = font.getCmap().getCmapEncodingType();
+        if (encode == OtfEncodingType.SYMBOL) {
+            panose[0] = 5;
+            panose[2] = 1;
+            panose[4] = 1;
+
+        }
+        else
+            panose[0] = 2;
+    }
+
+    private void calcEncodingRanges() {
+        if (isFromParsedFont)
+            return;
+
+        OtfEncodingType encode = font.getCmap().getCmapEncodingType();
+        if (encode == OtfEncodingType.SYMBOL) {
+            codePageRanges.setPageBit(CodePageRange.SYMBOL_CHARACTER_SET, true);
+        } else {
+            unicodeRanges.setPageBit(OtfUnicodeRange.BASIC_LATIN, true);
+        }
+
+        unicodeRange1 = unicodeRanges.getRanges().get(0);
+        unicodeRange2 = unicodeRanges.getRanges().get(1);
+        unicodeRange3 = unicodeRanges.getRanges().get(2);
+        unicodeRange4 = unicodeRanges.getRanges().get(3);
+        
+        codePageRange1 = codePageRanges.getRanges().get(0);
+        codePageRange2 = codePageRanges.getRanges().get(1);
+    }
+
+    static class BinaryBlock {
+        protected boolean[] binary;
+
+        BinaryBlock(int size) {
+            binary = new boolean[size];
+            for (int i = 0; i < binary.length; i++)
+                binary[i] = false;
+        }
+
+        ArrayList<Long> getRanges() {
+            ArrayList<Long> ranges = new ArrayList<Long>();
+
+            boolean[] reversedBinary = binary.clone();
+            ArrayUtils.reverse(reversedBinary);
+
+            long n = 0;
+            for (int i = 0; i < reversedBinary.length; i++) {
+                boolean b = reversedBinary[i];
+                n = (n << 1) | (b ? 1 : 0);
+
+                boolean isLastBit = (i + 1) % 32 == 0;
+                if (isLastBit) {
+                    ranges.add(n);
+                    n = 0;
+                }
+            }
+
+            Collections.reverse(ranges);
+            return ranges;
+        }
+    }
+
+    private static class UnicodeRanges extends BinaryBlock {
+        UnicodeRanges() {
+            super(128);
+        }
+
+        public void setPageBit(OtfUnicodeRange range, boolean enable) {
+            binary[range.bit] = enable;
+        }
+
+        public void setPageBit(OtfUnicodeRange range) {
+            binary[range.bit] = true;
+        }
+    }
+
+    private static class CodePageRanges extends BinaryBlock {
+        CodePageRanges() {
+            super(64);
+        }
+
+        public void setPageBit(CodePageRange range, boolean enable) {
+            binary[range.bit] = enable;
+        }
+
+        public void setPageBit(CodePageRange range) {
+            binary[range.bit] = true;
+        }
     }
 }

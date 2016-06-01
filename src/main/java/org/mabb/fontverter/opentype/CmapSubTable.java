@@ -9,6 +9,8 @@ import org.mabb.fontverter.io.FontDataOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import static org.mabb.fontverter.opentype.OtfNameConstants.*;
+
 abstract class CmapSubTable {
     public static final int CMAP_RECORD_BYTE_SIZE = 8;
 
@@ -17,7 +19,7 @@ abstract class CmapSubTable {
     protected byte[] rawReadData;
 
     private int platformId;
-    private int platformEncodingId;
+    private int encodingId;
     private long subTableOffset;
     private int[] glyphIdToCharacterCode;
     private Map<Integer, Integer> characterCodeToGlyphId;
@@ -37,7 +39,7 @@ abstract class CmapSubTable {
     public byte[] getRecordData() throws IOException {
         FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         writer.writeUnsignedShort(platformId);
-        writer.writeUnsignedShort(platformEncodingId);
+        writer.writeUnsignedShort(encodingId);
         writer.writeUnsignedInt((int) subTableOffset);
         return writer.toByteArray();
     }
@@ -50,12 +52,12 @@ abstract class CmapSubTable {
         this.platformId = platformId;
     }
 
-    public int getPlatformEncodingId() {
-        return platformEncodingId;
+    public OtfEncodingType getEncodingType() {
+        return OtfEncodingType.fromInt(encodingId);
     }
 
-    public void setEncodingId(int platformEncodingId) {
-        this.platformEncodingId = platformEncodingId;
+    public void setEncodingId(int encodingId) {
+        this.encodingId = encodingId;
     }
 
     public abstract byte[] getData() throws IOException;
@@ -72,12 +74,9 @@ abstract class CmapSubTable {
         private static final int FORMAT4_HEADER_SIZE = 16;
         // LinkedHashMap important, for keeping ordering the same for loops
         private Map<Integer, Integer> charCodeToGlyphId = new LinkedHashMap<Integer, Integer>();
-        private int length = 0;
         private ArrayList<Integer> deltas;
         private ArrayList<Integer> ends;
         private ArrayList<Integer> starts;
-        private ArrayList<Integer> idRangeOffset;
-        private ArrayList<Integer> glyphIndex;
 
         public Format4SubTable() {
             formatNumber = 4;
@@ -85,6 +84,15 @@ abstract class CmapSubTable {
 
         public byte[] getData() throws IOException {
             FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
+            // kludge for read otf fonts
+            if (rawReadData != null) {
+                writer.writeUnsignedShort(formatNumber);
+                writer.writeUnsignedShort(rawReadData.length + 4);
+                writer.write(rawReadData);
+
+                return writer.toByteArray();
+            }
+
             calculateSegmentArrays();
 
             writer.writeUnsignedShort((int) formatNumber);
@@ -218,8 +226,6 @@ abstract class CmapSubTable {
             deltas = new ArrayList<Integer>();
             starts = new ArrayList<Integer>();
             ends = new ArrayList<Integer>();
-            idRangeOffset = new ArrayList<Integer>();
-            glyphIndex = new ArrayList<Integer>();
 
             int lastCharCode = -1;
             int lastGlyphId = -1;

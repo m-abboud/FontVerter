@@ -133,6 +133,17 @@ public class PdfFontExtractor extends PDFTextStripper {
         }
     }
 
+    public static FVFont convertFont(PDFont font) throws IOException {
+        if (font instanceof PDType0Font && ((PDType0Font) font).getDescendantFont() instanceof PDCIDFontType2) {
+            FVFont convertedFont = convertType0FontToOpenType((PDType0Font) font);
+            convertedFont.normalize();
+
+            return convertedFont;
+        }
+
+        return null;
+    }
+
     static abstract class ExtractFontStrategy {
         protected List<PDFont> extractedFonts = new ArrayList<PDFont>();
 
@@ -158,9 +169,11 @@ public class PdfFontExtractor extends PDFTextStripper {
 
         public void extract(PDFont font) throws IOException {
             extractedFonts.add(font);
-            if(font instanceof PDType0Font)
-                extractedFvFonts.add(convertType0FontToOpenType((PDType0Font) font));
+            FVFont convertedFont = convertFont(font);
+            if (convertedFont != null)
+                extractedFvFonts.add(convertedFont);
         }
+
     }
 
     static class ExtractToDirStrategy extends ExtractFontStrategy {
@@ -173,6 +186,7 @@ public class PdfFontExtractor extends PDFTextStripper {
         public void extract(PDFont font) throws IOException {
             String fileEnding = "";
             PDStream fontStream = null;
+            byte[] data = new byte[0];
             PDFontDescriptor fontDesc = font.getFontDescriptor();
 
             if (font instanceof PDTrueTypeFont) {
@@ -181,7 +195,7 @@ public class PdfFontExtractor extends PDFTextStripper {
             } else if (font instanceof PDType0Font) {
                 PDCIDFont descendantFont = ((PDType0Font) font).getDescendantFont();
                 if (descendantFont instanceof PDCIDFontType2) {
-                    fontStream = fontDesc.getFontFile2();
+                    data = convertFont(font).getData();
                     fileEnding = ".ttf";
                 } else
                     log.warn("Skipped: " + font.getName() + " type0");
@@ -191,11 +205,13 @@ public class PdfFontExtractor extends PDFTextStripper {
             } else
                 log.info("Skipped: " + font.getName() + " type unkown");
 
-            if (!fileEnding.isEmpty() && fontStream != null && !extractPath.isEmpty()) {
+            if (!fileEnding.isEmpty() && !extractPath.isEmpty()) {
                 String fontFilePath = extractPath + font.getName() + fileEnding;
                 if (!hasExtractedFont(font)) {
                     extractedFonts.add(font);
-                    FileUtils.writeByteArrayToFile(new File(fontFilePath), fontStream.toByteArray());
+                    if(fontStream != null)
+                        data = fontStream.toByteArray();
+                    FileUtils.writeByteArrayToFile(new File(fontFilePath), data);
                     log.warn("Extracted: " + fontFilePath);
                 }
             }

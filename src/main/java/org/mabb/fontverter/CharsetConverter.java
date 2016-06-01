@@ -113,5 +113,6 @@ public class CharsetConverter {
         symbolCharToWord.put("_", "underscore");
         symbolCharToWord.put("{", "braceleft");
         symbolCharToWord.put("}", "braceright");
+        symbolCharToWord.put("\u00c1", "Aacute");
     }
 }

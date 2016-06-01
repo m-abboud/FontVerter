@@ -69,7 +69,7 @@ public class OpenTypeFont implements FVFont {
         }
     }
 
-    public String getFontName() {
+    public String getName() {
         return getNameTable().getName(OtfNameConstants.RecordType.FULL_FONT_NAME);
     }
 
@@ -93,7 +93,7 @@ public class OpenTypeFont implements FVFont {
         }
     }
 
-    public void normalize() {
+    public void normalize() throws IOException {
         if (getOs2() == null)
             setOs2(OS2WinMetricsTable.createDefaultTable());
 
@@ -102,6 +102,8 @@ public class OpenTypeFont implements FVFont {
 
         if (getPost() == null)
             setPost(PostScriptTable.createDefaultTable(getOpenTypeVersion()));
+
+        finalizeFont();
     }
 
     public FontProperties getProperties() {

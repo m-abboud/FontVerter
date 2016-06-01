@@ -1,24 +1,16 @@
 package org.mabb.fontverter.pdf;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.fontbox.ttf.OTFParser;
-import org.apache.fontbox.ttf.TTFParser;
-import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mabb.fontverter.CharsetConverter;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.TestUtils;
 import org.mabb.fontverter.opentype.OpenTypeFont;
-import org.mabb.fontverter.opentype.OpenTypeFont;
-import org.mabb.fontverter.opentype.OtfNameConstants;
 import org.mabb.fontverter.opentype.OtfNameConstants.RecordType;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -60,10 +52,34 @@ public class TestType0ToOpenTypeConverter {
         Assert.assertEquals("Normal", otfFont.getNameTable().getName(RecordType.FONT_SUB_FAMILY));
     }
 
+    @Test
+    public void given_type0ss() throws IOException {
+        List<FVFont> fonts = extractFonts("pdf/brno30.pdf");
+        Assert.assertNotNull(fonts);
+    }
+
     private PDFont extractFont(PDDocument pdfFile, String name) throws IOException {
         PdfFontExtractor extractor = new PdfFontExtractor();
         List<PDFont> fonts = extractor.extractToPDFBoxFonts(pdfFile);
         return findFont(fonts, name);
+    }
+
+    private FVFont extractFont(String pdfFile, String name) throws IOException {
+        PDDocument doc = PDDocument.load(TestUtils.readTestFile(pdfFile));
+
+        PdfFontExtractor extractor = new PdfFontExtractor();
+        List<PDFont> fonts = extractor.extractToPDFBoxFonts(doc);
+        FVFont font = PdfFontExtractor.convertType0FontToOpenType((PDType0Font) findFont(fonts, name));
+        font.normalize();
+        return font;
+    }
+
+    private List<FVFont> extractFonts(String pdfFile) throws IOException {
+        PDDocument doc = PDDocument.load(TestUtils.readTestFile(pdfFile));
+
+        PdfFontExtractor extractor = new PdfFontExtractor();
+        extractor.extractFontsToDir(doc, TestUtils.tempOutputPath);
+        return extractor.extractToFVFonts(doc);
     }
 
     private PDFont findFont(List<PDFont> fonts, String name) {

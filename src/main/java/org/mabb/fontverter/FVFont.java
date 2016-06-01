@@ -35,7 +35,7 @@ public interface FVFont {
     /**
      * @return font name
      */
-    String getFontName();
+    String getName();
 
     /**
      * @return True if strict validation passes.
@@ -50,7 +50,7 @@ public interface FVFont {
     /**
      * Fixes any validation issues with the font.
      */
-    void normalize();
+    void normalize() throws IOException;
 
     /**
      * @return extra information about the font such as the file ending it should use.

@@ -67,7 +67,7 @@ public class CffFontAdapter implements FVFont {
         throw new FontNotSupportedException("Font conversion not supported");
     }
 
-    public String getFontName() {
+    public String getName() {
         return getFullName();
     }
 

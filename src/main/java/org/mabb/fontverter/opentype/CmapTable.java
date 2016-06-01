@@ -5,6 +5,7 @@ import org.mabb.fontverter.CharsetConverter.GlyphMapping;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.io.DataTypeProperty;
+import org.mabb.fontverter.opentype.OtfNameConstants.OtfEncodingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,6 +151,15 @@ public class CmapTable extends OpenTypeTable {
         return 0;
     }
 
+    public OtfEncodingType getCmapEncodingType() {
+        // kludge to skip blind parsed subtables and should go off glyf/loca table anyway at least for ttf for maxp size?
+        for (CmapSubTable subTableOn : subTables)
+            if (subTableOn.getPlatformId() == OtfNameConstants.WINDOWS_PLATFORM_ID)
+                return subTableOn.getEncodingType();
+
+        return OtfEncodingType.Unicode_BMP;
+    }
+
     public List<GlyphMapping> getGlyphMappings() {
         if (subTables.size() == 0)
             return new ArrayList<GlyphMapping>();
@@ -168,5 +178,4 @@ public class CmapTable extends OpenTypeTable {
             offset += tableOn.getData().length;
         }
     }
-
 }
