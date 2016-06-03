@@ -59,7 +59,7 @@ public class HeadTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataTypeProperty.DataType.SHORT)
     private short glyphDataFormat;
 
-    public String getTableTypeName() {
+    public String getTableType() {
         return "head";
     }
 

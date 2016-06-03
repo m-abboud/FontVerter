@@ -1,14 +1,11 @@
 package org.mabb.fontverter.woff;
 
-import org.apache.commons.io.FileUtils;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.FontVerter.FontFormat;
 import org.mabb.fontverter.woff.WoffConstants.*;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.io.File;
 
 import static org.mabb.fontverter.TestUtils.*;
 import static org.mabb.fontverter.woff.WoffConstants.TableFlagType.*;
@@ -70,7 +67,7 @@ public class TestOtfToWoffConverter {
         for (TableFlagType flagOn : flags) {
             boolean flagFound = false;
             for (WoffTable table : parsedFont.getTables()) {
-                if (flagOn == table.flag)
+                if (flagOn == ((Woff2Font.Woff2Table)table).flag)
                     flagFound = true;
             }
 
@@ -105,11 +102,4 @@ public class TestOtfToWoffConverter {
     }
 
 
-    private static void saveTempFile(byte[] data, String fileName) throws Exception {
-        File outputFile = new File(tempOutputPath + fileName);
-        if (outputFile.exists())
-            outputFile.delete();
-
-        FileUtils.writeByteArrayToFile(outputFile, data);
-    }
 }

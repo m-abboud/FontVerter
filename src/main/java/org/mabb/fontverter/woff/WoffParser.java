@@ -24,6 +24,11 @@ public class WoffParser {
     }
 
     public WoffFont parse(byte[] data) throws IOException {
+        return parse(data, null);
+    }
+
+    public WoffFont parse(byte[] data, WoffFont readTo) throws IOException {
+        this.font = readTo;
         this.input = new FontDataInputStream(data);
         DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
 
@@ -31,8 +36,9 @@ public class WoffParser {
         WoffHeader header = (WoffHeader) deserializer.deserialize(this.input, WoffHeader.class);
         if (!header.isSignatureValid())
             throw new IOException("Woff header signature not recognized");
+        if (font == null)
+            font = WoffFont.createBlankFont(header.getWoffSignatureVersion());
 
-        font = WoffFont.createBlankFont(header.getWoffSignatureVersion());
         font.header = header;
 
         parseTables();
@@ -47,25 +53,34 @@ public class WoffParser {
         // todo seperate out v2 class...
         if (font instanceof Woff1Font) {
             for (WoffTable tableOn : font.getTables())
-                parseTableData(tableOn);
+                parseTableData((Woff1Table) tableOn);
         } else
             parseV2CompressedBlock();
     }
 
     private void parseV2CompressedBlock() throws IOException {
-        byte[] compressedBlock = input.readBytes(font.header.totalCompressedSize);
-        compressedBlock = brotliDecompress(compressedBlock);
-        int posOn = 0;
+        byte[] block = input.readBytes(font.header.totalCompressedSize);
+        block = brotliDecompress(block);
 
-        for (WoffTable tableOn : font.getTables())
-            tableOn.tableData = Arrays.copyOfRange(compressedBlock, posOn, tableOn.originalLength);
+        int offset = 0;
+        for (WoffTable tableOn : font.getTables()) {
+            try {
+                int end = tableOn.transformLength + offset;
+                if(end > block.length)
+                    end = block.length;
+
+                tableOn.tableData = Arrays.copyOfRange(block, offset, end);
+                offset += tableOn.transformLength;
+            } catch (Exception e) {
+                return;
+            }
+        }
     }
 
-    private void parseTableData(WoffTable tableOn) throws IOException {
-        if (tableOn instanceof Woff1Table)
-            input.seek(((Woff1Table) tableOn).offset);
-
-        tableOn.compressedData = input.readBytes(tableOn.transformLength);
+    private void parseTableData(Woff1Table tableOn) throws IOException {
+        input.seek(tableOn.offset);
+        byte[] compressedData = input.readBytes(tableOn.transformLength);
+        tableOn.readCompressedData(compressedData);
     }
 
     private void parseDirectoryEntry() throws IOException {
@@ -79,8 +94,7 @@ public class WoffParser {
     }
 
     private void parseV1DirectoryEntry(Woff1Table table) throws IOException {
-        String tag = input.readString(4);
-        table.flag = TableFlagType.fromString(tag);
+        table.tag = input.readString(4);
 
         table.offset = input.readInt();
         table.transformLength = input.readInt();
@@ -125,7 +139,7 @@ public class WoffParser {
 
     private byte[] brotliDecompress(byte[] bytes) {
         ByteBuffer inBuffer = ByteBuffer.allocate(bytes.length);
-        ByteBuffer outBuffer = ByteBuffer.allocate(bytes.length * 2);
+        ByteBuffer outBuffer = ByteBuffer.allocate(bytes.length * 4);
         inBuffer.put(bytes);
         inBuffer.limit(bytes.length);
         inBuffer.position(0);

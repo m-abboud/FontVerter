@@ -36,7 +36,7 @@ public class NameTable extends OpenTypeTable {
         return false;
     }
 
-    public String getTableTypeName() {
+    public String getTableType() {
         return "name";
     }
 

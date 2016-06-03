@@ -41,13 +41,11 @@ public class WoffConstants {
 
 
         public static TableFlagType fromString(String str) {
-            for (TableFlagType type : TableFlagType.values()) {
-                String typeName = type.name().trim();
-                if (typeName.equals("OS/2"))
-                    return OS2;
+            for (TableFlagType typeOn : TableFlagType.values()) {
+                String cleanedStr = str.trim().replace("/","");
 
-                if (type.name().equals(str))
-                    return type;
+                if (typeOn.name().equals(cleanedStr))
+                    return typeOn;
             }
 
             return arbitrary;

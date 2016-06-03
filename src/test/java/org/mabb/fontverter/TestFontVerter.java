@@ -39,7 +39,7 @@ public class TestFontVerter {
         FileUtils.writeByteArrayToFile(outputFile, font.getData());
         font.setSourceFile(outputFile);
 
-        TestUtils.runAllValidators(font);
+        TestUtils.runAllOtfValidators(font);
         Assert.assertTrue(font.getCmap().getGlyphCount() > 3);
     }
 }

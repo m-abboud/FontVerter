@@ -20,7 +20,7 @@ public class Woff1Validator extends RuleValidator<Woff1Font> {
             for (WoffTable table : font.tables) {
                 Woff1Table tableOn = ((Woff1Table) table);
                 if (tableOn.offset != positionOn)
-                    overlapErrors += String.format("\n Table %s %d != %d", tableOn.flag, tableOn.offset, positionOn);
+                    overlapErrors += String.format("\n Table %s %d != %d", tableOn.getTag(), tableOn.offset, positionOn);
 
                 positionOn += tableOn.getCompressedData().length;
             }
@@ -35,7 +35,7 @@ public class Woff1Validator extends RuleValidator<Woff1Font> {
             for (WoffTable table : font.tables) {
                 Woff1Table tableOn = ((Woff1Table) table);
                 if (tableOn.offset % 4 != 0)
-                    paddingErrors += String.format("\n Table %s %d %% 4 != 0", tableOn.flag, tableOn.offset);
+                    paddingErrors += String.format("\n Table %s %d %% 4 != 0", tableOn.getTag(), tableOn.offset);
             }
 
             return paddingErrors;

@@ -1,5 +1,6 @@
 package org.mabb.fontverter.woff;
 
+import org.mabb.fontverter.converter.WoffToOtfConverter;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontConverter;
@@ -32,12 +33,12 @@ public abstract class WoffFont implements FVFont {
         return font;
     }
 
-    WoffFont() {
+    public WoffFont() {
     }
 
     public abstract WoffTable createTable();
 
-    public abstract void addFontTable(byte[] unpaddedData, WoffConstants.TableFlagType tableFlag, long checksum);
+    public abstract void addFontTable(byte[] unpaddedData, String tag, long checksum);
 
     public byte[] getData() throws IOException {
         // have to write out data twice for header calcs
@@ -50,8 +51,8 @@ public abstract class WoffFont implements FVFont {
 
         Collections.sort(tables, new Comparator<WoffTable>() {
             public int compare(WoffTable o1, WoffTable o2) {
-                String c1 = o1.flag.toString();
-                String c2 = o2.flag.toString();
+                String c1 = o1.getTag();
+                String c2 = o2.getTag();
                 return c1.compareTo(c2);
             }
         });
@@ -80,10 +81,8 @@ public abstract class WoffFont implements FVFont {
     }
 
     public void read(byte[] fontFile) throws IOException {
-    }
-
-    public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
-        throw new FontNotSupportedException("Font conversion not supported");
+        WoffParser parser = new WoffParser();
+        parser.parse(fontFile, this);
     }
 
     public void addFont(FVFont adapter) {

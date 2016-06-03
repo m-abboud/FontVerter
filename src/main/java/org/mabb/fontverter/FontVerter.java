@@ -1,13 +1,13 @@
 package org.mabb.fontverter;
 
 import org.apache.commons.io.FileUtils;
-import org.mabb.fontverter.cff.CffFontAdapter;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,14 +63,15 @@ public class FontVerter {
 
         // if nothing can read go at it again and use the first one to throw an exception
         // as the exception message for debugging.
-        try {
-            for (Class<? extends FVFont> adapterOn : adapters) {
+        for (Class<? extends FVFont> adapterOn : adapters) {
+
+            try {
                 FVFont adapter = parseFont(fontData, adapterOn);
                 if (adapter != null)
                     return adapter;
+            } catch (Exception ex) {
+                throw new IOException("FontVerter could not read the given font file.", ex);
             }
-        } catch (Exception ex) {
-            throw new IOException("FontVerter could not read the given font file.", ex);
         }
 
         throw new IOException("FontVerter could not detect the input font's type.");
@@ -114,8 +115,19 @@ public class FontVerter {
                 int cffIndex = adapters.indexOf(cffAdapter);
                 adapters.set(cffIndex, adapters.get(adapters.size() - 1));
                 adapters.set(adapters.size() - 1, cffAdapter);
+
+                adapters = removeAbstractClasses(adapters);
             }
         }
     }
 
+    private static List<Class> removeAbstractClasses(List<Class> classes) {
+        List<Class> filtered = new ArrayList<Class>();
+        for (Class adapterOn : classes) {
+            if (!Modifier.isAbstract(adapterOn.getModifiers()))
+                filtered.add(adapterOn);
+        }
+
+        return filtered;
+    }
 }

@@ -10,7 +10,7 @@ class UnknownTableType extends OpenTypeTable {
         this.name = name;
     }
 
-    public String getTableTypeName() {
+    public String getTableType() {
         return name;
     }
 

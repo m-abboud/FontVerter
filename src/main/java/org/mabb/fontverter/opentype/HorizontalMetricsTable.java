@@ -10,7 +10,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
     private short[] nonHorizontalLeftSideBearing;
     private int numHMetrics;
 
-    public String getTableTypeName() {
+    public String getTableType() {
         return "hmtx";
     }
 

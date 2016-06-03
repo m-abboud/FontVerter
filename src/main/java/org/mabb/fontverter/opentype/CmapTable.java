@@ -32,7 +32,7 @@ public class CmapTable extends OpenTypeTable {
         return subTables.size();
     }
 
-    public String getTableTypeName() {
+    public String getTableType() {
         return "cmap";
     }
 

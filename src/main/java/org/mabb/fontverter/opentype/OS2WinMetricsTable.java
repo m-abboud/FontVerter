@@ -123,11 +123,12 @@ public class OS2WinMetricsTable extends OpenTypeTable {
 
     private UnicodeRanges unicodeRanges = new UnicodeRanges();
     private CodePageRanges codePageRanges = new CodePageRanges();
+    private static byte[] latinPanose = new byte[]{2, 0, 6, 3, 0, 0, 0, 0, 0, 0};
 
     public OS2WinMetricsTable() {
     }
 
-    public String getTableTypeName() {
+    public String getTableType() {
         return "OS/2";
     }
 
@@ -149,7 +150,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
         table.strikeoutSize = 49;
         table.strikeoutPosition = 258;
         table.familyClass = 0;
-        table.panose = new byte[]{2, 0, 6, 3, 0, 0, 0, 0, 0, 0};
+        table.panose = latinPanose.clone();
         table.unicodeRange1 = 1;
         table.unicodeRange2 = 0;
         table.unicodeRange3 = 0;
@@ -188,6 +189,8 @@ public class OS2WinMetricsTable extends OpenTypeTable {
 
     void normalize() {
         super.normalize();
+        if(panose == null)
+            panose = latinPanose.clone();
         calcPanose();
         calcEncodingRanges();
 
@@ -203,11 +206,11 @@ public class OS2WinMetricsTable extends OpenTypeTable {
             panose[0] = 5;
             panose[2] = 1;
             panose[4] = 1;
-
         }
         else
             panose[0] = 2;
     }
+
 
     private void calcEncodingRanges() {
         if (isFromParsedFont)

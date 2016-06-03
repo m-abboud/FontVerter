@@ -5,7 +5,9 @@ Java library for converting fonts.
 Bare CFF -> OpenType/OTF and WOFF 1.0 & 2.0
 (Bare CFFs are found in PDF files and can be used as an OTF's CFF table with extra conversion work)
 
-OTF -> WOFF 1.0 & 2.0
+OpenType/OTF/TTF-> WOFF 1.0 & 2.0
+
+WOFF 1.0 -> OpenType and WOFF 2.0
 
 # Usage
 ##### Converting a font (in this case to OTF)

@@ -1,8 +1,10 @@
 package org.mabb.fontverter.woff;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.mabb.fontverter.FontProperties;
-import org.mabb.fontverter.FontVerterUtils;
+import org.mabb.fontverter.*;
+import org.mabb.fontverter.converter.OtfToWoffConverter;
+import org.mabb.fontverter.converter.OtfToWoffConverter.OtfToWoff2Converter;
+import org.mabb.fontverter.converter.WoffToOtfConverter;
 import org.meteogroup.jbrotli.Brotli;
 import org.meteogroup.jbrotli.BrotliStreamCompressor;
 import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
@@ -20,8 +22,8 @@ public class Woff2Font extends WoffFont {
         return new Woff2Font.Woff2Table(new byte[0], arbitrary);
     }
 
-    public void addFontTable(byte[] data, WoffConstants.TableFlagType flag, long checksum) {
-        WoffTable table = new Woff2Table(data, flag);
+    public void addFontTable(byte[] data, String tag, long checksum) {
+        WoffTable table = new Woff2Table(data, WoffConstants.TableFlagType.fromString(tag));
         tables.add(table);
     }
 
@@ -63,11 +65,22 @@ public class Woff2Font extends WoffFont {
         return properties;
     }
 
+    public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
+        if (fontFormat == FontVerter.FontFormat.OTF)
+            return new WoffToOtfConverter();
+        if (fontFormat == FontVerter.FontFormat.WOFF1)
+            return new CombinedFontConverter(new WoffToOtfConverter(), new OtfToWoffConverter());
+
+        throw new FontNotSupportedException("Font conversion not supported");
+    }
+
     public static class Woff2Table extends WoffTable {
         private int transform = -1;
+        protected WoffConstants.TableFlagType flag;
 
         public Woff2Table(byte[] table, WoffConstants.TableFlagType flag) {
-            super(table, flag);
+            super(table);
+            this.flag = flag;
         }
 
         protected byte[] compress(byte[] bytes) throws IOException {
@@ -117,6 +130,14 @@ public class Woff2Font extends WoffFont {
                 return transform != 3;
 
             return transform != 0;
+        }
+
+        public WoffConstants.TableFlagType getFlag() {
+            return flag;
+        }
+
+        public String getTag() {
+            return flag.toString();
         }
     }
 }

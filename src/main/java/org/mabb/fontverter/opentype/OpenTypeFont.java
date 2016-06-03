@@ -1,5 +1,6 @@
 package org.mabb.fontverter.opentype;
 
+import org.apache.fontbox.ttf.CFFTable;
 import org.mabb.fontverter.*;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.io.FontDataOutputStream;
@@ -145,7 +146,7 @@ public class OpenTypeFont implements FVFont {
         // then still needs to be added here for seperate data entries
         Collections.sort(tables, new Comparator<OpenTypeTable>() {
             public int compare(OpenTypeTable left, OpenTypeTable right) {
-                return left.getTableTypeName().compareTo(right.getTableTypeName());
+                return left.getTableType().compareTo(right.getTableType());
             }
         });
 
@@ -183,6 +184,9 @@ public class OpenTypeFont implements FVFont {
     }
 
     private void normalizeTables() {
+        if (sfntHeader.sfntFlavor.isEmpty())
+            sfntHeader.sfntFlavor = determineSfntFlavor();
+
         if (getCmap() != null && getMxap() != null && !getMxap().isFromParsedFont)
             getMxap().setNumGlyphs(getCmap().getGlyphCount());
 
@@ -190,6 +194,15 @@ public class OpenTypeFont implements FVFont {
             tableOn.font = this;
             tableOn.normalize();
         }
+    }
+
+    private String determineSfntFlavor() {
+        if (getCffTable() != null)
+            return SfntHeader.CFF_FLAVOR;
+        else if (getPost() != null )
+            return SfntHeader.toVersionString(getPost().getVersion());
+
+        return VERSION_1;
     }
 
     private byte[] getRawData() throws IOException {
@@ -341,7 +354,15 @@ public class OpenTypeFont implements FVFont {
         setTable(name);
     }
 
+    public NameTable getCffTable() {
+        return findTableType(CFFTable.class);
+    }
+
     public List<OpenTypeTable> getTables() {
         return tables;
+    }
+
+    public SfntHeader getSfntHeader() {
+        return sfntHeader;
     }
 }

@@ -5,7 +5,6 @@ import org.mabb.fontverter.FontVerterUtils;
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
 import org.mabb.fontverter.io.DataTypeBindingSerializer;
 import org.mabb.fontverter.io.DataTypeProperty;
-import org.mabb.fontverter.io.DataTypeSerializerException;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +58,7 @@ public abstract class OpenTypeTable {
         for (Class typeOn : tableTypes) {
             OpenTypeTable tableOn = (OpenTypeTable) typeOn.newInstance();
 
-            if (tableOn.getTableTypeName().equals(record.recordName)) {
+            if (tableOn.getTableType().equals(record.recordName)) {
                 createdTable = tableOn;
                 break;
             }
@@ -104,7 +103,7 @@ public abstract class OpenTypeTable {
     }
 
     /* overly descriptive method name to avoid confusion with other getName methods */
-    public abstract String getTableTypeName();
+    public abstract String getTableType();
 
     public final byte[] getData() throws IOException {
         // open type tables should be padded to be divisible by 4
@@ -148,7 +147,7 @@ public abstract class OpenTypeTable {
         byte[] data = getData();
 
         OtfTableRecord record = new OtfTableRecord();
-        record.recordName = getTableTypeName();
+        record.recordName = getTableType();
         record.length = data.length - paddingAdded;
         record.checksum = (int) checksum;
         record.offset = getOffset();

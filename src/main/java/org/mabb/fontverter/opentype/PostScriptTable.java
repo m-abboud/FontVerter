@@ -48,7 +48,7 @@ public class PostScriptTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.PASCAL_STRING, isArray = true, includeIf = "isVersion2", arrayLength = "getNumGlyphs")
     private String[] glyphNames = new String[0];
 
-    public String getTableTypeName() {
+    public String getTableType() {
         return "post";
     }
 

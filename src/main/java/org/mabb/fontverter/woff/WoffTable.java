@@ -9,16 +9,13 @@ import java.io.IOException;
 public abstract class WoffTable {
     int transformLength;
     int originalLength;
-
-    protected TableFlagType flag;
     protected byte[] tableData;
     protected byte[] compressedData;
     protected int paddingAdded = 0;
 
-    public WoffTable(byte[] table, TableFlagType flag) {
+    public WoffTable(byte[] table) {
         this.tableData = table;
         originalLength = table.length;
-        this.flag = flag;
     }
 
     protected abstract byte[] compress(byte[] data) throws IOException;
@@ -46,4 +43,9 @@ public abstract class WoffTable {
         return tableData.length;
     }
 
+    public byte[] getTableData() {
+        return tableData;
+    }
+
+    public abstract String getTag();
 }

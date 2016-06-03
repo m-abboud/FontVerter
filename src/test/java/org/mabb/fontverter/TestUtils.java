@@ -6,6 +6,7 @@ import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.validator.OpenTypeFontValidator;
 
 import java.awt.*;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -13,19 +14,17 @@ public class TestUtils {
     public static final String TEST_PATH = "src/test/files/";
     public static final String tempOutputPath = "src/test/test-output/";
 
-    public static void runAllValidators(OpenTypeFont font) throws Exception {
+    public static void runAllOtfValidators(OpenTypeFont font) throws Exception {
         runFontVerterInternalValidator(font);
 
         try {
-            fontboxValidate(font.getSourceFile());
+            fontboxValidate(font.getData());
         } catch (IOException ex) {
             // fontbox bug location table is not mandatory for otf with cff type fonts
             // putting patch in soon
             if (!ex.getMessage().contains("loca is mandatory"))
                 throw ex;
         }
-
-        jdkFontValidate(font.getSourceFile());
     }
 
     public static void runFontVerterInternalValidator(OpenTypeFont font) throws Exception {
@@ -33,19 +32,23 @@ public class TestUtils {
         validator.validateWithExceptionsThrown(font);
     }
 
-    public static void jdkFontValidate(File file) throws FontFormatException, IOException {
-        Font.createFont(Font.TRUETYPE_FONT, file);
-    }
-
-    public static void fontboxValidate(File file) throws IOException {
+    public static void fontboxValidate(byte[] file) throws IOException {
         // fontbox for validating generated fonts, fontbox has good pdf type font parsing no generation tho
         // but font classes have package local constructors
         OTFParser parser = new OTFParser();
-        org.apache.fontbox.ttf.OpenTypeFont font = parser.parse(file);
+        org.apache.fontbox.ttf.OpenTypeFont font = parser.parse(new ByteArrayInputStream(file));
         font.getName();
     }
 
     public static byte[] readTestFile(String filePath) throws IOException {
         return FileUtils.readFileToByteArray(new File(TEST_PATH + filePath));
+    }
+
+    public static void saveTempFile(byte[] data, String fileName) throws Exception {
+        File outputFile = new File(tempOutputPath + fileName);
+        if (outputFile.exists())
+            outputFile.delete();
+
+        FileUtils.writeByteArrayToFile(outputFile, data);
     }
 }

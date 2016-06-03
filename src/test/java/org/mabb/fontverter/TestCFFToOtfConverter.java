@@ -18,13 +18,13 @@ public class TestCFFToOtfConverter {
     @Test
     public void convertSimpleFont_fontValidatorsPass() throws Exception {
         OpenTypeFont font = convertAndSaveFile("cff/FontVerter+SimpleTestFont");
-        TestUtils.runAllValidators(font);
+        TestUtils.runAllOtfValidators(font);
     }
 
     @Test
     public void convertFullAlphabetFont_fontValidatorsPass() throws Exception {
         OpenTypeFont font = convertAndSaveFile("cff/FontVerter+FullAlphabetFont");
-        TestUtils.runAllValidators(font);
+        TestUtils.runAllOtfValidators(font);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class TestCFFToOtfConverter {
 
         for (File file : cffFiles) {
             OpenTypeFont font = convertAndSaveFile(file);
-            TestUtils.runAllValidators(font);
+            TestUtils.runAllOtfValidators(font);
         }
     }
 

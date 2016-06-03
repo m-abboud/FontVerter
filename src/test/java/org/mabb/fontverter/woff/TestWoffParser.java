@@ -52,10 +52,9 @@ public class TestWoffParser {
     @Test
     public void parseWoff2_thenAllTablesHaveData() throws IOException {
         WoffFont font = parseFont(TestUtils.TEST_PATH + "Open-Sans-WOFF-2.0.woff2");
-
-        //  todo pretty sure google font is font collection and parser doesn't do yet
+//
 //        for (WoffTable tableOn : font.getTables())
-//            Assert.assertThat(tableOn.flag.toString(), tableOn.tableData.length, greaterThan(0));
+//            Assert.assertThat(tableOn.getTag(), tableOn.tableData.length, greaterThan(0));
     }
 
 

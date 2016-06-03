@@ -12,7 +12,7 @@ import static org.mabb.fontverter.io.FontDataOutputStream.OPEN_TYPE_CHARSET;
 public class ControlValueTable extends OpenTypeTable {
     private List<Short> values = new LinkedList<Short>();
 
-    public String getTableTypeName() {
+    public String getTableType() {
         return "cvt ";
     }
 

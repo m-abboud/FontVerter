@@ -5,15 +5,15 @@ import org.mabb.fontverter.io.DataTypeProperty;
 
 import java.io.IOException;
 
-class SfntHeader {
-    static final int SFNT_HEADER_SIZE = 12;
-    static final String CFF_FLAVOR = "OTTO";
-    static final String VERSION_1 = "\u0000\u0001\u0000\u0000";
-    static final String VERSION_2 = "\u0000\u0002\u0000\u0000";
-    static final String VERSION_2_5 = "\u0000\u0002\u0005\u0000";
+public class SfntHeader {
+    public static final int SFNT_HEADER_SIZE = 12;
+    public static final String CFF_FLAVOR = "OTTO";
+    public static final String VERSION_1 = "\u0000\u0001\u0000\u0000";
+    public static final String VERSION_2 = "\u0000\u0002\u0000\u0000";
+    public static final String VERSION_2_5 = "\u0000\u0002\u0005\u0000";
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.STRING, byteLength = 4)
-    public String sfntFlavor = CFF_FLAVOR;
+    public String sfntFlavor = "";
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
     public int numTables;
@@ -62,5 +62,9 @@ class SfntHeader {
             return 2.5F;
 
         return 1;
+    }
+
+    static String toVersionString(float i) {
+        return i == 2.5 ? VERSION_2_5 : (i == 2 ? VERSION_2 : VERSION_1);
     }
 }
