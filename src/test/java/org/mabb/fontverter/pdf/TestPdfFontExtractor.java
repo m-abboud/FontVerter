@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) Matthew Abboud 2016
+ *
+ * FontVerter is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FontVerter is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with FontVerter. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.mabb.fontverter.pdf;
 
 import org.apache.commons.io.FilenameUtils;
@@ -23,6 +40,7 @@ public class TestPdfFontExtractor {
         List<FVFont> fonts = extractor.extractToFVFonts(doc);
 
         Assert.assertEquals(3, fonts.size());
+        doc.close();
     }
 
     @Rule
@@ -40,6 +58,8 @@ public class TestPdfFontExtractor {
         Assert.assertEquals(3, fontFiles.length);
         for (File fileOn : fontFiles)
             Assert.assertEquals("ttf", FilenameUtils.getExtension(fileOn.getPath()));
+
+        doc.close();
     }
 
     @Test
@@ -56,5 +76,7 @@ public class TestPdfFontExtractor {
         Assert.assertEquals(3, fontFiles.length);
         for (File fileOn : fontFiles)
             Assert.assertEquals("woff", FilenameUtils.getExtension(fileOn.getPath()));
+
+        doc.close();
     }
 }
