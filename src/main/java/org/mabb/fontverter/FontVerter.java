@@ -27,11 +27,15 @@ public class FontVerter {
         public static final FontFormat TTF = OTF;
     }
 
-    public static FVFont convertFont(byte[] inputFontData, FontFormat convertTo) throws IOException {
-        FVFont inputFont = readFont(inputFontData);
+    public static FVFont convertFont(FVFont inputFont, FontFormat convertTo) throws IOException {
         FontConverter converter = inputFont.createConverterForType(convertTo);
 
         return converter.convertFont(inputFont);
+    }
+
+    public static FVFont convertFont(byte[] inputFontData, FontFormat convertTo) throws IOException {
+        FVFont inputFont = readFont(inputFontData);
+        return convertFont(inputFont, convertTo);
     }
 
     public static FVFont convertFont(File inputFontData, FontFormat convertTo) throws IOException {

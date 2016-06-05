@@ -2,6 +2,7 @@ package org.mabb.fontverter.opentype;
 
 import org.apache.fontbox.ttf.CFFTable;
 import org.mabb.fontverter.*;
+import org.mabb.fontverter.converter.IdentityConverter;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.validator.RuleValidator;
@@ -122,12 +123,17 @@ public class OpenTypeFont implements FVFont {
     }
 
     public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
-        if (fontFormat == FontVerter.FontFormat.WOFF1)
-            return new OtfToWoffConverter();
-        if (fontFormat == FontVerter.FontFormat.WOFF2)
-            return new OtfToWoffConverter.OtfToWoff2Converter();
-
-        throw new FontNotSupportedException("Font conversion not supported");
+        switch(fontFormat)
+        {
+            case OTF:
+                return new IdentityConverter();
+            case WOFF1:
+                return new OtfToWoffConverter();
+            case WOFF2:
+                return new OtfToWoffConverter.OtfToWoff2Converter();
+            default:
+                throw new FontNotSupportedException("Font conversion not supported");
+        }
     }
 
     private <T extends OpenTypeTable> T initTable(T table) {

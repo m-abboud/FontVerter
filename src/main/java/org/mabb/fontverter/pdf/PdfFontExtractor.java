@@ -5,42 +5,70 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.*;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.mabb.fontverter.FVFont;
+import org.mabb.fontverter.FontVerter;
+import org.mabb.fontverter.FontVerter.FontFormat;
 import org.mabb.fontverter.converter.PsType0ToOpenTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Utility to extract all fonts in a given PDF
  */
 public class PdfFontExtractor extends PDFTextStripper {
-    public static void main(String[] args) throws IOException {
-        String extractPath = "extracted-pdf-fonts/";
+    private static final String[] HELP_CODES = new String[]{"-h", "help", "--help", "/?"};
+    private static final String DEFAULT_EXTRACT_PATH = "fonts/";
 
-        File pdf = new File("f");
+    public static void main(String[] args) throws IOException {
+        if (args.length < 1 || Arrays.asList(HELP_CODES).contains(args[0])) {
+            System.out.println("Usage: PdfFontExtractor <pdf file or directory containing pdf files>");
+            System.out.println("Options: ");
+            System.out.println("-ff=<format> Font format to save the fonts as. <format> = WOFF1, WOFF2, OTF. Defaults to OTF.");
+            System.out.println("-dir=<path> Directory to extract to. <path> = font extract directory. Defaults to {current dir}/fonts/");
+
+            System.exit(1);
+        }
+
+        String extractPath = DEFAULT_EXTRACT_PATH;
+        FontFormat format = FontFormat.OTF;
+
+        for (String argOn : args) {
+            String value = argOn.replaceAll("-[^=]*=", "");
+            if (argOn.startsWith("-ff=")) {
+                if (value.toUpperCase().equals("WOFF"))
+                    value = "WOFF1";
+
+                format = FontFormat.valueOf(value.toUpperCase());
+            } else if (argOn.startsWith("-dir=")) {
+                extractPath = value;
+            }
+        }
+
+        File pdf = new File(args[0]);
         if (pdf.isDirectory()) {
             List<File> pdfFiles = (List<File>) FileUtils.listFiles(pdf, new String[]{"pdf"}, true);
+
             for (File fileOn : pdfFiles)
                 try {
-                    extractPdfFonts(extractPath, fileOn);
+                    extractPdfFonts(extractPath, fileOn, format);
                 } catch (Throwable ex) {
                     ex.printStackTrace();
                 }
         } else
-            extractPdfFonts(extractPath, pdf);
+            extractPdfFonts(extractPath, pdf, format);
 
     }
 
-    private static void extractPdfFonts(String extractPath, File pdfFile) throws IOException {
+    private static void extractPdfFonts(String extractPath, File pdfFile, FontFormat format) throws IOException {
         File fontExtractDir = new File(extractPath);
         if (!fontExtractDir.exists())
             fontExtractDir.mkdir();
@@ -48,45 +76,43 @@ public class PdfFontExtractor extends PDFTextStripper {
         PDDocument pdf = PDDocument.load(pdfFile);
 
         PdfFontExtractor fontExtractor = new PdfFontExtractor();
-        fontExtractor.pdfFile = pdfFile;
-
+        fontExtractor.setExtractFormat(format);
         fontExtractor.extractFontsToDir(pdf, extractPath);
 
         pdf.close();
     }
 
-    public static FVFont convertType0FontToOpenType(PDType0Font font) throws IOException {
-        PsType0ToOpenTypeConverter converter = new PsType0ToOpenTypeConverter();
-        try {
-            return converter.convert(font);
-        } catch (Exception ex) {
-            throw new IOException(ex);
-        }
-    }
-
+    private FontFormat extractFormat = FontFormat.OTF;
     private static Logger log = LoggerFactory.getLogger(PdfFontExtractor.class);
     private PDPage pdpage;
     private ExtractFontStrategy extractStrategy;
-    private File pdfFile;
 
     public PdfFontExtractor() throws IOException {
         super();
     }
 
-    public void extractFontsToDir(PDDocument pdf, String path) throws IOException {
-        this.extractStrategy = new ExtractToDirStrategy(path);
-        Writer output = new StringWriter();
-        writeText(pdf, output);
-        output.close();
+    public void extractFontsToDir(File pdf, String path) throws IOException {
+        PDDocument doc = PDDocument.load(pdf);
+        extractFontsToDir(doc, path);
+        doc.close();
     }
 
-    public List<PDFont> extractToPDFBoxFonts(PDDocument pdf) throws IOException {
-        this.extractStrategy = new ExtractToPDFBoxFontStrategy();
+    public void extractFontsToDir(byte[] pdf, String path) throws IOException {
+        PDDocument doc = PDDocument.load(pdf);
+        extractFontsToDir(doc, path);
+        doc.close();
+    }
+
+    public void extractFontsToDir(PDDocument pdf, File path) throws IOException {
+        extractFontsToDir(pdf, path.getPath() + "/");
+    }
+
+    public void extractFontsToDir(PDDocument pdf, String path) throws IOException {
+        this.extractStrategy = new ExtractToDirStrategy(path, extractFormat);
         Writer output = new StringWriter();
         writeText(pdf, output);
-        output.close();
 
-        return ((ExtractToPDFBoxFontStrategy) extractStrategy).extractedFonts;
+        output.close();
     }
 
     public List<FVFont> extractToFVFonts(PDDocument pdf) throws IOException {
@@ -96,6 +122,15 @@ public class PdfFontExtractor extends PDFTextStripper {
         output.close();
 
         return ((ExtractFVFontStrategy) extractStrategy).extractedFvFonts;
+    }
+
+    public List<PDFont> extractToPDFBoxFonts(PDDocument pdf) throws IOException {
+        this.extractStrategy = new ExtractToPDFBoxFontStrategy();
+        Writer output = new StringWriter();
+        writeText(pdf, output);
+        output.close();
+
+        return ((ExtractToPDFBoxFontStrategy) extractStrategy).extractedFonts;
     }
 
     public void processPage(PDPage page) throws IOException {
@@ -127,21 +162,60 @@ public class PdfFontExtractor extends PDFTextStripper {
             if (xobject instanceof PDFormXObject) {
                 PDFormXObject xObjectForm = (PDFormXObject) xobject;
                 PDResources formResources = xObjectForm.getResources();
+
                 if (formResources != null)
                     extractFontResources(formResources);
             }
         }
     }
 
-    public static FVFont convertFont(PDFont font) throws IOException {
-        if (font instanceof PDType0Font && ((PDType0Font) font).getDescendantFont() instanceof PDCIDFontType2) {
-            FVFont convertedFont = convertType0FontToOpenType((PDType0Font) font);
-            convertedFont.normalize();
+    public static FVFont convertFont(PDFont font, FontFormat format) throws IOException {
+        FVFont readFont = null;
 
-            return convertedFont;
+        if (font instanceof PDTrueTypeFont) {
+            byte[] data = font.getFontDescriptor().getFontFile2().toByteArray();
+            readFont = FontVerter.readFont(data);
+
+        } else if (isTtfType0CombinedFont(font)) {
+            readFont = convertType0FontToOpenType((PDType0Font) font);
+            readFont.normalize();
+
+        } else if (font instanceof PDType1CFont) {
+            byte[] data = font.getFontDescriptor().getFontFile3().toByteArray();
+            readFont = FontVerter.readFont(data);
+
+        } else
+            log.warn("Skipped font: '{}'. FontVerter does not support font type: '{}'", font.getName(), font.getType());
+
+        if (readFont == null)
+            return null;
+
+        if (!readFont.isValid())
+            readFont.normalize();
+
+        return FontVerter.convertFont(readFont, format);
+    }
+
+    public static FVFont convertType0FontToOpenType(PDType0Font font) throws IOException {
+        PsType0ToOpenTypeConverter converter = new PsType0ToOpenTypeConverter();
+        try {
+            return converter.convert(font);
+        } catch (Exception ex) {
+            throw new IOException(ex);
         }
+    }
 
-        return null;
+    private static boolean isTtfType0CombinedFont(PDFont font) {
+        return font instanceof PDType0Font &&
+                ((PDType0Font) font).getDescendantFont() instanceof PDCIDFontType2;
+    }
+
+    public FontFormat getExtractFormat() {
+        return extractFormat;
+    }
+
+    public void setExtractFormat(FontFormat extractFormat) {
+        this.extractFormat = extractFormat;
     }
 
     static abstract class ExtractFontStrategy {
@@ -169,51 +243,42 @@ public class PdfFontExtractor extends PDFTextStripper {
 
         public void extract(PDFont font) throws IOException {
             extractedFonts.add(font);
-            FVFont convertedFont = convertFont(font);
+            FVFont convertedFont = convertFont(font, FontFormat.OTF);
+
             if (convertedFont != null)
                 extractedFvFonts.add(convertedFont);
-        }
 
+            log.info("Extracted: {}", font.getName());
+        }
     }
 
     static class ExtractToDirStrategy extends ExtractFontStrategy {
-        private final String extractPath;
+        private String extractPath;
+        private final FontFormat format;
 
-        public ExtractToDirStrategy(String path) {
+        public ExtractToDirStrategy(String path, FontFormat format) {
             extractPath = path;
+            this.format = format;
         }
 
         public void extract(PDFont font) throws IOException {
-            String fileEnding = "";
-            PDStream fontStream = null;
-            byte[] data = new byte[0];
-            PDFontDescriptor fontDesc = font.getFontDescriptor();
+            if (hasExtractedFont(font))
+                return;
+            else
+                extractedFonts.add(font);
 
-            if (font instanceof PDTrueTypeFont) {
-                fontStream = fontDesc.getFontFile2();
-                fileEnding = ".ttf";
-            } else if (font instanceof PDType0Font) {
-                PDCIDFont descendantFont = ((PDType0Font) font).getDescendantFont();
-                if (descendantFont instanceof PDCIDFontType2) {
-                    data = convertFont(font).getData();
-                    fileEnding = ".ttf";
-                } else
-                    log.warn("Skipped: " + font.getName() + " type0");
-            } else if (font instanceof PDType1CFont) {
-                fontStream = fontDesc.getFontFile3();
-                fileEnding = ".cff";
-            } else
-                log.info("Skipped: " + font.getName() + " type unkown");
+            FVFont saveFont = convertFont(font, format);
 
-            if (!fileEnding.isEmpty() && !extractPath.isEmpty()) {
-                String fontFilePath = extractPath + font.getName() + fileEnding;
-                if (!hasExtractedFont(font)) {
-                    extractedFonts.add(font);
-                    if(fontStream != null)
-                        data = fontStream.toByteArray();
-                    FileUtils.writeByteArrayToFile(new File(fontFilePath), data);
-                    log.warn("Extracted: " + fontFilePath);
-                }
+            if (saveFont != null && !extractPath.isEmpty()) {
+                String fileEnding = saveFont.getProperties().getFileEnding();
+                if (!extractPath.endsWith("/"))
+                    extractPath += "/";
+
+                String fontFilePath = extractPath + font.getName() + "." + fileEnding;
+
+                FileUtils.writeByteArrayToFile(new File(fontFilePath), saveFont.getData());
+
+                log.info("Extracted: {}", fontFilePath);
             }
         }
     }
