@@ -1,14 +1,11 @@
 package org.mabb.fontverter.woff;
 
 import org.mabb.fontverter.*;
-import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.converter.OtfToWoffConverter.OtfToWoff2Converter;
 import org.mabb.fontverter.converter.WoffToOtfConverter;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.zip.DeflaterInputStream;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterOutputStream;
 
@@ -42,6 +39,11 @@ public class Woff1Font extends WoffFont {
             tableOn.setOffset(offset);
             offset += tableOn.getCompressedData().length;
         }
+    }
+
+    public void read(byte[] fontFile) throws IOException {
+        WoffParser parser = new WoffParser();
+        parser.parse(fontFile, this);
     }
 
     int tableDirectoryOffsetStart() {

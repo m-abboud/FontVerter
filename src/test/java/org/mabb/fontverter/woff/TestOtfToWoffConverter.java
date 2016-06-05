@@ -80,7 +80,7 @@ public class TestOtfToWoffConverter {
         WoffFont convertedFont = (WoffFont) FontVerter.convertFont(TEST_PATH + "cff/test.cff", FontFormat.WOFF2);
         int otfLength = convertedFont.getFonts().get(0).getData().length;
 
-        WoffParser parser = new WoffParser();
+        Woff2Parser parser = new Woff2Parser();
         WoffFont reparsedFont = parser.parse(convertedFont.getData());
 
         Assert.assertEquals(otfLength, reparsedFont.header.totalSfntSize);
@@ -93,13 +93,11 @@ public class TestOtfToWoffConverter {
         saveTempFile(fontData, "FontVerter+SimpleTestFont.woff2");
 
         // parse bytes and rebuild font obj for validation so know data is written right
-        WoffParser parser = new WoffParser();
+        Woff2Parser parser = new Woff2Parser();
 
         // readd underlying opentype font for validator
         Woff2Font reparseFont = (Woff2Font) parser.parse(fontData);
         reparseFont.getFonts().add(convertedFont.fonts.get(0));
         return convertedFont;
     }
-
-
 }

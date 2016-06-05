@@ -1,11 +1,7 @@
 package org.mabb.fontverter.woff;
 
-import org.mabb.fontverter.converter.WoffToOtfConverter;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.FVFont;
-import org.mabb.fontverter.FontConverter;
-import org.mabb.fontverter.FontNotSupportedException;
-import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.validator.RuleValidator;
 
 import java.io.IOException;
@@ -78,11 +74,6 @@ public abstract class WoffFont implements FVFont {
             writer.write(tableOn.getCompressedData());
 
         return writer.toByteArray();
-    }
-
-    public void read(byte[] fontFile) throws IOException {
-        WoffParser parser = new WoffParser();
-        parser.parse(fontFile, this);
     }
 
     public void addFont(FVFont adapter) {

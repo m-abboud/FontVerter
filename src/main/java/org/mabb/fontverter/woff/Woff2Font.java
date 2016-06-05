@@ -31,6 +31,11 @@ public class Woff2Font extends WoffFont {
         return FontVerterUtils.bytesStartsWith(fontFile, "wOF2");
     }
 
+    public void read(byte[] fontFile) throws IOException {
+        Woff2Parser parser = new Woff2Parser();
+        parser.parse(fontFile, this);
+    }
+
     byte[] getCompressedDataBlock() throws IOException {
         if (cachedCompressedBlock == null)
             cachedCompressedBlock = brotliCompress(super.getCompressedDataBlock());
