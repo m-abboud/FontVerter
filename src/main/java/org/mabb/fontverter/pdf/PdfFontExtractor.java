@@ -189,7 +189,7 @@ public class PdfFontExtractor extends PDFTextStripper {
             byte[] data = font.getFontDescriptor().getFontFile2().toByteArray();
             readFont = FontVerter.readFont(data);
 
-        } else if (isTtfType0CombinedFont(font)) {
+        } else if (font instanceof PDType0Font) {
             readFont = convertType0FontToOpenType((PDType0Font) font);
             readFont.normalize();
 
@@ -216,11 +216,6 @@ public class PdfFontExtractor extends PDFTextStripper {
         } catch (Exception ex) {
             throw new IOException(ex);
         }
-    }
-
-    private static boolean isTtfType0CombinedFont(PDFont font) {
-        return font instanceof PDType0Font &&
-                ((PDType0Font) font).getDescendantFont() instanceof PDCIDFontType2;
     }
 
     public FontFormat getExtractFormat() {

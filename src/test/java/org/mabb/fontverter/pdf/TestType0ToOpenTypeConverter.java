@@ -27,7 +27,9 @@ import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.TestUtils;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.OtfNameConstants.RecordType;
+import org.mabb.fontverter.opentype.SfntHeader;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -70,9 +72,12 @@ public class TestType0ToOpenTypeConverter {
     }
 
     @Test
-    public void given_type0ss() throws IOException {
-        List<FVFont> fonts = extractFonts("pdf/brno30.pdf");
-        Assert.assertNotNull(fonts);
+    public void given_type0_withCFF_convertToOtf_thenSfntHeaderIsCffFlavor() throws Exception {
+        PDFont rawType0Font = extractFont(doc, "ZGBKQN+HelveticaNeue-Bold-Identity-H");
+
+        OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
+        TestUtils.saveTempFile(font.getData(), "ZGBKQN." + font.getProperties().getFileEnding());
+        Assert.assertEquals(SfntHeader.CFF_FLAVOR, font.getSfntHeader().sfntFlavor);
     }
 
     private PDFont extractFont(PDDocument pdfFile, String name) throws IOException {

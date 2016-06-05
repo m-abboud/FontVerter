@@ -18,18 +18,11 @@
 package org.mabb.fontverter.converter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.fontbox.cff.CFFStandardEncoding;
 import org.apache.fontbox.cmap.CMap;
-import org.apache.pdfbox.pdmodel.font.PDCIDFont;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
-import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
-import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
-import org.mabb.fontverter.CharsetConverter;
+import org.apache.pdfbox.pdmodel.font.*;
 import org.mabb.fontverter.CharsetConverter.GlyphMapping;
 import org.mabb.fontverter.FVFont;
+import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.FontVerterUtils;
 import org.mabb.fontverter.opentype.*;
 import org.mabb.fontverter.opentype.OpenTypeFont;
@@ -42,19 +35,12 @@ import java.util.regex.Pattern;
 public class PsType0ToOpenTypeConverter {
     private OpenTypeFont otfFont;
     private PDType0Font type0Font;
-    private int originalNumGlyphs;
 
     public FVFont convert(PDType0Font type0Font) throws IOException, IllegalAccessException, InstantiationException {
         this.type0Font = type0Font;
         PDCIDFont descendantFont = type0Font.getDescendantFont();
 
-        if (!(descendantFont instanceof PDCIDFontType2))
-            throw new IOException("Can only convert type 0 fonts with ttf type descendant.");
-
-        byte[] ttfData = type0Font.getFontDescriptor().getFontFile2().toByteArray();
-        OpenTypeParser otfParser = new OpenTypeParser();
-        otfFont = otfParser.parse(ttfData);
-        originalNumGlyphs = otfFont.getMxap().getNumGlyphs();
+        otfFont = getOtfFromDescendantFont(descendantFont);
 
         // so the descendant ttf font will usually have some important tables missing from it
         // that we need to create ourselves from data in the parent type 0 font.
@@ -62,12 +48,28 @@ public class PsType0ToOpenTypeConverter {
         // always build cmap from type0 parent ourselves, cmaps existing in the ttf child tend to have some
         // issues in certain browsers and apps.
         convertCmap();
-        if (otfFont.getNameTable() == null)
+        if (otfFont.getNameTable() == null || isCffDescendant())
             convertNameRecords();
 
         otfFont.finalizeFont();
 
         return otfFont;
+    }
+
+    private OpenTypeFont getOtfFromDescendantFont(PDCIDFont descendantFont) throws IOException, InstantiationException, IllegalAccessException {
+        if (isTtfDescendant()) {
+            byte[] ttfData = type0Font.getFontDescriptor().getFontFile2().toByteArray();
+            OpenTypeParser otfParser = new OpenTypeParser();
+
+            return otfParser.parse(ttfData);
+        } else if (isCffDescendant()) {
+            byte[] cffData = type0Font.getFontDescriptor().getFontFile3().toByteArray();
+
+            return (OpenTypeFont) FontVerter.convertFont(cffData, FontVerter.FontFormat.OTF);
+        }
+
+        // don't think descendant can be anything but cff or ttf but just incase
+        throw new IOException("Descendant font type not supported: " + descendantFont.getClass().getSimpleName());
     }
 
     private void convertCmap() throws IllegalAccessException, IOException {
@@ -79,7 +81,7 @@ public class PsType0ToOpenTypeConverter {
             int charCode = name.charAt(0);
             int glyphId = nameSetOn.getKey();
 
-            if(name.length() > 2 || charCode > 0xFFFF)
+            if (name.length() > 2 || charCode > 0xFFFF)
                 throw new IOException("Multi byte glyph name not supported.");
 
             if (charCode != 0)
@@ -134,13 +136,11 @@ public class PsType0ToOpenTypeConverter {
         return (Map<Integer, String>) mappings;
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<Integer, Integer> getType0CodeToCid(CMap cmap) throws IllegalAccessException {
-        Object mappings = (Map<Integer, Integer>) FontVerterUtils.findPrivateField("codeToCid", cmap.getClass()).get(cmap);
-        if (mappings == null)
-            return new HashMap<Integer, Integer>();
-
-        return (Map<Integer, Integer>) mappings;
+    private boolean isTtfDescendant() {
+        return type0Font.getDescendantFont() instanceof PDCIDFontType2;
     }
 
+    private boolean isCffDescendant() {
+        return type0Font.getDescendantFont() instanceof PDCIDFontType0;
+    }
 }

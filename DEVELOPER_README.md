@@ -16,11 +16,7 @@ Currently using specific converters for font conversion but would probabley be a
 however that's a lot of boring work since fonts have a ton of crap in them and it remains on my backburner.
 
 ##### Hardley any Java Docs what is this??
-You may notice the lack of java docs in this project, it's on purpose. IMO java docs are an unncessaray evil that amounts to little more than duplicate code,
-you modify some code and now you have to change two things instead of one. I try to name my methods and parameter names as accuratley as possible so there is no need to resort to a comment and it's quicker to figure out
-what a method or class does if you don't have to read a giant block comment to understand it. See Uncle Bob's opinion on the matter.
-
-However some public interfaces in this project still have them for presentation's sake only.
+You may notice the lack of java docs in this project, it's on purpose.
 
 ##### PDFBox/FontBox dependency
 Currently this project relies on PDFBox/FontBox for parsing Type0/PostScript Composite fonts, Bare CFF fonts and the PDFFontExtractor tool. Pretty big dependency

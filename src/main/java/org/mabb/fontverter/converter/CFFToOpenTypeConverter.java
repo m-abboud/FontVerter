@@ -47,6 +47,8 @@ public class CFFToOpenTypeConverter implements FontConverter {
 
     public OpenTypeFont generateFont() throws IOException {
         otfFont = OpenTypeFont.createBlankFont();
+        otfFont.getSfntHeader().sfntFlavor = SfntHeader.CFF_FLAVOR;
+
         byte[] cffData = cffFont.getData();
         otfFont.addTable(new CffTable(cffData));
 
