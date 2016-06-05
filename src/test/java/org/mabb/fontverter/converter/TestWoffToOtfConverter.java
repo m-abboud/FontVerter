@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontVerter;
-import org.mabb.fontverter.TestUtils;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.SfntHeader;
 
@@ -19,7 +18,7 @@ public class TestWoffToOtfConverter {
         byte[] fontData = otfFont.getData();
         saveTempFile(fontData, "Open-Sans-WOFF-1.0.otf");
 
-        Assert.assertTrue(otfFont.doesPassStrictValidation());
+        Assert.assertTrue(otfFont.isValid());
     }
 
     @Test
@@ -28,7 +27,7 @@ public class TestWoffToOtfConverter {
         byte[] fontData = otfFont.getData();
         saveTempFile(fontData, "Open-Sans-WOFF-2.0.otf");
 
-        Assert.assertTrue(otfFont.doesPassStrictValidation());
+        Assert.assertTrue(otfFont.isValid());
     }
 
     @Test

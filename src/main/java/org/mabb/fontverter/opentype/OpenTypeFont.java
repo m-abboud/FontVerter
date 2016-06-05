@@ -4,7 +4,6 @@ import org.apache.fontbox.ttf.CFFTable;
 import org.mabb.fontverter.*;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.io.FontDataOutputStream;
-import org.mabb.fontverter.opentype.validator.OpenTypeStrictValidator;
 import org.mabb.fontverter.validator.RuleValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,13 +73,13 @@ public class OpenTypeFont implements FVFont {
         return getNameTable().getName(OtfNameConstants.RecordType.FULL_FONT_NAME);
     }
 
-    public boolean doesPassStrictValidation() {
-        return getStrictValidationErrors().size() == 0;
+    public boolean isValid() {
+        return getValidationErrors().size() == 0;
     }
 
-    public List<RuleValidator.FontValidatorError> getStrictValidationErrors() {
+    public List<RuleValidator.FontValidatorError> getValidationErrors() {
         try {
-            OpenTypeStrictValidator validator = new OpenTypeStrictValidator();
+            OpenTypeValidator validator = new OpenTypeValidator();
             return validator.validate(this);
         } catch (Exception ex) {
             ex.printStackTrace();

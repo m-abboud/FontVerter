@@ -102,11 +102,11 @@ public abstract class WoffFont implements FVFont {
     public void normalize() {
     }
 
-    public boolean doesPassStrictValidation() {
+    public boolean isValid() {
         return true;
     }
 
-    public List<RuleValidator.FontValidatorError> getStrictValidationErrors() {
+    public List<RuleValidator.FontValidatorError> getValidationErrors() {
         return new ArrayList<RuleValidator.FontValidatorError>();
     }
 }

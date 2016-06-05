@@ -3,9 +3,8 @@ package org.mabb.fontverter;
 import org.apache.commons.io.FileUtils;
 import org.apache.fontbox.ttf.OTFParser;
 import org.mabb.fontverter.opentype.OpenTypeFont;
-import org.mabb.fontverter.opentype.validator.OpenTypeFontValidator;
+import org.mabb.fontverter.opentype.OpenTypeValidator;
 
-import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class TestUtils {
     }
 
     public static void runFontVerterInternalValidator(OpenTypeFont font) throws Exception {
-        OpenTypeFontValidator validator = new OpenTypeFontValidator();
+        OpenTypeValidator validator = new OpenTypeValidator();
         validator.validateWithExceptionsThrown(font);
     }
 

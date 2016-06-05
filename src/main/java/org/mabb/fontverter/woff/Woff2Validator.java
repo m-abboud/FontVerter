@@ -13,7 +13,7 @@ public class Woff2Validator extends RuleValidator<Woff2Font> {
     }
 
     public static class HeaderRules {
-        @ValidateRule(message = "total sfnt size figure sketchy")
+        @ValidateRule(message = "Reported total sfnt size not equal to calculated size")
         public String totalSfntSize(Woff2Font font) throws IOException {
             OpenTypeFont otfFOnt = ((OpenTypeFont) font.getFonts().get(0));
             int reportedTotal = otfFOnt.getData().length;
@@ -32,7 +32,7 @@ public class Woff2Validator extends RuleValidator<Woff2Font> {
             return num + (4 - (num % 4));
         }
 
-        @ValidateRule(message = "header is not correct size")
+        @ValidateRule(message = "Header is not correct size")
         public String headerBytesCorrectSize(Woff2Font font) throws IOException {
             if (font.header.getData().length != 48)
                 return String.format("%d != 48", font.header.getData().length);

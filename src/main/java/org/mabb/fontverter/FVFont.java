@@ -40,12 +40,12 @@ public interface FVFont {
     /**
      * @return True if strict validation passes.
      */
-    boolean doesPassStrictValidation();
+    boolean isValid();
 
     /**
      * @return runs strict validator and returns any validation errors with the font.
      */
-    List<FontValidatorError> getStrictValidationErrors();
+    List<FontValidatorError> getValidationErrors();
 
     /**
      * Fixes any validation issues with the font.

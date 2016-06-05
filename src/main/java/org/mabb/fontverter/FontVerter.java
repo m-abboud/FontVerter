@@ -22,7 +22,9 @@ public class FontVerter {
         CFF,
         OTF,
         WOFF1,
-        WOFF2
+        WOFF2;
+
+        public static final FontFormat TTF = OTF;
     }
 
     public static FVFont convertFont(byte[] inputFontData, FontFormat convertTo) throws IOException {
