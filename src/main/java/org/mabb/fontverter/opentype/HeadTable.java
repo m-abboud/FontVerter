@@ -89,10 +89,8 @@ public class HeadTable extends OpenTypeTable {
         table.flags = 11;
         table.unitsPerEm = 1000;
 
-        table.created = GregorianCalendar.getInstance();
-        table.created.set(1991, 3, 1);
-        table.modified = GregorianCalendar.getInstance();
-        table.modified.set(1991, 3, 1);
+        table.created = createDefaultDate();
+        table.modified = createDefaultDate();
 
         table.xMin = 26;
         table.yMin = -2;
@@ -104,6 +102,13 @@ public class HeadTable extends OpenTypeTable {
         table.indexToLocFormat = 1;
         table.glyphDataFormat = 0;
         return table;
+    }
+
+    private static Calendar createDefaultDate() {
+        Calendar created = GregorianCalendar.getInstance();
+        // author's birthday, a very important date
+        created.set(1991, Calendar.MARCH, 21);
+        return created;
     }
 
     public void checksumAdjustment(byte[] fontBytes) throws IOException {

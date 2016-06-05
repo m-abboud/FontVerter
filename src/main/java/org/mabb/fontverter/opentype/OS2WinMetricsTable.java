@@ -308,4 +308,208 @@ public class OS2WinMetricsTable extends OpenTypeTable {
             binary[range.bit] = true;
         }
     }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public void setAverageCharWidth(short averageCharWidth) {
+        this.averageCharWidth = averageCharWidth;
+    }
+
+    public int getWeightClass() {
+        return weightClass;
+    }
+
+    public void setWeightClass(int weightClass) {
+        this.weightClass = weightClass;
+    }
+
+    public int getWidthClass() {
+        return widthClass;
+    }
+
+    public void setWidthClass(int widthClass) {
+        this.widthClass = widthClass;
+    }
+
+    public short getFsType() {
+        return fsType;
+    }
+
+    public void setFsType(short fsType) {
+        this.fsType = fsType;
+    }
+
+    public short getSubscriptXSize() {
+        return subscriptXSize;
+    }
+
+    public void setSubscriptXSize(short subscriptXSize) {
+        this.subscriptXSize = subscriptXSize;
+    }
+
+    public short getSubscriptYSize() {
+        return subscriptYSize;
+    }
+
+    public void setSubscriptYSize(short subscriptYSize) {
+        this.subscriptYSize = subscriptYSize;
+    }
+
+    public short getSubscriptXOffset() {
+        return subscriptXOffset;
+    }
+
+    public void setSubscriptXOffset(short subscriptXOffset) {
+        this.subscriptXOffset = subscriptXOffset;
+    }
+
+    public short getSuperscriptYOffset() {
+        return superscriptYOffset;
+    }
+
+    public void setSuperscriptYOffset(short superscriptYOffset) {
+        this.superscriptYOffset = superscriptYOffset;
+    }
+
+    public short getSubscriptYOffset() {
+        return subscriptYOffset;
+    }
+
+    public void setSubscriptYOffset(short subscriptYOffset) {
+        this.subscriptYOffset = subscriptYOffset;
+    }
+
+    public short getSuperscriptXSize() {
+        return superscriptXSize;
+    }
+
+    public void setSuperscriptXSize(short superscriptXSize) {
+        this.superscriptXSize = superscriptXSize;
+    }
+
+    public short getSuperscriptYSize() {
+        return superscriptYSize;
+    }
+
+    public void setSuperscriptYSize(short superscriptYSize) {
+        this.superscriptYSize = superscriptYSize;
+    }
+
+    public short getSuperscriptXOffset() {
+        return superscriptXOffset;
+    }
+
+    public void setSuperscriptXOffset(short superscriptXOffset) {
+        this.superscriptXOffset = superscriptXOffset;
+    }
+
+    public short getStrikeoutSize() {
+        return strikeoutSize;
+    }
+
+    public void setStrikeoutSize(short strikeoutSize) {
+        this.strikeoutSize = strikeoutSize;
+    }
+
+    public short getStrikeoutPosition() {
+        return strikeoutPosition;
+    }
+
+    public void setStrikeoutPosition(short strikeoutPosition) {
+        this.strikeoutPosition = strikeoutPosition;
+    }
+
+    public int getFamilyClass() {
+        return familyClass;
+    }
+
+    public void setFamilyClass(int familyClass) {
+        this.familyClass = familyClass;
+    }
+
+    public byte[] getPanose() {
+        return panose;
+    }
+
+    public void setPanose(byte[] panose) {
+        this.panose = panose;
+    }
+
+    public String getAchVendId() {
+        return achVendId;
+    }
+
+    public void setAchVendId(String achVendId) {
+        this.achVendId = achVendId;
+    }
+
+    public int getFsSelection() {
+        return fsSelection;
+    }
+
+    public void setFsSelection(int fsSelection) {
+        this.fsSelection = fsSelection;
+    }
+
+    public int getTypoAscender() {
+        return typoAscender;
+    }
+
+    public void setTypoAscender(int typoAscender) {
+        this.typoAscender = typoAscender;
+    }
+
+    public int getTypoLineGap() {
+        return typoLineGap;
+    }
+
+    public void setTypoLineGap(int typoLineGap) {
+        this.typoLineGap = typoLineGap;
+    }
+
+    public int getTypoDescender() {
+        return typoDescender;
+    }
+
+    public void setTypoDescender(int typoDescender) {
+        this.typoDescender = typoDescender;
+    }
+
+    public int getWinAscent() {
+        return winAscent;
+    }
+
+    public void setWinAscent(int winAscent) {
+        this.winAscent = winAscent;
+    }
+
+    public int getWinDescent() {
+        return winDescent;
+    }
+
+    public void setWinDescent(int winDescent) {
+        this.winDescent = winDescent;
+    }
+
+    public int getSxHeight() {
+        return sxHeight;
+    }
+
+    public void setSxHeight(int sxHeight) {
+        this.sxHeight = sxHeight;
+    }
+
+    public int getsCapHeight() {
+        return sCapHeight;
+    }
+
+    public void setsCapHeight(int sCapHeight) {
+        this.sCapHeight = sCapHeight;
+    }
 }

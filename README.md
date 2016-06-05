@@ -1,13 +1,23 @@
 # FontVerter
-Java library for converting fonts. 
+Java library for manipulating and converting various font formats. 
 
 ## Currently supports
-Bare CFF -> OpenType/OTF and WOFF 1.0 & 2.0
-(Bare CFFs are found in PDF files and can be used as an OTF's CFF table with extra conversion work)
+- Bare CFF** -> OpenType/OTF and WOFF 1.0 & 2.0 
 
-OpenType/OTF/TTF-> WOFF 1.0 & 2.0
 
-WOFF 1.0 -> OpenType and WOFF 2.0
+- OpenType/OTF/TTF -> WOFF 1.0 & 2.0
+
+- WOFF 1.0 -> OpenType and WOFF 2.0
+
+** Bare CFFs are found in PDF files and can be saved as .cff files. They can be used as an OTF's CFF table with extra conversion work.
+
+#### With PdfFontExctractor utility
+- Supports extracting PostScript Type0/Compsoite, Bare CFF and TTF fonts. 
+- PdfFontExtractor will normalize TTF fonts to make sure they are valid in all major web browsers.
+
+##### Can only convert these types with PdfFontExtractor utility
+- PostScript Type0/Composite -> OpenType/TTF and WOFF 1 & 2
+
 
 ## Maven
     <dependencies>
@@ -28,15 +38,15 @@ WOFF 1.0 -> OpenType and WOFF 2.0
 
 ## Usage
 ##### Converting a font (in this case to OTF)
-  ```java
-  FVFont font = FontVerter.convertFont(inputFontFile, FontVerter.FontFormat.OTF);
-  FileUtils.writeByteArrayToFile(new File("MyFont.otf"), font.getData());
-  ```
+```java
+FVFont font = FontVerter.convertFont(inputFontFile, FontVerter.FontFormat.OTF);
+FileUtils.writeByteArrayToFile(new File("MyFont.otf"), font.getData());
+```
 ##### Reading a font file
-  ```java
-  File file = new File("FontVerter+SimpleTestFont.otf");
-  FVFont font = FontVerter.readFont(file);
-  ```  
+```java
+File file = new File("FontVerter+SimpleTestFont.otf");
+FVFont font = FontVerter.readFont(file);
+```  
 
 ##### PDF Font Extractor command line
     PdfFontExtractor <PDF file or directory containing PDF files>
@@ -46,12 +56,13 @@ WOFF 1.0 -> OpenType and WOFF 2.0
     -dir=<path> Directory to extract to. <path> = font extract directory. Defaults to {current dir}/fonts/
 
 ##### PDF font extractor programatically
-  ```java
-  File pdf = new File("test.pdf");
-  PdfFontExtractor extractor = new PdfFontExtractor();
+```java
+File pdf = new File("test.pdf");
+PdfFontExtractor extractor = new PdfFontExtractor();
 
-  // extract directly to a directory
-  extractor.extractFontsToDir(pdf, TestUtils.tempOutputPath);
+// extract directly to a directory
+extractor.extractFontsToDir(pdf, TestUtils.tempOutputPath);
 
-  // or extract to list of FVFonts for further manipulation
-  List<FVFont> fonts = extractor.extractToFVFonts(doc);```
+// or extract to list of FVFonts for further manipulation
+List<FVFont> fonts = extractor.extractToFVFonts(doc);
+```

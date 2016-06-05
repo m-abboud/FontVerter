@@ -115,7 +115,7 @@ public class TestCFFToOtfConverter {
         return generatedFont;
     }
 
-    private static OpenTypeFont convert(String fileName) throws IOException {
+    public static OpenTypeFont convert(String fileName) throws IOException {
         return convert(new File(TestUtils.TEST_PATH + fileName + ".cff"));
     }
 

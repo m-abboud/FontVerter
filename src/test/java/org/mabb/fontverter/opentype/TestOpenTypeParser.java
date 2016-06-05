@@ -18,6 +18,9 @@
 package org.mabb.fontverter.opentype;
 
 import org.apache.commons.io.FileUtils;
+import org.mabb.fontverter.FVFont;
+import org.mabb.fontverter.FontVerter;
+import org.mabb.fontverter.TestCFFToOtfConverter;
 import org.mabb.fontverter.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,9 +31,7 @@ import java.io.IOException;
 public class TestOpenTypeParser {
     @Test
     public void given_OTF_CFF_FLAVOR_font_parseSfntHeader_thenParsedFontHasCorrectFlavor_and_NumOfTables() throws IOException, IllegalAccessException, InstantiationException {
-        OpenTypeParser parser = new OpenTypeParser();
-        byte[] fontData = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf"));
-        OpenTypeFont font = parser.parse(fontData);
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
 
         Assert.assertEquals("OTTO", font.sfntHeader.sfntFlavor);
     }
@@ -53,4 +54,48 @@ public class TestOpenTypeParser {
 
         Assert.assertEquals(13, font.sfntHeader.numTables);
     }
+
+    @Test
+    public void givenGeneratedOTF_parseOs2WinMetricsTable_thenVersionIsSameAsOriginal() throws IOException, IllegalAccessException, InstantiationException {
+        OpenTypeFont originalFont = TestCFFToOtfConverter.convert("cff/FontVerter+SimpleTestFont");
+        OpenTypeFont parsedFont = (OpenTypeFont) FontVerter.readFont(originalFont.getData());
+
+        Assert.assertEquals(originalFont.getOs2().getVersion(), parsedFont.getOs2().getVersion());
+    }
+
+    @Test
+    public void givenGeneratedOTF_parseOs2WinMetricsTable_thenTypoAscenderIsSameAsOriginal() throws IOException, IllegalAccessException, InstantiationException {
+        OpenTypeFont originalFont = TestCFFToOtfConverter.convert("cff/FontVerter+SimpleTestFont");
+        OpenTypeFont parsedFont = (OpenTypeFont) FontVerter.readFont(originalFont.getData());
+
+        Assert.assertEquals(originalFont.getOs2().getTypoAscender(), parsedFont.getOs2().getTypoAscender());
+    }
+
+    @Test
+    public void given_OTF_file_whenParsed_thenCmapTableHasSameNumberOfGlyphMappings() throws IOException, IllegalAccessException, InstantiationException {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
+
+        Assert.assertEquals(4, font.getCmap().getGlyphMappings().size());
+    }
+
+    @Test
+    public void given_OTF_file_whenParsed_thenMaximumProfileTable_hasSameNumberOfGlyphs() throws IOException, IllegalAccessException, InstantiationException {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
+
+        // 4 real glyphs, 1 padding is always added
+        Assert.assertEquals(5, font.getMxap().getNumGlyphs());
+    }
+
+    @Test
+    public void given_OTF_file_whenParsed_thenHorizontalHeadTables_AscenderTheSame() throws IOException, IllegalAccessException, InstantiationException {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
+        Assert.assertEquals(796, font.getHhea().ascender);
+    }
+
+    @Test
+    public void given_OTF_file_whenParsed_thenHorizontalHeadTables_NumHMetricsTheSame() throws IOException, IllegalAccessException, InstantiationException {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
+        Assert.assertEquals(5, font.getHhea().numberOfHMetrics);
+    }
+
 }
