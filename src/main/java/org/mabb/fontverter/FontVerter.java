@@ -95,6 +95,11 @@ public class FontVerter {
                 return adapter;
         }
 
+        // screwy double loop since CFF fonts don't have magic number header and was try catching around every font
+        // adapter that matched in detectFormat, think just having CFF adapter always try last fixes this, but what if
+        // a CFF starts with 'wOF2' or something? font-box bare CFF parser will often work on non CFF fonts anyway which
+        // causes issues with that too, needa write own base CFF parser sometime.
+
         // if nothing can read go at it again and use the first one to throw an exception
         // as the exception message for debugging.
         for (Class<? extends FVFont> adapterOn : adapters) {
@@ -111,21 +116,19 @@ public class FontVerter {
         throw new IOException("FontVerter could not detect the input font's type.");
     }
 
+    private static FVFont tryReadFontAdapter(byte[] fontData, Class<? extends FVFont> adapterOn) throws IOException {
+        try {
+            return parseFont(fontData, adapterOn);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
     private static FVFont parseFont(byte[] fontData, Class<? extends FVFont> adapterOn) throws InstantiationException, IllegalAccessException, IOException {
         FVFont adapter = adapterOn.newInstance();
         if (adapter.detectFormat(fontData)) {
             adapter.read(fontData);
             return adapter;
-        }
-
-        return null;
-    }
-
-    private static FVFont tryReadFontAdapter(byte[] fontData, Class<? extends FVFont> adapterOn) throws IOException {
-        try {
-            return parseFont(fontData, adapterOn);
-        } catch (Exception e) {
-            log.debug("Error creating font adapter {} Message: {}", adapterOn.getName(), e);
         }
 
         return null;

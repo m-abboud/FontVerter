@@ -52,6 +52,31 @@ public class TestCFFToOtfConverter {
     }
 
     @Test
+    public void convert_CFF_hmtxHasCorrectHMetric_forGlyphWithWidthSet() throws Exception {
+        OpenTypeFont font = convert("cff/test");
+        Assert.assertEquals(1292, font.getHmtx().getAdvanceWidths()[1]);
+    }
+
+    @Test
+    public void convert_CFF_forGlyphNoWidthSet_hmtxUsesDefaultWidth() throws Exception {
+        OpenTypeFont font = convert("cff/test");
+        Assert.assertEquals(1000, font.getHmtx().getAdvanceWidths()[0]);
+    }
+
+    @Test
+    public void convert_CFF_forGlyphsHstemSet_hmtxUsesLeftSideBearing() throws Exception {
+        OpenTypeFont font = convert("cff/test");
+
+        Assert.assertEquals(10, font.getHmtx().getLeftSideBearings()[1]);
+    }
+
+    @Test
+    public void convert_CFF_forGlyphNoHstem_hmtxUsesDefaultLeftSideBearing() throws Exception {
+        OpenTypeFont font = convert("cff/test");
+        Assert.assertEquals(0, font.getHmtx().getLeftSideBearings()[0]);
+    }
+
+    @Test
     public void convert_CFF_withDictNameEntries_Then_OTF_hasFontNameRecordsSet() throws Exception {
         OpenTypeFont font = convert("cff/FontVerter+SimpleTestFont");
 

@@ -20,6 +20,7 @@ package org.mabb.fontverter.opentype;
 import org.apache.commons.lang3.ArrayUtils;
 import org.mabb.fontverter.io.DataTypeProperty;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -204,7 +205,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
         return averageCharWidth;
     }
 
-    void normalize() {
+    void normalize() throws IOException {
         super.normalize();
         if(panose == null)
             panose = latinPanose.clone();

@@ -74,10 +74,25 @@ public class TestType0ToOpenTypeConverter {
     @Test
     public void given_type0_withCFF_convertToOtf_thenSfntHeaderIsCffFlavor() throws Exception {
         PDFont rawType0Font = extractFont(doc, "ZGBKQN+HelveticaNeue-Bold-Identity-H");
-
         OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
-        TestUtils.saveTempFile(font.getData(), "ZGBKQN." + font.getProperties().getFileEnding());
+
         Assert.assertEquals(SfntHeader.CFF_FLAVOR, font.getSfntHeader().sfntFlavor);
+    }
+
+    @Test
+    public void given_type0_withCFF_convertToOtf_thenCmapSameNumberOfEntries() throws Exception {
+        PDFont rawType0Font = extractFont(doc, "ZGBKQN+HelveticaNeue-Bold-Identity-H");
+        OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
+
+        Assert.assertEquals(41, font.getCmap().getGlyphMappings().size());
+    }
+
+    @Test
+    public void given_type0_withCFF_convertToOtf_then_hmtx_advanced_widths_count_sameAsGlyphCount() throws Exception {
+        PDFont rawType0Font = extractFont(doc, "ZGBKQN+HelveticaNeue-Bold-Identity-H");
+        OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
+
+        Assert.assertEquals(43, font.getHmtx().getAdvanceWidths().length);
     }
 
     private PDFont extractFont(PDDocument pdfFile, String name) throws IOException {

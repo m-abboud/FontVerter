@@ -20,12 +20,13 @@ package org.mabb.fontverter;
 import org.apache.fontbox.encoding.Encoding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
-public class CharsetConverter {
-    private static Logger log = LoggerFactory.getLogger(CharsetConverter.class);
+public class GlyphMapReader {
+    private static Logger log = LoggerFactory.getLogger(GlyphMapReader.class);
 
-    public static List<GlyphMapping> glyphIdsToNameToEncoding(Map<Integer, String> idToNames, Encoding encoding) {
+    public static List<GlyphMapping> readGlyphsToNames(Map<Integer, String> idToNames, Encoding encoding) {
         List<GlyphMapping> glyphMappings = new ArrayList<GlyphMapping>();
         Map<Integer, Integer> usedCodes = new HashMap<Integer, Integer>();
 
@@ -39,7 +40,7 @@ public class CharsetConverter {
 
             if (charCode != 0)
                 glyphMappings.add(new GlyphMapping(glyphId, charCode, name));
-            else
+            else if (!name.equals(".notdef"))
                 log.warn("Could not find character code for glyph name. Name:'{}' GlyphID:'{}'",
                         nameSetOn.getValue(), nameSetOn.getKey());
         }
@@ -47,7 +48,7 @@ public class CharsetConverter {
         return glyphMappings;
     }
 
-    public static List<GlyphMapping> charCodeToGlyphIdsToEncoding(Map<Integer, Integer> charCodeToGlyphIds, Encoding encoding) {
+    public static List<GlyphMapping> readCharCodesToGlyphs(Map<Integer, Integer> charCodeToGlyphIds, Encoding encoding) {
         List<GlyphMapping> glyphMappings = new ArrayList<GlyphMapping>();
         for (Map.Entry<Integer, Integer> entryOn : charCodeToGlyphIds.entrySet()) {
             Integer charCode = entryOn.getKey();

@@ -28,9 +28,7 @@ import org.mabb.fontverter.validator.RuleValidator;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CffFontAdapter implements FVFont {
     private byte[] data = new byte[]{};
@@ -165,15 +163,33 @@ public class CffFontAdapter implements FVFont {
         return boundingBox;
     }
 
+    @SuppressWarnings("unchecked")
     public Map<Integer, String> getGlyphIdsToNames() throws IOException {
         try {
             // reflection to get private map field for lazyness, !fragile!, obviously
             Field mapField = FontVerterUtils.findPrivateField("gidToName", CFFCharset.class);
-
             return (Map<Integer, String>) mapField.get(font.getCharset());
         } catch (Exception ex) {
             throw new IOException(ex);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<Integer, Integer> getCharCodeToGlyphIds() throws IOException {
+        try {
+            Field mapField = FontVerterUtils.findPrivateField("sidOrCidToGid", CFFCharset.class);
+            return (Map<Integer, Integer>) mapField.get(font.getCharset());
+        } catch (Exception ex) {
+            throw new IOException(ex);
+        }
+    }
+
+    public List<GlyphMapReader.GlyphMapping> getGlyphMaps() throws IOException {
+        Map<Integer, String> glyphIdsToNames = getGlyphIdsToNames();
+        if (glyphIdsToNames.size() != 0)
+            return GlyphMapReader.readGlyphsToNames(glyphIdsToNames, getEncoding());
+
+        return GlyphMapReader.readCharCodesToGlyphs(getCharCodeToGlyphIds(), getEncoding());
     }
 
     public Encoding getEncoding() {
@@ -227,5 +243,124 @@ public class CffFontAdapter implements FVFont {
         properties.setFileEnding("cff");
         properties.setCssFontFaceFormat("");
         return properties;
+    }
+
+    public List<Glyph> getGlyphs() throws IOException {
+        List<Glyph> glyphs = new ArrayList<Glyph>();
+
+        for (GlyphMapReader.GlyphMapping mapOn : getGlyphMaps()) {
+            Glyph glyph = createGlyph();
+
+            Type2CharString charStr = font.getType2CharString(mapOn.glyphId);
+            glyph.readSequence(charStr.getType2Sequence());
+
+            glyphs.add(glyph);
+        }
+
+        return glyphs;
+    }
+
+    public Integer getDefaultWidth() {
+        String key = "defaultWidthX";
+        if (!getPrivateDict().containsKey(key))
+            return 1000;
+
+        return (Integer) getPrivateDict().get(key);
+    }
+
+    public Integer getNominalWidth() {
+        String key = "nominalWidthX";
+
+        if (!getPrivateDict().containsKey(key))
+            return 1000;
+
+        return (Integer) getPrivateDict().get(key);
+    }
+
+    Map<String, Object> getPrivateDict() {
+        if (font instanceof CFFType1Font)
+            return ((CFFType1Font) font).getPrivateDict();
+        else {
+            Map<String, Object> dict = new HashMap<String, Object>();
+            for (Map<String, Object> dictOn : ((CFFCIDFont) font).getPrivDicts())
+                dict.putAll(dictOn);
+
+            return dict;
+        }
+    }
+
+    public Glyph createGlyph() {
+        Glyph glyph = new Glyph();
+        glyph.nominalWidth = getNominalWidth();
+        glyph.defaultWidth = getDefaultWidth();
+        glyph.advancedWidth = getDefaultWidth();
+
+        return glyph;
+    }
+
+    public static class Glyph {
+        private int leftSideBearing = 0;
+        private Integer advancedWidth;
+        Integer nominalWidth;
+        Integer defaultWidth;
+
+        public int getLeftSideBearing() {
+            return leftSideBearing;
+        }
+
+        public void setLeftSideBearing(int leftSideBearing) {
+            this.leftSideBearing = leftSideBearing;
+        }
+
+        public int getAdvanceWidth() {
+            return advancedWidth;
+        }
+
+        public void setAdvancedWidth(int advancedWidth) {
+            this.advancedWidth = advancedWidth;
+        }
+
+        public void readSequence(List<Object> type2Sequence) {
+            Object firstObj = type2Sequence.get(0);
+
+            if (firstObj instanceof Integer)
+                advancedWidth = nominalWidth + (Integer) firstObj;
+            else
+                advancedWidth = defaultWidth;
+
+            parseHints(type2Sequence);
+        }
+
+        private void parseHints(List<Object> type2Sequence) {
+            List<Command> commands = new LinkedList<Command>();
+
+            Command commandOn = null;
+            for (Object objOn : type2Sequence) {
+
+                if (objOn instanceof CharStringCommand) {
+                    CharStringCommand command = (CharStringCommand) objOn;
+                    commandOn = new Command();
+                    commandOn.name = command.toString();
+                    commands.add(commandOn);
+
+                } else if (objOn instanceof Integer && commandOn != null)
+                    commandOn.values.add((Integer) objOn);
+            }
+
+            for (Command command : commands) {
+                parseHint(command);
+            }
+        }
+
+        private void parseHint(Command command) {
+            if (command.name.startsWith("hstem")) {
+                leftSideBearing = command.values.get(0);
+            }
+        }
+
+        static class Command {
+            String name;
+            List<Integer> values = new LinkedList<Integer>();
+        }
     }
 }

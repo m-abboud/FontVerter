@@ -62,4 +62,8 @@ public class FontDataOutputStream extends DataOutputStream {
         int decimalVal = (int) (decimalOnlyVal * 65536);
         writeUnsignedShort(decimalVal);
     }
+
+    public int currentPosition() {
+        return ((ByteArrayOutputStream) out).size();
+    }
 }

@@ -183,7 +183,7 @@ public abstract class OpenTypeTable {
         checksum = FontVerterUtils.getTableChecksum(getData());
     }
 
-    void normalize() {
+    void normalize() throws IOException {
     }
 
     public long getOffset() {

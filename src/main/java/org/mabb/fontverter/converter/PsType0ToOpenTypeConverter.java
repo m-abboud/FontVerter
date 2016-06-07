@@ -20,7 +20,7 @@ package org.mabb.fontverter.converter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.pdfbox.pdmodel.font.*;
-import org.mabb.fontverter.CharsetConverter.GlyphMapping;
+import org.mabb.fontverter.GlyphMapReader.GlyphMapping;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.FontVerterUtils;
@@ -52,7 +52,7 @@ public class PsType0ToOpenTypeConverter {
             convertNameRecords();
 
         otfFont.finalizeFont();
-
+        otfFont.normalize();
         return otfFont;
     }
 
@@ -81,7 +81,7 @@ public class PsType0ToOpenTypeConverter {
             int charCode = name.charAt(0);
             int glyphId = nameSetOn.getKey();
 
-            if (name.length() > 2 || charCode > 0xFFFF)
+            if (name.length() > 2 || charCode >= 0xFFFF)
                 throw new IOException("Multi byte glyph name not supported.");
 
             if (charCode != 0)

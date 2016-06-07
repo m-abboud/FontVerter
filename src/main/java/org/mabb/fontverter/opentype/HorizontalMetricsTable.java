@@ -17,16 +17,19 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.cff.CffFontAdapter;
+import org.mabb.fontverter.cff.CffFontAdapter.Glyph;
 import org.mabb.fontverter.io.FontDataOutputStream;
 
 import java.io.IOException;
+import java.util.List;
 
 public class HorizontalMetricsTable extends OpenTypeTable {
-    private int[] advanceWidth;
-    private short[] leftSideBearing;
+    private int[] advanceWidths;
+
+    private short[] leftSideBearings;
     private short[] nonHorizontalLeftSideBearing;
     private int numHMetrics;
-
     public String getTableType() {
         return "hmtx";
     }
@@ -40,8 +43,8 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
 
         for (int i = 0; i < numHMetrics; i++) {
-            writer.writeUnsignedShort(advanceWidth[i]);
-            writer.writeShort(leftSideBearing[i]);
+            writer.writeUnsignedShort(advanceWidths[i]);
+            writer.writeShort(leftSideBearings[i]);
         }
         for (int i = 0; i < nonHorizontalLeftSideBearing.length; i++)
             writer.writeUnsignedShort(nonHorizontalLeftSideBearing[i]);
@@ -49,23 +52,42 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         return writer.toByteArray();
     }
 
-
     public static HorizontalMetricsTable createDefaultTable(OpenTypeFont font) {
         HorizontalMetricsTable table = new HorizontalMetricsTable();
         table.font = font;
 
         table.nonHorizontalLeftSideBearing = new short[]{};
-        table.leftSideBearing = new short[]{};
-        table.advanceWidth = new int[]{};
+        table.leftSideBearings = new short[]{};
+        table.advanceWidths = new int[]{};
 
         return table;
     }
 
-    void normalize() {
-        numHMetrics = 5;
 
-        leftSideBearing = new short[]{0, 10, 29, 29, 55};
-        advanceWidth = new int[]{1000, 1292, 1251, 1430, 1244};
+    void normalize() throws IOException {
+        advanceWidths = new int[]{};
+        leftSideBearings = new short[]{};
+
+        // ttf type doesn't appear to need these set for being valid at least so leaving alone atm
+        // cff will throw validation errors if you don't copy from the cff table
+        if (font.isCffType()) {
+            CffFontAdapter cff = font.getCffTable().getCffFont();
+            List<Glyph> glyphs = cff.getGlyphs();
+
+            // must start with the .notdef entry otherwise removed
+            glyphs.add(0, cff.createGlyph());
+
+            advanceWidths = new int[glyphs.size()];
+            leftSideBearings = new short[glyphs.size()];
+
+            for (int i = 0; i < glyphs.size(); i++) {
+                Glyph glyphOn = glyphs.get(i);
+                advanceWidths[i] = glyphOn.getAdvanceWidth();
+                leftSideBearings[i] = (short) glyphOn.getLeftSideBearing();
+            }
+        }
+
+        numHMetrics = advanceWidths.length;
 
         if (font.getCmap() != null)
             loadMetrics();
@@ -79,5 +101,13 @@ public class HorizontalMetricsTable extends OpenTypeTable {
                 nonHorizontalLeftSideBearing[i] = 1;
         } else
             nonHorizontalLeftSideBearing = new short[]{};
+    }
+
+    public int[] getAdvanceWidths() {
+        return advanceWidths;
+    }
+
+    public short[] getLeftSideBearings() {
+        return leftSideBearings;
     }
 }

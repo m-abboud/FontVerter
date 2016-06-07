@@ -17,8 +17,7 @@
 
 package org.mabb.fontverter.converter;
 
-import org.mabb.fontverter.CharsetConverter;
-import org.mabb.fontverter.CharsetConverter.GlyphMapping;
+import org.mabb.fontverter.GlyphMapReader.GlyphMapping;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontConverter;
 import org.mabb.fontverter.cff.CffFontAdapter;
@@ -26,7 +25,6 @@ import org.mabb.fontverter.opentype.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class CFFToOpenTypeConverter implements FontConverter {
     private CffFontAdapter cffFont;
@@ -63,12 +61,16 @@ public class CFFToOpenTypeConverter implements FontConverter {
     }
 
     private void convertGlyphIdToCodeMap() throws IOException {
-        Map<Integer, String> glyphIdsToNames = cffFont.getGlyphIdsToNames();
-        if (glyphIdsToNames.containsKey(0))
-            glyphIdsToNames.remove(0);
+        List<GlyphMapping> glyphMappings = cffFont.getGlyphMaps();
 
-        List<GlyphMapping> glyphMappings =
-                CharsetConverter.glyphIdsToNameToEncoding(glyphIdsToNames, cffFont.getEncoding());
+        for (int i = 0; i < glyphMappings.size(); i++) {
+            GlyphMapping mappingOn = glyphMappings.get(i);
+
+            if (mappingOn.glyphId == 0) {
+                glyphMappings.remove(mappingOn);
+                break;
+            }
+        }
 
         otfFont.getCmap().addGlyphMapping(glyphMappings);
     }

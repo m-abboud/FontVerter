@@ -48,7 +48,7 @@ public class OpenTypeFont implements FVFont {
     private static Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
     private File sourceFile;
 
-    public static OpenTypeFont createBlankFont() {
+    public static OpenTypeFont createBlankFont() throws IOException {
         OpenTypeFont font = new OpenTypeFont();
         font.initTable(HeadTable.createDefaultTable());
 
@@ -205,7 +205,7 @@ public class OpenTypeFont implements FVFont {
         getHead().checksumAdjustment(getRawData());
     }
 
-    private void normalizeTables() {
+    private void normalizeTables() throws IOException {
         if (sfntHeader.sfntFlavor.isEmpty())
             sfntHeader.sfntFlavor = determineSfntFlavor();
 
@@ -376,8 +376,8 @@ public class OpenTypeFont implements FVFont {
         setTable(name);
     }
 
-    public NameTable getCffTable() {
-        return findTableType(CFFTable.class);
+    public CffTable getCffTable() {
+        return findTableType(CffTable.class);
     }
 
     public List<OpenTypeTable> getTables() {

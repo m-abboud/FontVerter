@@ -17,13 +17,18 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.cff.CffFontAdapter;
 import org.mabb.fontverter.io.DataTypeSerializerException;
+
+import java.io.IOException;
+import java.util.List;
 
 public class CffTable extends OpenTypeTable {
     private byte[] data;
+    private CffFontAdapter cff;
 
-    public CffTable(byte[] data) {
-        this.data = data;
+    public CffTable(byte[] data) throws IOException {
+        readData(data);
     }
 
     public CffTable() {
@@ -37,7 +42,17 @@ public class CffTable extends OpenTypeTable {
         return "CFF ";
     }
 
-    public void readData(byte[] data) throws DataTypeSerializerException {
+    public void readData(byte[] data) throws IOException {
         this.data = data;
+        cff = new CffFontAdapter();
+        cff.read(data);
+    }
+
+    public List<CffFontAdapter.Glyph> getGlyphs() throws IOException {
+        return getCffFont().getGlyphs();
+    }
+
+    public CffFontAdapter getCffFont() throws IOException {
+        return cff;
     }
 }

@@ -17,16 +17,14 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.mabb.fontverter.CharsetConverter;
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
-import org.mabb.fontverter.io.DataTypeBindingSerializer;
 import org.mabb.fontverter.io.DataTypeProperty;
 import org.mabb.fontverter.io.DataTypeProperty.DataType;
 
 import java.io.IOException;
 import java.util.List;
 
-import static org.mabb.fontverter.CharsetConverter.*;
+import static org.mabb.fontverter.GlyphMapReader.*;
 
 public class PostScriptTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.FIXED32)
@@ -139,7 +137,7 @@ public class PostScriptTable extends OpenTypeTable {
         return numGlyphs;
     }
 
-    void normalize() {
+    void normalize() throws IOException {
         if (font.getCmap() != null)
             loadGlyphsFromCmap();
 
