@@ -45,6 +45,8 @@ public abstract class OpenTypeTable {
 
         @DataTypeProperty(dataType = DataTypeProperty.DataType.UINT)
         public long length;
+
+        public byte[] originalData;
     }
 
     public static final int TABLE_RECORD_SIZE = 16;

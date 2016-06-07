@@ -20,11 +20,13 @@ package org.mabb.fontverter.opentype;
 import org.mabb.fontverter.GlyphMapReader;
 import org.mabb.fontverter.cff.CffFontAdapter;
 import org.mabb.fontverter.cff.CffFontAdapter.Glyph;
+import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -34,22 +36,35 @@ public class HorizontalMetricsTable extends OpenTypeTable {
     private int[] advanceWidths;
 
     private short[] leftSideBearings;
-    private short[] nonHorizontalLeftSideBearing;
-    private int numHMetrics;
+    private Short[] nonHorizontalLeftSideBearing;
 
     public String getTableType() {
         return "hmtx";
     }
 
-    /* big old kludge to handle conversion of tables types that arn't deserializable/parsable yet remove asap*/
-    protected boolean isParsingImplemented() {
-        return false;
+    public void readData(byte[] data) throws IOException {
+        FontDataInputStream reader = new FontDataInputStream(data);
+
+        int numHMetrics = font.getHhea().numberOfHMetrics;
+        advanceWidths = new int[numHMetrics];
+        leftSideBearings = new short[numHMetrics];
+
+        for (int i = 0; i < numHMetrics; i++) {
+            advanceWidths[i] = reader.readUnsignedShort();
+            leftSideBearings[i] = reader.readShort();
+        }
+
+        LinkedList<Short> nonHorzBearings = new LinkedList<Short>();
+        while(reader.available() >= 2)
+            nonHorzBearings.add(reader.readShort());
+
+        nonHorizontalLeftSideBearing = nonHorzBearings.toArray(new Short[nonHorzBearings.size()]);
     }
 
     protected byte[] generateUnpaddedData() throws IOException {
         FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
 
-        for (int i = 0; i < numHMetrics; i++) {
+        for (int i = 0; i < advanceWidths.length; i++) {
             writer.writeUnsignedShort(advanceWidths[i]);
             writer.writeShort(leftSideBearings[i]);
         }
@@ -63,7 +78,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         HorizontalMetricsTable table = new HorizontalMetricsTable();
         table.font = font;
 
-        table.nonHorizontalLeftSideBearing = new short[]{};
+        table.nonHorizontalLeftSideBearing = new Short[]{};
         table.leftSideBearings = new short[]{};
         table.advanceWidths = new int[]{};
 
@@ -72,8 +87,10 @@ public class HorizontalMetricsTable extends OpenTypeTable {
 
 
     void normalize() throws IOException {
-        leftSideBearings = new short[]{0};
-        advanceWidths = new int[]{1000};
+        if (advanceWidths == null) {
+            leftSideBearings = new short[]{0};
+            advanceWidths = new int[]{1000};
+        }
 
         // todo for ttf type
         if (font.isCffType()) {
@@ -94,20 +111,21 @@ public class HorizontalMetricsTable extends OpenTypeTable {
             }
         }
 
-        numHMetrics = advanceWidths.length;
-
         if (font.getCmap() != null)
             loadMetrics();
     }
 
     private void loadMetrics() {
-        int lsbArrCount = font.getCmap().getGlyphCount() - numHMetrics;
+        if (isFromParsedFont)
+            return;
+
+        int lsbArrCount = font.getCmap().getGlyphCount() - advanceWidths.length;
         if (lsbArrCount > 0) {
-            nonHorizontalLeftSideBearing = new short[lsbArrCount];
+            nonHorizontalLeftSideBearing = new Short[lsbArrCount];
             for (int i = 0; i < lsbArrCount; i++)
                 nonHorizontalLeftSideBearing[i] = 1;
         } else
-            nonHorizontalLeftSideBearing = new short[]{};
+            nonHorizontalLeftSideBearing = new Short[]{};
     }
 
     public int[] getAdvanceWidths() {

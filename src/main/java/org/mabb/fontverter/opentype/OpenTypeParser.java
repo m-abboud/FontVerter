@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class OpenTypeParser {
     private static final Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
@@ -60,6 +62,8 @@ public class OpenTypeParser {
             table.isFromParsedFont = true;
             font.addTable(table);
         }
+
+        font.orderTablesByDependencies();
     }
 
     private void readTableDataEntries() throws IOException {

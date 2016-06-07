@@ -80,6 +80,14 @@ public class TestType0ToOpenTypeConverter {
     }
 
     @Test
+    public void given_type0_withCFF_convertToOtf_thenCmapSamdasdeNumberOfEntries() throws Exception {
+        PDFont rawType0Font = extractFont(doc, "TCQDAA+HelveticaNeue-Light-Identity-H");
+        OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
+
+//        Assert.assertEquals(41, font.getCmap().getGlyphMappings().size());
+    }
+
+    @Test
     public void given_type0_withCFF_convertToOtf_thenCmapSameNumberOfEntries() throws Exception {
         PDFont rawType0Font = extractFont(doc, "ZGBKQN+HelveticaNeue-Bold-Identity-H");
         OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
@@ -100,28 +108,6 @@ public class TestType0ToOpenTypeConverter {
         PdfFontExtractor extractor = new PdfFontExtractor();
         List<PDFont> fonts = extractor.extractToPDFBoxFonts(pdfFile);
         return findFont(fonts, name);
-    }
-
-    private FVFont extractFont(String pdfFile, String name) throws IOException {
-        PDDocument doc = PDDocument.load(TestUtils.readTestFile(pdfFile));
-
-        PdfFontExtractor extractor = new PdfFontExtractor();
-        List<PDFont> fonts = extractor.extractToPDFBoxFonts(doc);
-        FVFont font = PdfFontExtractor.convertType0FontToOpenType((PDType0Font) findFont(fonts, name));
-        font.normalize();
-        return font;
-    }
-
-    private List<FVFont> extractFonts(String pdfFile) throws IOException {
-        PDDocument doc = PDDocument.load(TestUtils.readTestFile(pdfFile));
-
-        PdfFontExtractor extractor = new PdfFontExtractor();
-        extractor.extractFontsToDir(doc, TestUtils.tempOutputPath);
-        try {
-            return extractor.extractToFVFonts(doc);
-        } finally {
-            doc.close();
-        }
     }
 
     private PDFont findFont(List<PDFont> fonts, String name) {

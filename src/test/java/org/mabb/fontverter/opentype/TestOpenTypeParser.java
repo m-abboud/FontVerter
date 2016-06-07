@@ -28,6 +28,8 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
+import static org.hamcrest.number.OrderingComparison.lessThan;
+
 public class TestOpenTypeParser {
     @Test
     public void given_OTF_CFF_FLAVOR_font_parseSfntHeader_thenParsedFontHasCorrectFlavor_and_NumOfTables() throws IOException, IllegalAccessException, InstantiationException {
@@ -96,6 +98,23 @@ public class TestOpenTypeParser {
     public void given_OTF_file_whenParsed_thenHorizontalHeadTables_NumHMetricsTheSame() throws IOException, IllegalAccessException, InstantiationException {
         OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
         Assert.assertEquals(5, font.getHhea().numberOfHMetrics);
+    }
+
+    @Test
+    public void given_OTF_file_whenParsed_thenHorizontalHeadTable_read_before_dependant_HmtxTable() throws IOException, IllegalAccessException, InstantiationException {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
+
+        int hheaIndex = font.getTables().indexOf(font.getHhea());
+        int hmtxIndex = font.getTables().indexOf(font.getHmtx());
+
+        Assert.assertThat(hheaIndex, lessThan(hmtxIndex));
+    }
+
+    @Test
+    public void given_OTF_file_whenParsed_thenHmtxAdvanceWidthsSameLength() throws IOException, IllegalAccessException, InstantiationException {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+SimpleTestFont.otf");
+
+        Assert.assertEquals(5, font.getHmtx().getAdvanceWidths().length);
     }
 
 }

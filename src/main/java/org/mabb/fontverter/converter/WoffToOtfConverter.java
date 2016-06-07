@@ -52,12 +52,18 @@ public class WoffToOtfConverter implements FontConverter {
             record.recordName = tableOn.getTag();
             if (record.recordName.length() < 4)
                 record.recordName = record.recordName + StringUtils.repeat(" ", 4 - record.recordName.length());
+            record.originalData = tableOn.getTableData();
 
             OpenTypeTable table = OpenTypeTable.createFromRecord(record, otfFont);
-            table.readData(tableOn.getTableData());
             table.isFromParsedFont = true;
 
             otfFont.addTable(table);
         }
+
+        // have to order by dependant tables before doing table reads
+        otfFont.orderTablesByDependencies();
+        for (OpenTypeTable tableOn : otfFont.getTables())
+            tableOn.readData(tableOn.record.originalData);
+
     }
 }

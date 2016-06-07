@@ -252,6 +252,26 @@ public class OpenTypeFont implements FVFont {
         }
     }
 
+    public void orderTablesByDependencies() {
+        Collections.sort(getTables(), new Comparator<OpenTypeTable>() {
+            public int compare(OpenTypeTable o1, OpenTypeTable o2) {
+                int order1 = dependencyOrderForTable(o1);
+                int order2 = dependencyOrderForTable(o2);
+
+                return order1 < order2 ? -1 : order1 == order2 ? 0 : 1;
+            }
+        });
+    }
+
+    private static int dependencyOrderForTable(OpenTypeTable table) {
+        if (table instanceof HorizontalHeadTable)
+            return 1;
+        if (table instanceof HorizontalMetricsTable)
+            return 2;
+
+        return 0;
+    }
+
     // Should be called before/after font data generation. While building up the font generateData is called multiple
     // times to calculate offsets and checksums before writing out the full font.
     private void clearTableDataCache() {
