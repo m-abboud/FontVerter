@@ -17,19 +17,26 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.GlyphMapReader;
 import org.mabb.fontverter.cff.CffFontAdapter;
 import org.mabb.fontverter.cff.CffFontAdapter.Glyph;
 import org.mabb.fontverter.io.FontDataOutputStream;
+import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class HorizontalMetricsTable extends OpenTypeTable {
+    private static final Logger log = getLogger(HorizontalMetricsTable.class);
     private int[] advanceWidths;
 
     private short[] leftSideBearings;
     private short[] nonHorizontalLeftSideBearing;
     private int numHMetrics;
+
     public String getTableType() {
         return "hmtx";
     }
@@ -65,17 +72,17 @@ public class HorizontalMetricsTable extends OpenTypeTable {
 
 
     void normalize() throws IOException {
-        advanceWidths = new int[]{};
-        leftSideBearings = new short[]{};
+        leftSideBearings = new short[]{0};
+        advanceWidths = new int[]{1000};
 
-        // ttf type doesn't appear to need these set for being valid at least so leaving alone atm
-        // cff will throw validation errors if you don't copy from the cff table
+        // todo for ttf type
         if (font.isCffType()) {
             CffFontAdapter cff = font.getCffTable().getCffFont();
             List<Glyph> glyphs = cff.getGlyphs();
 
             // must start with the .notdef entry otherwise removed
-            glyphs.add(0, cff.createGlyph());
+            if (glyphs.get(0).getLeftSideBearing() != 0)
+                glyphs.add(0, cff.createGlyph());
 
             advanceWidths = new int[glyphs.size()];
             leftSideBearings = new short[glyphs.size()];

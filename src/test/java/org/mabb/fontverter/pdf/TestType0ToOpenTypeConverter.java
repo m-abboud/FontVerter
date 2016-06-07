@@ -92,7 +92,8 @@ public class TestType0ToOpenTypeConverter {
         PDFont rawType0Font = extractFont(doc, "ZGBKQN+HelveticaNeue-Bold-Identity-H");
         OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
 
-        Assert.assertEquals(43, font.getHmtx().getAdvanceWidths().length);
+        TestUtils.saveTempFile(font.getData(), "ZGBKQN+HelveticaNeue-Bold-Identity-H.otf");
+        Assert.assertEquals(42, font.getHmtx().getAdvanceWidths().length);
     }
 
     private PDFont extractFont(PDDocument pdfFile, String name) throws IOException {

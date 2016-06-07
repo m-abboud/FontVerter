@@ -66,7 +66,6 @@ public class TestCFFToOtfConverter {
     @Test
     public void convert_CFF_forGlyphsHstemSet_hmtxUsesLeftSideBearing() throws Exception {
         OpenTypeFont font = convert("cff/test");
-
         Assert.assertEquals(10, font.getHmtx().getLeftSideBearings()[1]);
     }
 

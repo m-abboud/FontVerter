@@ -62,14 +62,17 @@ public class PsType0ToOpenTypeConverter {
             OpenTypeParser otfParser = new OpenTypeParser();
 
             return otfParser.parse(ttfData);
-        } else if (isCffDescendant()) {
-            byte[] cffData = type0Font.getFontDescriptor().getFontFile3().toByteArray();
-
-            return (OpenTypeFont) FontVerter.convertFont(cffData, FontVerter.FontFormat.OTF);
-        }
+        } else if (isCffDescendant())
+            return buildFromCff();
 
         // don't think descendant can be anything but cff or ttf but just incase
         throw new IOException("Descendant font type not supported: " + descendantFont.getClass().getSimpleName());
+    }
+
+    private OpenTypeFont buildFromCff() throws IOException {
+        byte[] cffData = type0Font.getFontDescriptor().getFontFile3().toByteArray();
+        OpenTypeFont otfFont =  (OpenTypeFont) FontVerter.convertFont(cffData, FontVerter.FontFormat.OTF);
+        return otfFont;
     }
 
     private void convertCmap() throws IllegalAccessException, IOException {
@@ -88,7 +91,6 @@ public class PsType0ToOpenTypeConverter {
                 glyphMappings.add(new GlyphMapping(glyphId, charCode, name));
         }
 
-        // todo different platform/encode/langauge handeling?
         CmapTable cmapTable = CmapTable.createDefaultTable();
         cmapTable.addGlyphMapping(glyphMappings);
 

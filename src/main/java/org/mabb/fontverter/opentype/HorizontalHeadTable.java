@@ -17,7 +17,13 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.mabb.fontverter.io.DataTypeProperty;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class HorizontalHeadTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataTypeProperty.DataType.FIXED32)
@@ -95,7 +101,22 @@ public class HorizontalHeadTable extends OpenTypeTable {
         table.reserved3 = 0;
         table.reserved4 = 0;
         table.metricDataFormat = 0;
-        table.numberOfHMetrics = 5;
+        table.numberOfHMetrics = 0;
         return table;
+    }
+
+    void normalize() throws IOException {
+        if (font.getHmtx().isFromParsedFont)
+            return;
+
+        font.getHmtx().normalize();
+        int[] widths = font.getHmtx().getAdvanceWidths();
+        this.numberOfHMetrics = widths.length;
+
+        List<Integer> widthsList = Arrays.asList(ArrayUtils.toObject(widths));
+        if (widthsList.size() > 0)
+            advanceWidthMax = Collections.max(widthsList);
+
+
     }
 }
