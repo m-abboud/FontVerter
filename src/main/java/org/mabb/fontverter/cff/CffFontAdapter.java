@@ -245,11 +245,11 @@ public class CffFontAdapter implements FVFont {
         return properties;
     }
 
-    public List<Glyph> getGlyphs() throws IOException {
-        List<Glyph> glyphs = new ArrayList<Glyph>();
+    public List<CffGlyph> getGlyphs() throws IOException {
+        List<CffGlyph> glyphs = new ArrayList<CffGlyph>();
 
         for (GlyphMapReader.GlyphMapping mapOn : getGlyphMaps()) {
-            Glyph glyph = createGlyph();
+            CffGlyph glyph = createGlyph();
 
             Type2CharString charStr = font.getType2CharString(mapOn.glyphId);
             glyph.readType2Sequence(charStr.getType2Sequence());
@@ -290,8 +290,8 @@ public class CffFontAdapter implements FVFont {
         }
     }
 
-    public Glyph createGlyph() {
-        Glyph glyph = new Glyph();
+    public CffGlyph createGlyph() {
+        CffGlyph glyph = new CffGlyph();
         glyph.nominalWidth = getNominalWidth();
         glyph.defaultWidth = getDefaultWidth();
         glyph.advancedWidth = getDefaultWidth();
@@ -299,7 +299,7 @@ public class CffFontAdapter implements FVFont {
         return glyph;
     }
 
-    public static class Glyph {
+    public static class CffGlyph {
         private int leftSideBearing = 0;
         private Integer advancedWidth;
         Integer nominalWidth;

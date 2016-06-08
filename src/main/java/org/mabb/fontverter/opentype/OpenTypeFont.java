@@ -17,7 +17,6 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.apache.fontbox.ttf.CFFTable;
 import org.mabb.fontverter.*;
 import org.mabb.fontverter.converter.IdentityConverter;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
@@ -113,7 +112,7 @@ public class OpenTypeFont implements FVFont {
 
     public void normalize() throws IOException {
         if (getOs2() == null)
-            setOs2(OS2WinMetricsTable.createDefaultTable());
+            createNewOS2WinMetricsTable();
 
         if (getNameTable() == null)
             setName(NameTable.createDefaultTable());
@@ -122,6 +121,12 @@ public class OpenTypeFont implements FVFont {
             setPost(PostScriptTable.createDefaultTable(getOpenTypeVersion()));
 
         finalizeFont();
+    }
+
+    private void createNewOS2WinMetricsTable() {
+        HorizontalHeadTable hhea = getHhea();
+        OS2WinMetricsTable table = OS2WinMetricsTable.createDefaultTable();
+        setOs2(table);
     }
 
     public FontProperties getProperties() {
@@ -268,6 +273,10 @@ public class OpenTypeFont implements FVFont {
             return 1;
         if (table instanceof HorizontalMetricsTable)
             return 2;
+        if (table instanceof GlyphLocationTable)
+            return 3;
+        if (table instanceof GlyphTable)
+            return 4;
 
         return 0;
     }
@@ -398,6 +407,14 @@ public class OpenTypeFont implements FVFont {
 
     public CffTable getCffTable() {
         return findTableType(CffTable.class);
+    }
+
+    public GlyphLocationTable getLocaTable() {
+        return findTableType(GlyphLocationTable.class);
+    }
+
+    public GlyphTable getGlyfTable() {
+        return findTableType(GlyphTable.class);
     }
 
     public List<OpenTypeTable> getTables() {

@@ -80,9 +80,10 @@ public class TestType0ToOpenTypeConverter {
     }
 
     @Test
-    public void given_type0_withCFF_convertToOtf_thenCmapSamdasdeNumberOfEntries() throws Exception {
+    public void given_type0_withCFF_HelveticaNeueBug() throws Exception {
         PDFont rawType0Font = extractFont(doc, "TCQDAA+HelveticaNeue-Light-Identity-H");
         OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
+        TestUtils.saveTempFile(font.getData(), "TCQDAA+HelveticaNeue-Light-Identity-H.ttf");
 
 //        Assert.assertEquals(41, font.getCmap().getGlyphMappings().size());
     }

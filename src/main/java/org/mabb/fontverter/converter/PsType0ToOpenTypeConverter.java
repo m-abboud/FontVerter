@@ -72,6 +72,7 @@ public class PsType0ToOpenTypeConverter {
     private OpenTypeFont buildFromCff() throws IOException {
         byte[] cffData = type0Font.getFontDescriptor().getFontFile3().toByteArray();
         OpenTypeFont otfFont =  (OpenTypeFont) FontVerter.convertFont(cffData, FontVerter.FontFormat.OTF);
+
         return otfFont;
     }
 

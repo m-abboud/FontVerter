@@ -214,7 +214,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
 
         if (!isFromParsedFont) {
             winAscent = font.getHhea().ascender;
-            winDescent = font.getHhea().descender;
+            winDescent = Math.abs(font.getHhea().descender);
         }
     }
 

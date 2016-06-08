@@ -80,6 +80,7 @@ public class DataTypeBindingSerializer {
             case USHORT:
                 writer.writeUnsignedShort(((Number) fieldValue).intValue());
                 break;
+            // note (U)LONG = 32 bits in true/open type, dunno if should change name to like UINT32 instead or if more confusing
             case LONG:
                 writer.writeInt(((Number) fieldValue).intValue());
                 break;

@@ -18,7 +18,6 @@
 package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.cff.CffFontAdapter;
-import org.mabb.fontverter.io.DataTypeSerializerException;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,7 +47,7 @@ public class CffTable extends OpenTypeTable {
         cff.read(data);
     }
 
-    public List<CffFontAdapter.Glyph> getGlyphs() throws IOException {
+    public List<CffFontAdapter.CffGlyph> getGlyphs() throws IOException {
         return getCffFont().getGlyphs();
     }
 

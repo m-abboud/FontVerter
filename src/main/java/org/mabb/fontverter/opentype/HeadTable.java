@@ -151,4 +151,8 @@ public class HeadTable extends OpenTypeTable {
         checkSumAdjustment = 0;
         super.resetCalculations();
     }
+
+    public boolean isLongIndexToLocFormat() {
+        return indexToLocFormat == 1;
+    }
 }

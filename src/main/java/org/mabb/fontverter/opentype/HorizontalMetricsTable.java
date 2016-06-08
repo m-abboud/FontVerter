@@ -17,15 +17,13 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.mabb.fontverter.GlyphMapReader;
 import org.mabb.fontverter.cff.CffFontAdapter;
-import org.mabb.fontverter.cff.CffFontAdapter.Glyph;
+import org.mabb.fontverter.cff.CffFontAdapter.CffGlyph;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,7 +53,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         }
 
         LinkedList<Short> nonHorzBearings = new LinkedList<Short>();
-        while(reader.available() >= 2)
+        while (reader.available() >= 2)
             nonHorzBearings.add(reader.readShort());
 
         nonHorizontalLeftSideBearing = nonHorzBearings.toArray(new Short[nonHorzBearings.size()]);
@@ -68,8 +66,8 @@ public class HorizontalMetricsTable extends OpenTypeTable {
             writer.writeUnsignedShort(advanceWidths[i]);
             writer.writeShort(leftSideBearings[i]);
         }
-        for (int i = 0; i < nonHorizontalLeftSideBearing.length; i++)
-            writer.writeUnsignedShort(nonHorizontalLeftSideBearing[i]);
+        for (Short bearingOn : nonHorizontalLeftSideBearing)
+            writer.writeUnsignedShort(bearingOn);
 
         return writer.toByteArray();
     }
@@ -95,7 +93,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
         // todo for ttf type
         if (font.isCffType()) {
             CffFontAdapter cff = font.getCffTable().getCffFont();
-            List<Glyph> glyphs = cff.getGlyphs();
+            List<CffGlyph> glyphs = cff.getGlyphs();
 
             // must start with the .notdef entry otherwise removed
             if (glyphs.get(0).getLeftSideBearing() != 0)
@@ -105,7 +103,7 @@ public class HorizontalMetricsTable extends OpenTypeTable {
             leftSideBearings = new short[glyphs.size()];
 
             for (int i = 0; i < glyphs.size(); i++) {
-                Glyph glyphOn = glyphs.get(i);
+                CffGlyph glyphOn = glyphs.get(i);
                 advanceWidths[i] = glyphOn.getAdvanceWidth();
                 leftSideBearings[i] = (short) glyphOn.getLeftSideBearing();
             }
