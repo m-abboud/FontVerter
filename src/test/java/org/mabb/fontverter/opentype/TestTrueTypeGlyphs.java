@@ -22,6 +22,11 @@ import org.junit.Test;
 import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.TestUtils;
 
+import java.awt.geom.Point2D;
+import java.util.List;
+
+import static org.hamcrest.Matchers.lessThan;
+
 public class TestTrueTypeGlyphs {
     @Test
     public void givenTTF_whenParsed_thenLocaGlyphOffsets_equalsNumGlyphs() throws Exception {
@@ -39,15 +44,50 @@ public class TestTrueTypeGlyphs {
 
         Assert.assertEquals(88, table.glyphs.size());
     }
+
     @Test
     public void parseTtf_thenGlyphBoundingBox_parsedCorrectly() throws Exception {
         OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
-        GlyphTable.TtfGlyph glyph = font.getGlyfTable().glyphs.get(5);
+        TtfGlyph glyph = font.getGlyfTable().glyphs.get(5);
 
         Assert.assertEquals(86, glyph.xMin);
         Assert.assertEquals(986, glyph.xMax);
 
         Assert.assertEquals(20, glyph.yMin);
         Assert.assertEquals(1400, glyph.yMax);
+    }
+
+    @Test
+    public void parseTtf_then_parsedCoordinatesForGlyph_isSameSize() throws Exception {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
+        TtfGlyph glyph = font.getGlyfTable().glyphs.get(5);
+        List<Point2D.Double> coords = glyph.getCoordinates();
+
+        Assert.assertEquals(12, coords.size());
+    }
+
+    @Test
+    public void parseTtf_then_parsedGlyphCoordinates_allWithinNormalRange() throws Exception {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
+
+        List<TtfGlyph> glyphs = font.getGlyfTable().getGlyphs();
+        for (TtfGlyph glyphOn : glyphs)
+            validateGlyphCoordinateRanges(font, glyphOn);
+    }
+
+    private void validateGlyphCoordinateRanges(OpenTypeFont font, TtfGlyph glyphOn) {
+        List<TtfGlyph> glyphs = font.getGlyfTable().getGlyphs();
+        int index = glyphs.indexOf(glyphOn);
+        int coordCount = glyphs.size();
+
+        List<Point2D.Double> coords = glyphOn.getCoordinates();
+        for (Point2D.Double coordOn : coords) {
+            int coordIndex = coords.indexOf(coordOn);
+
+            String message = String.format("GlyphIndex:'%d'  Coord Index:'%d'  Coord Count:'%d'", index, coordCount, coordIndex);
+
+            Assert.assertThat(message, Math.abs(coordOn.x), lessThan(3000D));
+            Assert.assertThat(message, Math.abs(coordOn.y), lessThan(3000D));
+        }
     }
 }

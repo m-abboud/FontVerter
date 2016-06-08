@@ -55,7 +55,7 @@ class DataTypeAnnotationReader {
             DataTypeProperty annotationOn = getPropertyAnnotation(propertyOn);
 
             boolean isVarLengthType = annotationOn.dataType() == BYTE_ARRAY || annotationOn.dataType() == STRING;
-            if (isVarLengthType && annotationOn.byteLength() < 1)
+            if (isVarLengthType && annotationOn.constLength() < 1)
                 throw new DataTypeSerializerException("byteLength annotation field is required for " +
                         annotationOn.dataType());
         }
@@ -100,14 +100,30 @@ class DataTypeAnnotationReader {
             ignoreIf = ignoreIf.replace("!", "");
         }
 
-        Method method = object.getClass().getMethod(ignoreIf);
-        method.setAccessible(true);
-        boolean result = (Boolean) method.invoke(object);
+        boolean filterResult = false;
+        List<Boolean> originalAccessibility = setAllPropertiesAccessible(object.getClass());
+
+        Object fieldResult = tryGetFieldValue(ignoreIf, object);
+
+        if (fieldResult == null) {
+            Method method = object.getClass().getMethod(ignoreIf.replace("()",""));
+            filterResult = (Boolean) method.invoke(object);
+        }
 
         if (hasNotOperator)
-            result = !result;
+            filterResult = !filterResult;
 
-        return result;
+        resetAccessibility(originalAccessibility, object.getClass());
+        return filterResult;
+    }
+
+    private Object tryGetFieldValue(String fieldName, Object object) throws IllegalAccessException {
+        try {
+            Field field = object.getClass().getField(fieldName);
+            return field.get(object);
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
     }
 
     private void sortProperties(List<AccessibleObject> properties) throws DataTypeSerializerException {
@@ -141,5 +157,34 @@ class DataTypeAnnotationReader {
             return ((Method) property).getAnnotation(DataTypeProperty.class);
 
         throw new DataTypeSerializerException("Could not find annotation for property " + property.toString());
+    }
+
+    private static List<Boolean> setAllPropertiesAccessible(Class type) {
+        List<Boolean> originalAccessiblity = new LinkedList<Boolean>();
+
+        for (Field fieldOn : type.getDeclaredFields()) {
+            originalAccessiblity.add(fieldOn.isAccessible());
+            fieldOn.setAccessible(true);
+        }
+        for (Method methodOn : type.getDeclaredMethods()) {
+            originalAccessiblity.add(methodOn.isAccessible());
+            methodOn.setAccessible(true);
+        }
+
+        return originalAccessiblity;
+    }
+
+    private static void resetAccessibility(List<Boolean> originalAccessibility, Class type) {
+        int i = 0;
+
+        for (Field fieldOn : type.getDeclaredFields()) {
+            fieldOn.setAccessible(originalAccessibility.get(i));
+            i++;
+        }
+
+        for (Method methodOn : type.getDeclaredMethods()) {
+            methodOn.setAccessible(originalAccessibility.get(i));
+            i++;
+        }
     }
 }

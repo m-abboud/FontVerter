@@ -113,10 +113,12 @@ public class DataTypeBindingDeserializer {
                 return input.readInt();
             case UINT:
                 return input.readUnsignedInt();
+            case BYTE:
+                return input.readByte();
             case STRING:
-                return input.readString(property.byteLength());
+                return input.readString(property.constLength());
             case BYTE_ARRAY:
-                return input.readBytes(property.byteLength());
+                return input.readBytes(property.constLength());
             case LONG_DATE_TIME:
                 Calendar date = Calendar.getInstance();
                 date.setTimeInMillis(input.readLong() * 1000);

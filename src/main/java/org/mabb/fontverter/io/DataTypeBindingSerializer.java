@@ -109,6 +109,8 @@ public class DataTypeBindingSerializer {
                 writer.writeByte(value.length());
                 writer.writeString(value);
                 break;
+            case BYTE:
+                writer.writeByte((Byte) fieldValue);
             case UINT_BASE_128:
                 throw new IOException("Data type annotation serialization is not implemented for type: " +
                         property.dataType());

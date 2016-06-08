@@ -17,18 +17,18 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.mabb.fontverter.io.DataTypeBindingDeserializer;
-import org.mabb.fontverter.io.DataTypeProperty;
 import org.mabb.fontverter.io.FontDataInputStream;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.mabb.fontverter.io.DataTypeProperty.DataType.SHORT;
-import static org.mabb.fontverter.io.DataTypeProperty.DataType.USHORT;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class GlyphTable extends OpenTypeTable {
+    private static final Logger log = getLogger(GlyphTable.class);
+
     List<TtfGlyph> glyphs = new LinkedList<TtfGlyph>();
 
     public String getTableType() {
@@ -51,39 +51,13 @@ public class GlyphTable extends OpenTypeTable {
                 continue;
 
             reader.seek(offset.intValue());
-
-            DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
-            TtfGlyph glyph = (TtfGlyph) deserializer.deserialize(reader, TtfGlyph.class);
-
+            TtfGlyph glyph = TtfGlyph.parse(reader);
             glyphs.add(glyph);
         }
     }
 
-    public static class TtfGlyph {
-        @DataTypeProperty(dataType = SHORT)
-        short numberOfContours;
-
-        @DataTypeProperty(dataType = SHORT)
-        short xMin;
-
-        @DataTypeProperty(dataType = SHORT)
-        short yMin;
-
-        @DataTypeProperty(dataType = SHORT)
-        short xMax;
-
-        @DataTypeProperty(dataType = SHORT)
-        short yMax;
-
-        @DataTypeProperty(dataType = USHORT, isArray = true, arrayLength = "getNumberOfContours", ignoreIf = "isComposite")
-        Integer[] endPtsOfContours;
-
-        public short getNumberOfContours() {
-            return numberOfContours;
-        }
-
-        public boolean isComposite() {
-            return numberOfContours < 0;
-        }
+    public List<TtfGlyph> getGlyphs() {
+        return glyphs;
     }
+
 }

@@ -19,14 +19,17 @@ package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.mabb.fontverter.io.FontDataOutputStream.OPEN_TYPE_CHARSET;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class ControlValueTable extends OpenTypeTable {
+    private static final Logger log = getLogger(ControlValueTable.class);
     private List<Short> values = new LinkedList<Short>();
 
     public String getTableType() {
@@ -37,6 +40,9 @@ public class ControlValueTable extends OpenTypeTable {
         FontDataInputStream input = new FontDataInputStream(data);
         while (input.available() > 2)
             values.add(input.readShort());
+
+        if (input.available() == 1)
+            log.warn("original cvt table data length not divisble by two, ignoring last byte.");
     }
 
     protected byte[] generateUnpaddedData() throws IOException {

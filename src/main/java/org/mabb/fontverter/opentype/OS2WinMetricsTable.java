@@ -76,7 +76,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.USHORT)
     private int familyClass;
 
-    @DataTypeProperty(dataType = DataType.BYTE_ARRAY, byteLength = 10)
+    @DataTypeProperty(dataType = DataType.BYTE_ARRAY, constLength = 10)
     private byte[] panose = new byte[10];
 
     @DataTypeProperty(dataType = DataType.UINT)
@@ -91,7 +91,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.UINT)
     private long unicodeRange4;
 
-    @DataTypeProperty(dataType = DataType.STRING, byteLength = 4)
+    @DataTypeProperty(dataType = DataType.STRING, constLength = 4)
     private String achVendId;
 
     @DataTypeProperty(dataType = DataType.USHORT)

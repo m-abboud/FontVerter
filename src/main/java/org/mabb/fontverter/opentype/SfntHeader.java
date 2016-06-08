@@ -29,7 +29,7 @@ public class SfntHeader {
     public static final String VERSION_2 = "\u0000\u0002\u0000\u0000";
     public static final String VERSION_2_5 = "\u0000\u0002\u0005\u0000";
 
-    @DataTypeProperty(dataType = DataTypeProperty.DataType.STRING, byteLength = 4)
+    @DataTypeProperty(dataType = DataTypeProperty.DataType.STRING, constLength = 4)
     public String sfntFlavor = "";
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)

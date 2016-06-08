@@ -29,7 +29,7 @@ import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.OtfNameConstants.RecordType;
 import org.mabb.fontverter.opentype.SfntHeader;
 
-import java.io.File;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.List;
 
@@ -85,6 +85,8 @@ public class TestType0ToOpenTypeConverter {
         OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
         TestUtils.saveTempFile(font.getData(), "TCQDAA+HelveticaNeue-Light-Identity-H.ttf");
 
+        List<Point2D.Double> points = font.getGlyfTable().getGlyphs().get(4).getCoordinates();
+        points.get(0);
 //        Assert.assertEquals(41, font.getCmap().getGlyphMappings().size());
     }
 

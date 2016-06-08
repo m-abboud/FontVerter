@@ -33,11 +33,12 @@ public @interface DataTypeProperty {
         FIXED32,
         INT,
         UINT,
+        BYTE,
         STRING,
         LONG_DATE_TIME,
         UINT_BASE_128,
         BYTE_ARRAY,
-        PASCAL_STRING
+        PASCAL_STRING;
     }
 
     DataType dataType();
@@ -50,7 +51,7 @@ public @interface DataTypeProperty {
 
     int order() default -1;
 
-    int byteLength() default -1;
+    int constLength() default -1;
 
     String arrayLength() default "";
 

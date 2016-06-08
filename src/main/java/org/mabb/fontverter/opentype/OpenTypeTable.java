@@ -34,7 +34,7 @@ import java.util.Set;
 
 public abstract class OpenTypeTable {
     public static class OtfTableRecord {
-        @DataTypeProperty(dataType = DataTypeProperty.DataType.STRING, byteLength = 4)
+        @DataTypeProperty(dataType = DataTypeProperty.DataType.STRING, constLength = 4)
         public String recordName;
 
         @DataTypeProperty(dataType = DataTypeProperty.DataType.UINT)
