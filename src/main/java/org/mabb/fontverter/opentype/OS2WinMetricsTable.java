@@ -152,10 +152,11 @@ public class OS2WinMetricsTable extends OpenTypeTable {
 
     public static OS2WinMetricsTable createDefaultTable() {
         OS2WinMetricsTable table = new OS2WinMetricsTable();
-        table.version = 3;
-        table.averageCharWidth = 1304;
-        table.weightClass = 500;
-        table.widthClass = 5;
+        table.version = 0;
+        table.averageCharWidth = 700;
+        table.weightClass = WeightClass.MEDIUM.getValue();
+        table.widthClass = WidthClass.MEDIUM.getValue();
+
         table.fsType = 0;
         table.subscriptXSize = 650;
         table.subscriptYSize = 699;
@@ -175,7 +176,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
         table.unicodeRange4 = 0;
         table.achVendId = "xxxx";
         table.fsSelection = 0;
-        table.firstCharIndex = 59;
+        table.firstCharIndex = 0;
         table.lastCharIndex = 123;
         table.typoAscender = 800;
         table.typoDescender = -200;
@@ -238,7 +239,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
         if (encode == OtfEncodingType.SYMBOL) {
             codePageRanges.setPageBit(CodePageRange.SYMBOL_CHARACTER_SET, true);
         } else {
-            unicodeRanges.setPageBit(OtfUnicodeRange.BASIC_LATIN, true);
+            unicodeRanges.setPageBit(CodePageRange.OtfUnicodeRange.BASIC_LATIN, true);
         }
 
         unicodeRange1 = unicodeRanges.getRanges().get(0);
@@ -287,11 +288,11 @@ public class OS2WinMetricsTable extends OpenTypeTable {
             super(128);
         }
 
-        public void setPageBit(OtfUnicodeRange range, boolean enable) {
+        public void setPageBit(CodePageRange.OtfUnicodeRange range, boolean enable) {
             binary[range.bit] = enable;
         }
 
-        public void setPageBit(OtfUnicodeRange range) {
+        public void setPageBit(CodePageRange.OtfUnicodeRange range) {
             binary[range.bit] = true;
         }
     }

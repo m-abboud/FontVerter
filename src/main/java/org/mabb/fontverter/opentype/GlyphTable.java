@@ -18,6 +18,7 @@
 package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.io.FontDataInputStream;
+import org.mabb.fontverter.io.FontDataOutputStream;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -35,9 +36,14 @@ public class GlyphTable extends OpenTypeTable {
         return "glyf";
     }
 
-    /* kludge to avoid incomplete writing/parsing from a parsed font remove soon*/
-    protected boolean isParsingImplemented() {
-        return false;
+    protected byte[] generateUnpaddedData() throws IOException {
+        FontDataOutputStream out = new FontDataOutputStream();
+        for (TtfGlyph glyphOn : glyphs) {
+            if (!glyphOn.isEmpty())
+                out.write(glyphOn.generateData());
+        }
+
+        return out.toByteArray();
     }
 
     public void readData(byte[] data) throws IOException {
@@ -47,17 +53,43 @@ public class GlyphTable extends OpenTypeTable {
 
         for (int i = 0; i < offsets.length - 1; i++) {
             Long offset = offsets[i];
-            if (offset >= data.length)
-                continue;
+            long length = offsets[i + 1] - offset;
 
-            reader.seek(offset.intValue());
-            TtfGlyph glyph = TtfGlyph.parse(reader);
-            glyphs.add(glyph);
+            // 0 length is valid and means an empty outline for glyph
+            if (length == 0) {
+                glyphs.add(new TtfGlyph());
+                continue;
+            }
+
+            if (offset >= data.length) {
+                log.error("Invalid loca table offset, offset greater than glyf table length");
+                continue;
+            }
+
+            try {
+                reader.seek(offset.intValue());
+                byte[] glyphData = reader.readBytes((int) length);
+
+                TtfGlyph glyph = TtfGlyph.parse(glyphData, font);
+                glyphs.add(glyph);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
     public List<TtfGlyph> getGlyphs() {
         return glyphs;
+    }
+
+    public List<TtfGlyph> getNonEmptyGlyphs() {
+        List<TtfGlyph> nonEmpty = new LinkedList<TtfGlyph>();
+
+        for (TtfGlyph glyphOn : glyphs)
+            if (!glyphOn.isEmpty())
+                nonEmpty.add(glyphOn);
+
+        return nonEmpty;
     }
 
 }

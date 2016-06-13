@@ -80,6 +80,11 @@ public class HeadTable extends OpenTypeTable {
         return "head";
     }
 
+    void normalize() throws IOException {
+        super.normalize();
+        flags = 4097;
+    }
+
     public static HeadTable createDefaultTable() {
         HeadTable table = new HeadTable();
         table.version = 1;

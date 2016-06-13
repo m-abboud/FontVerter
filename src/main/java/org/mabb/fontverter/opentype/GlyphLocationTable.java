@@ -17,13 +17,21 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.GlyphMapReader;
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
 import org.mabb.fontverter.io.DataTypeProperty;
 import org.mabb.fontverter.io.DataTypeProperty.DataType;
+import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
-public class GlyphLocationTable extends OpenTypeTable{
+import static org.slf4j.LoggerFactory.getLogger;
+
+public class GlyphLocationTable extends OpenTypeTable {
+    private static final Logger log = getLogger(GlyphLocationTable.class);
+
     @DataTypeProperty(dataType = DataType.USHORT, isArray = true, ignoreIf = "isLongOffsets", arrayLength = "getNumGlyphs")
     Integer[] shortOffsets;
 
@@ -42,8 +50,32 @@ public class GlyphLocationTable extends OpenTypeTable{
         return font.getHead().isLongIndexToLocFormat();
     }
 
+    void normalize() throws IOException {
+        GlyphTable glyf = font.getGlyfTable();
+        if (glyf == null)
+            return;
+
+        List<Long> offsets = new LinkedList<Long>();
+        offsets.add(0L);
+
+        int posOn = 0;
+        for (TtfGlyph glyphOn : glyf.getGlyphs()) {
+            posOn += (long) glyphOn.generateData().length;
+            offsets.add((long) posOn);
+        }
+
+        if (isLongOffsets()) {
+            longOffsets = offsets.toArray(new Long[offsets.size()]);
+        } else {
+            shortOffsets = new Integer[offsets.size()];
+            for (int i = 0; i < offsets.size(); i++) {
+                shortOffsets[i] = (int) (offsets.get(i) / 2);
+            }
+        }
+    }
+
     public Long[] getOffsets() {
-        if(isLongOffsets())
+        if (isLongOffsets())
             return longOffsets;
 
         Long[] calcedShortOffsets = new Long[shortOffsets.length];

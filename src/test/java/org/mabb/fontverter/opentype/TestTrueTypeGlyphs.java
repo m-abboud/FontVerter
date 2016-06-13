@@ -42,13 +42,13 @@ public class TestTrueTypeGlyphs {
         OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
         GlyphTable table = font.getGlyfTable();
 
-        Assert.assertEquals(88, table.glyphs.size());
+        Assert.assertEquals(225, table.glyphs.size());
     }
 
     @Test
     public void parseTtf_thenGlyphBoundingBox_parsedCorrectly() throws Exception {
         OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
-        TtfGlyph glyph = font.getGlyfTable().glyphs.get(5);
+        TtfGlyph glyph = font.getGlyfTable().glyphs.get(12);
 
         Assert.assertEquals(86, glyph.xMin);
         Assert.assertEquals(986, glyph.xMax);
@@ -60,8 +60,8 @@ public class TestTrueTypeGlyphs {
     @Test
     public void parseTtf_then_parsedCoordinatesForGlyph_isSameSize() throws Exception {
         OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
-        TtfGlyph glyph = font.getGlyfTable().glyphs.get(5);
-        List<Point2D.Double> coords = glyph.getCoordinates();
+        TtfGlyph glyph = font.getGlyfTable().glyphs.get(12);
+        List<TtfGlyph.GlyphCoordinate> coords = glyph.getCoordinates();
 
         Assert.assertEquals(12, coords.size());
     }
@@ -75,12 +75,48 @@ public class TestTrueTypeGlyphs {
             validateGlyphCoordinateRanges(font, glyphOn);
     }
 
+    @Test
+    public void parseGlyphTable_andRegenerateItAndReparse_then_reparsedGlyphCountSameAsOriginal() throws Exception {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
+        OpenTypeFont reparsedFont = (OpenTypeFont) FontVerter.readFont(font.getData());
+
+        GlyphTable glyf = reparsedFont.getGlyfTable();
+        Assert.assertEquals(225, glyf.glyphs.size());
+    }
+
+    @Test
+    public void parseGlyphTable_andRegenerateItAndReparse_then_allGlyphsCoordsMatchOriginals() throws Exception {
+        OpenTypeFont font = (OpenTypeFont) FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
+        OpenTypeFont reparsedFont = (OpenTypeFont) FontVerter.readFont(font.getData());
+
+
+        List<TtfGlyph> originals = font.getGlyfTable().getGlyphs();
+        List<TtfGlyph> reparseds = reparsedFont.getGlyfTable().getGlyphs();
+
+        for (int i = 0; i < originals.size(); i++) {
+            List<TtfGlyph.GlyphCoordinate> originalOn = originals.get(i).getCoordinates();
+            List<TtfGlyph.GlyphCoordinate> reparsedOn = reparseds.get(i).getCoordinates();
+
+            Assert.assertEquals(originalOn.size(), reparsedOn.size());
+            assertCoordsEqual(originalOn, reparsedOn);
+        }
+    }
+
+    private void assertCoordsEqual(List<TtfGlyph.GlyphCoordinate> originalOn, List<TtfGlyph.GlyphCoordinate> reparsedOn) {
+        for (int j = 0; j < originalOn.size(); j++) {
+            TtfGlyph.GlyphCoordinate originalCoord = originalOn.get(j);
+            TtfGlyph.GlyphCoordinate reparsedCoord = reparsedOn.get(j);
+
+            Assert.assertEquals(originalCoord, reparsedCoord);
+        }
+    }
+
     private void validateGlyphCoordinateRanges(OpenTypeFont font, TtfGlyph glyphOn) {
         List<TtfGlyph> glyphs = font.getGlyfTable().getGlyphs();
         int index = glyphs.indexOf(glyphOn);
         int coordCount = glyphs.size();
 
-        List<Point2D.Double> coords = glyphOn.getCoordinates();
+        List<TtfGlyph.GlyphCoordinate> coords = glyphOn.getCoordinates();
         for (Point2D.Double coordOn : coords) {
             int coordIndex = coords.indexOf(coordOn);
 

@@ -24,7 +24,7 @@ Java library for manipulating and converting various font formats.
 		<dependency>
 			<groupId>org.fontverter</groupId>
 			<artifactId>FontVerter</artifactId>
-			<version>1.0</version>
+			<version>1.2.11</version>
 		</dependency>
     </dependencies>
 

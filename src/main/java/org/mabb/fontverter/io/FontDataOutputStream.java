@@ -28,9 +28,16 @@ import java.nio.charset.Charset;
  */
 public class FontDataOutputStream extends DataOutputStream {
     public static final Charset OPEN_TYPE_CHARSET = Charset.forName("ISO-8859-1");
+    private final Charset encoding;
 
     public FontDataOutputStream(Charset encoding) {
         super(new ByteArrayOutputStream());
+        this.encoding = encoding;
+    }
+
+    public FontDataOutputStream() {
+        super(new ByteArrayOutputStream());
+        encoding = OPEN_TYPE_CHARSET;
     }
 
     public byte[] toByteArray() {
@@ -38,7 +45,7 @@ public class FontDataOutputStream extends DataOutputStream {
     }
 
     public void writeString(String string) throws IOException {
-        byte[] bytes = string.getBytes(OPEN_TYPE_CHARSET);
+        byte[] bytes = string.getBytes(encoding);
         out.write(bytes);
     }
 

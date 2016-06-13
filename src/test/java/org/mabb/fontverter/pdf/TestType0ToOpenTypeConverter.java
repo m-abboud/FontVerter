@@ -17,19 +17,23 @@
 
 package org.mabb.fontverter.pdf;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mabb.fontverter.DebugGlyphDrawer;
 import org.mabb.fontverter.FVFont;
+import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.TestUtils;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.OtfNameConstants.RecordType;
 import org.mabb.fontverter.opentype.SfntHeader;
+import org.mabb.fontverter.opentype.TtfGlyph;
 
-import java.awt.geom.Point2D;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -80,17 +84,6 @@ public class TestType0ToOpenTypeConverter {
     }
 
     @Test
-    public void given_type0_withCFF_HelveticaNeueBug() throws Exception {
-        PDFont rawType0Font = extractFont(doc, "TCQDAA+HelveticaNeue-Light-Identity-H");
-        OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
-        TestUtils.saveTempFile(font.getData(), "TCQDAA+HelveticaNeue-Light-Identity-H.ttf");
-
-        List<Point2D.Double> points = font.getGlyfTable().getGlyphs().get(4).getCoordinates();
-        points.get(0);
-//        Assert.assertEquals(41, font.getCmap().getGlyphMappings().size());
-    }
-
-    @Test
     public void given_type0_withCFF_convertToOtf_thenCmapSameNumberOfEntries() throws Exception {
         PDFont rawType0Font = extractFont(doc, "ZGBKQN+HelveticaNeue-Bold-Identity-H");
         OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);
@@ -107,13 +100,13 @@ public class TestType0ToOpenTypeConverter {
         Assert.assertEquals(42, font.getHmtx().getAdvanceWidths().length);
     }
 
-    private PDFont extractFont(PDDocument pdfFile, String name) throws IOException {
+    public static PDFont extractFont(PDDocument pdfFile, String name) throws IOException {
         PdfFontExtractor extractor = new PdfFontExtractor();
         List<PDFont> fonts = extractor.extractToPDFBoxFonts(pdfFile);
         return findFont(fonts, name);
     }
 
-    private PDFont findFont(List<PDFont> fonts, String name) {
+    public static PDFont findFont(List<PDFont> fonts, String name) {
         PDFont searchFont = null;
         for (PDFont fontOn : fonts)
             if (fontOn.getName().equals(name))
