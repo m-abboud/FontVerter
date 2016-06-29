@@ -17,23 +17,18 @@
 
 package org.mabb.fontverter.pdf;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mabb.fontverter.DebugGlyphDrawer;
 import org.mabb.fontverter.FVFont;
-import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.TestUtils;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.OtfNameConstants.RecordType;
 import org.mabb.fontverter.opentype.SfntHeader;
-import org.mabb.fontverter.opentype.TtfGlyph;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 

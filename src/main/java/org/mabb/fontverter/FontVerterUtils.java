@@ -97,4 +97,12 @@ public class FontVerterUtils {
 
         return inByte & (0x1F);
     }
+
+    public static byte[] toPrimative(Byte[] objArray) {
+        byte[] primArr = new byte[objArray.length];
+        for (int i = 0; i < objArray.length; i++)
+            primArr[i] = objArray[i];
+
+        return primArr;
+    }
 }

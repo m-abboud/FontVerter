@@ -41,8 +41,10 @@ public class ControlValueTable extends OpenTypeTable {
         while (input.available() > 2)
             values.add(input.readShort());
 
-        if (input.available() == 1)
-            log.warn("original cvt table data length not divisble by two, ignoring last byte.");
+        if (input.available() == 1) {
+            log.info("original cvt table data length not divisble by two, adding 1 byte padding.");
+            values.add((short) input.readByte());
+        }
     }
 
     protected byte[] generateUnpaddedData() throws IOException {

@@ -17,21 +17,24 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.mabb.fontverter.FontVerterUtils;
 import org.mabb.fontverter.GlyphMapReader;
 import org.mabb.fontverter.io.*;
+import org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionParser;
 import org.slf4j.Logger;
 
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.mabb.fontverter.io.DataTypeProperty.DataType.*;
 import static org.mabb.fontverter.opentype.TtfGlyph.CoordinateFlagType.*;
+import static org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionParser.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class TtfGlyph {
@@ -82,10 +85,10 @@ public class TtfGlyph {
         glyph.glyphId = font.getGlyfTable().getGlyphs().size();
         glyph.rawData = data;
 
-        // x[] and y[] vals can be variable length so have to do manually
         if (glyph.isComposite())
             glyph.useRawData = true;
         else
+            // x[] and y[] vals can be variable length so have to do manually vs annotation
             glyph.readSimpleGlyphData(reader);
 
         return glyph;
@@ -102,6 +105,11 @@ public class TtfGlyph {
         // dont support write for composite glyphs yet
         if (rawData != null && useRawData)
             return rawData;
+
+
+        int t = 85;
+        if (instructionLength > t)
+        instructionLength = t;
 
         FontDataOutputStream writer = new FontDataOutputStream();
         DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
@@ -248,8 +256,10 @@ public class TtfGlyph {
         return points;
     }
 
-
-    public List<Path2D.Double> getPaths() {
+    /**
+     * Debug only method at the moment, will not return an entireley accurate path in many cases.
+     */
+    List<Path2D.Double> getPaths() {
         LinkedList<Path2D.Double> paths = new LinkedList<Path2D.Double>();
 
         int startPtOn = 0;
@@ -289,6 +299,54 @@ public class TtfGlyph {
         return paths;
     }
 
+    List<Countour> getCountours() {
+        List<Countour> countours = new LinkedList<Countour>();
+
+        int startPtOn = 0;
+        Point2D.Double lastPoint = new Point2D.Double();
+
+        for (Integer endPtOn : countourEndPoints) {
+            Countour countourOn = new Countour();
+
+            Point2D.Double firstPoint = new Point2D.Double();
+
+            for (int i = startPtOn; i < endPtOn + 1; i++) {
+
+                Point2D.Double relativePoint = points.get(i);
+                Point2D.Double point = new Point2D.Double();
+                point.x = relativePoint.x + lastPoint.x;
+                point.y = relativePoint.y + lastPoint.y;
+
+                countourOn.add(relativePoint);
+//                countourOn.add(point);
+
+                if (i == startPtOn)
+                    firstPoint = point;
+
+                lastPoint = point;
+            }
+            startPtOn = endPtOn + 1;
+
+            countourOn.add(firstPoint);
+            countours.add(countourOn);
+        }
+
+        return countours;
+    }
+
+    public void setCountours(List<Countour> countours) {
+        points.clear();
+        for (Countour countourOn : countours) {
+            for (int i = 0; i < countourOn.size(); i++) {
+                Point2D.Double ptOn = countourOn.get(i);
+
+                // last point is filler for otf glyph
+                if (i != countourOn.size() - 1)
+                    points.add(new GlyphCoordinate(ptOn.x, ptOn.y, new CoordinateFlagSet()));
+            }
+        }
+    }
+
     public String toString() {
         if (font.getCmap() == null)
             return "CMap table is null can not get string data for glyph.";
@@ -305,11 +363,24 @@ public class TtfGlyph {
         return !isParsed && points.size() == 0 && rawData == null;
     }
 
+    public List<TtfInstructionParser.TtfInstruction> getInstructions()
+            throws IllegalAccessException, IOException, InstantiationException {
+        try {
+            TtfInstructionParser parser = new TtfInstructionParser();
+
+            return parser.parse(FontVerterUtils.toPrimative(instructions));
+        } catch (Exception ex) {
+            log.info("Failed to parse ttfinstrctuins, currentley uneeded for conversion");
+
+            return new ArrayList<TtfInstructionParser.TtfInstruction>();
+        }
+    }
+
     protected static class GlyphCoordinate extends Point2D.Double {
         CoordinateFlagSet flags;
 
-        public GlyphCoordinate(Integer xOn, int i, CoordinateFlagSet flags) {
-            super(xOn, i);
+        public GlyphCoordinate(double x, double y, CoordinateFlagSet flags) {
+            super(x, y);
             this.flags = flags;
         }
 
