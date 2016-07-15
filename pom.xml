@@ -6,7 +6,7 @@
 
     <groupId>org.fontverter</groupId>
     <artifactId>FontVerter</artifactId>
-    <version>1.2.12</version>
+    <version>1.2.13</version>
     <name>FontVerter</name>
     <description>Library for converting various font formats.</description>
     <url>https://github.com/m-abboud/FontVerter</url>
@@ -148,15 +148,6 @@
             <id>bintray-nitram509-jbrotli</id>
             <name>bintray</name>
             <url>http://dl.bintray.com/nitram509/jbrotli</url>
-        </repository>
-
-        <repository>
-            <id>ApacheSnapshot</id>
-            <name>Apache Repository</name>
-            <url>https://repository.apache.org/content/groups/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
     </repositories>
 
