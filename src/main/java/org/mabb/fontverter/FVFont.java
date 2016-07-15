@@ -41,7 +41,7 @@ public interface FVFont {
 
     /**
      * @param fontFile reads/parses the input font data into this object.
-     * @throws IOException
+     * @throws IOException error reading font data
      */
     void read(byte[] fontFile) throws IOException;
 
@@ -66,6 +66,7 @@ public interface FVFont {
 
     /**
      * Fixes any validation issues with the font.
+     * @throws IOException error reading font data
      */
     void normalize() throws IOException;
 

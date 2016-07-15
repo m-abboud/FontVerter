@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Validates input <T> object against validation rules. Rules use the @ValidateRule annotation above methods and can be
+ * Validates input T object against validation rules. Rules use the @ValidateRule annotation above methods and can be
  * any object type.
  */
 public abstract class RuleValidator<T> {
