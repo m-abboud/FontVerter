@@ -6,7 +6,7 @@
 
     <groupId>org.fontverter</groupId>
     <artifactId>FontVerter</artifactId>
-    <version>1.2.15</version>
+    <version>1.2.16</version>
     <name>FontVerter</name>
     <description>Library for converting various font formats.</description>
     <url>https://github.com/m-abboud/FontVerter</url>
@@ -98,10 +98,12 @@
             <artifactId>reflections-maven</artifactId>
             <version>0.9.9-RC2</version>
         </dependency>
+        <!--jbrotli is for woff2 generation and is not on central repo so dependency currently set to optional-->
         <dependency>
             <groupId>org.meteogroup.jbrotli</groupId>
             <artifactId>jbrotli</artifactId>
             <version>0.4.0</version>
+            <optional>true</optional>
         </dependency>
         <!-- there's some sort of maven bug or jbrotli maven config issue, with x64 windows it
              will grab x86 native jar instead. maybe intellij maven integration issue? todo needs investigation -->
@@ -110,6 +112,7 @@
             <artifactId>jbrotli-native-win32-x86-amd64</artifactId>
             <version>0.4.0</version>
             <type>jar</type>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

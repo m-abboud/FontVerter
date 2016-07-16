@@ -1,9 +1,8 @@
 # FontVerter
-Java library for manipulating and converting various font formats. 
+Java library for converting and manipulating various font formats, normalizing invalid fonts and extracting fonts from PDFs.
 
 ## Currently supports
 - Bare CFF** -> OpenType/OTF and WOFF 1.0 & 2.0 
-
 
 - OpenType/OTF/TTF -> WOFF 1.0 & 2.0
 
@@ -19,20 +18,37 @@ Java library for manipulating and converting various font formats.
 - PostScript Type0/Composite -> OpenType/TTF and WOFF 1 & 2
 
 
-## Maven
+## Maven (Note WOFF2 requires optional jBrotli dependency shown below)
     <dependencies>
 		<dependency>
 			<groupId>org.fontverter</groupId>
 			<artifactId>FontVerter</artifactId>
-			<version>1.2.11</version>
+			<version>1.2.16</version>
 		</dependency>
     </dependencies>
 
     <repositories>
+		<repository>
+			<id>jcenter</id>
+			<url>http://jcenter.bintray.com </url>
+		</repository>
+    </repositories>
+
+#### Optional jBrotli dependency for WOFF2 support. jBrotli is currently optional since it is not on Maven Central or JCenter yet.
+    <dependencies>
+        <dependency>
+            <groupId>org.meteogroup.jbrotli</groupId>
+            <artifactId>jbrotli</artifactId>
+            <version>0.4.0</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <repositories>
         <repository>
-            <id>bintray-m-abboud-fontverter</id>
+            <id>bintray-nitram509-jbrotli</id>
             <name>bintray</name>
-            <url>https://dl.bintray.com/m-abboud/maven/</url>
+            <url>http://dl.bintray.com/nitram509/jbrotli</url>
         </repository>
     </repositories>
 
@@ -42,10 +58,22 @@ Java library for manipulating and converting various font formats.
 FVFont font = FontVerter.convertFont(inputFontFile, FontVerter.FontFormat.OTF);
 FileUtils.writeByteArrayToFile(new File("MyFont.otf"), font.getData());
 ```
+
 ##### Reading a font file
 ```java
 File file = new File("FontVerter+SimpleTestFont.otf");
 FVFont font = FontVerter.readFont(file);
+```  
+
+##### Attempt to normalize and fix an invalid font
+```java
+File file = new File("FontVerter+SimpleTestFont.otf");
+FVFont font = FontVerter.readFont(file);
+
+if (!font.isValid())
+    font.normalize();
+
+FileUtils.writeByteArrayToFile(new File("fixed-font.otf"), font.getData());
 ```  
 
 ##### PDF Font Extractor command line
