@@ -17,8 +17,6 @@
 
 package org.mabb.fontverter.woff;
 
-import org.mabb.fontverter.io.DataTypeBindingDeserializer;
-import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.woff.Woff2Font.Woff2Table;
 import org.mabb.fontverter.woff.WoffConstants.TableFlagType;
 import org.meteogroup.jbrotli.BrotliStreamDeCompressor;
