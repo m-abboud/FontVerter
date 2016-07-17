@@ -19,7 +19,7 @@ package org.mabb.fontverter.woff;
 
 import org.mabb.fontverter.woff.Woff2Font.Woff2Table;
 import org.mabb.fontverter.woff.WoffConstants.TableFlagType;
-import org.meteogroup.jbrotli.BrotliStreamDeCompressor;
+import org.meteogroup.jbrotli.BrotliDeCompressor;
 import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,19 +90,10 @@ public class Woff2Parser extends WoffParser{
         }
     }
 
-    private byte[] brotliDecompress(byte[] bytes) {
-        ByteBuffer inBuffer = ByteBuffer.allocate(bytes.length);
-        ByteBuffer outBuffer = ByteBuffer.allocate(bytes.length * 4);
-        inBuffer.put(bytes);
-        inBuffer.limit(bytes.length);
-        inBuffer.position(0);
-
+    private byte[] brotliDecompress(byte[] compressed) {
         BrotliLibraryLoader.loadBrotli();
-        BrotliStreamDeCompressor streamCompressor = new BrotliStreamDeCompressor();
-        int decompressLength = streamCompressor.deCompress(inBuffer, outBuffer);
-
-        byte[] outBytes = new byte[decompressLength];
-        outBuffer.get(outBytes);
-        return outBytes;
+        byte[] decompressed = new byte[compressed.length * 4];
+        int decompressLength = new BrotliDeCompressor().deCompress(compressed, decompressed);
+        return Arrays.copyOfRange(decompressed, 0, decompressLength);
     }
 }
