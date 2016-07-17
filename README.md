@@ -39,7 +39,7 @@ Java library for converting and manipulating various font formats, normalizing i
         <dependency>
             <groupId>org.meteogroup.jbrotli</groupId>
             <artifactId>jbrotli</artifactId>
-            <version>0.4.0</version>
+            <version>0.5.0</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
