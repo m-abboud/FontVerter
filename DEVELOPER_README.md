@@ -15,9 +15,6 @@ Overall think they were just slightly more work than worth to add. But should yo
 Currently using specific converters for font conversion but would probabley be a better idea to parse the fonts to some master font adapter that can save arbitrarily to different formats,
 however that's a lot of boring work since fonts have a ton of crap in them and it remains on my backburner.
 
-##### Hardley any Java Docs what is this??
-You may notice the lack of java docs in this project, it's on purpose.
-
 ##### PDFBox/FontBox dependency
 Currently this project relies on PDFBox/FontBox for parsing Type0/PostScript Composite fonts, Bare CFF fonts and the PDFFontExtractor tool. Pretty big dependency
 and should be reduced to an optional one for just the PDFFontExtractor tool eventually. Bare CFF should be easy unsure about Type0.

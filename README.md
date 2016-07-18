@@ -2,13 +2,11 @@
 Java library for converting and manipulating various font formats, normalizing invalid fonts and extracting fonts from PDFs.
 
 ## Currently supports
-- Bare CFF** -> OpenType/OTF and WOFF 1.0 & 2.0 
+- Bare CFF -> OpenType/OTF and WOFF 1.0 & 2.0 
 
 - OpenType/OTF/TTF -> WOFF 1.0 & 2.0
 
 - WOFF 1.0 -> OpenType and WOFF 2.0
-
-** Bare CFFs are found in PDF files and can be saved as .cff files. They can be used as an OTF's CFF table with extra conversion work.
 
 #### With PdfFontExctractor utility
 - Supports extracting PostScript Type0/Compsoite, Bare CFF and TTF fonts. 
@@ -17,22 +15,14 @@ Java library for converting and manipulating various font formats, normalizing i
 ##### Can only convert these types with PdfFontExtractor utility
 - PostScript Type0/Composite -> OpenType/TTF and WOFF 1 & 2
 
-
-## Maven (Note WOFF2 requires optional jBrotli dependency shown below)
+## Maven (On Maven Central and jCenter)
     <dependencies>
 		<dependency>
 			<groupId>org.fontverter</groupId>
 			<artifactId>FontVerter</artifactId>
-			<version>1.2.16</version>
+			<version>1.2.18</version>
 		</dependency>
     </dependencies>
-
-    <repositories>
-		<repository>
-			<id>jcenter</id>
-			<url>http://jcenter.bintray.com </url>
-		</repository>
-    </repositories>
 
 #### Optional jBrotli dependency for WOFF2 support. jBrotli is currently optional since it is not on Maven Central or JCenter yet.
     <dependencies>
