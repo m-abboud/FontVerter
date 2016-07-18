@@ -20,7 +20,6 @@ package org.mabb.fontverter.woff;
 import org.apache.commons.lang3.ArrayUtils;
 import org.mabb.fontverter.*;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
-import org.mabb.fontverter.converter.OtfToWoffConverter.OtfToWoff2Converter;
 import org.mabb.fontverter.converter.WoffToOtfConverter;
 import org.meteogroup.jbrotli.Brotli;
 import org.meteogroup.jbrotli.BrotliStreamCompressor;
@@ -71,7 +70,11 @@ public class Woff2Font extends WoffFont {
     private byte[] brotliCompress(byte[] bytes) {
         BrotliLibraryLoader.loadBrotli();
 
-        Brotli.Parameter param = new Brotli.Parameter(Brotli.Mode.TEXT, 100, 1, 0);
+        Brotli.Parameter param = new Brotli.Parameter()
+                .setMode(Brotli.Mode.TEXT)
+                .setQuality(11)
+                .setLgwin(10)
+                .setLgblock(0);
         BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(param);
         byte[] compressed = streamCompressor.compressArray(bytes, true);
         streamCompressor.close();

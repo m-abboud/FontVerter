@@ -20,15 +20,8 @@ package org.mabb.fontverter.woff;
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.woff.Woff1Font.Woff1Table;
-import org.mabb.fontverter.woff.WoffConstants.TableFlagType;
-import org.meteogroup.jbrotli.BrotliStreamDeCompressor;
-import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 public class WoffParser {
     protected WoffFont font;

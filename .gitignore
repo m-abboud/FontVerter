@@ -1,3 +1,3 @@
 /target
-/.idea/libraries
-/.idea/copyright
+/.idea
+*.iml

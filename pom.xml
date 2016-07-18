@@ -22,6 +22,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jbrotli.version>0.5.0</jbrotli.version>
     </properties>
 
     <scm>
@@ -102,7 +103,7 @@
         <dependency>
             <groupId>org.meteogroup.jbrotli</groupId>
             <artifactId>jbrotli</artifactId>
-            <version>0.4.0</version>
+            <version>${jbrotli.version}</version>
             <optional>true</optional>
         </dependency>
         <!-- there's some sort of maven bug or jbrotli maven config issue, with x64 windows it
@@ -110,7 +111,7 @@
         <dependency>
             <groupId>org.meteogroup.jbrotli</groupId>
             <artifactId>jbrotli-native-win32-x86-amd64</artifactId>
-            <version>0.4.0</version>
+            <version>${jbrotli.version}</version>
             <type>jar</type>
             <optional>true</optional>
         </dependency>
