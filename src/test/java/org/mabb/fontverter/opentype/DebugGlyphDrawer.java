@@ -67,7 +67,7 @@ public class DebugGlyphDrawer {
 
         gfx.dispose();
 
-        ImageIO.write(image, "jpg", new File("test.jpg"));
+//        ImageIO.write(image, "jpg", new File("test.jpg"));
     }
 
 
