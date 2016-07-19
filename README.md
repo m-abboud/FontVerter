@@ -1,5 +1,6 @@
 # FontVerter
 [![Build Status](https://travis-ci.org/m-abboud/FontVerter.svg?branch=master)](https://travis-ci.org/m-abboud/FontVerter)
+
 Java library for converting and manipulating various font formats, normalizing invalid fonts and extracting fonts from PDFs.
 
 ## Currently supports
