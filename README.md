@@ -17,7 +17,7 @@ Java library for converting and manipulating various font formats, normalizing i
 ##### Can only convert these types with PdfFontExtractor utility
 - PostScript Type0/Composite -> OpenType/TTF and WOFF 1 & 2
 
-## Maven (On Maven Central and jCenter)
+## Maven (On Maven Central)
     <dependencies>
 		<dependency>
 			<groupId>org.fontverter</groupId>
