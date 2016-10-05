@@ -25,8 +25,7 @@ however that's a lot of boring work since fonts have a ton of crap in them and i
 
 
 ##### PDFBox/FontBox dependency
-Currently this project relies on PDFBox/FontBox for parsing Type0/PostScript Composite fonts, Bare CFF fonts and the PDFFontExtractor tool. Pretty big dependency
-and should be reduced to an optional one for just the PDFFontExtractor tool eventually. Bare CFF should be easy unsure about Type0.
-
+Currently this project relies on PDFBox/FontBox for parsing Type0/PostScript Composite fonts, Bare CFF fonts and the PDFFontExtractor tool before converting them to a more useable font format. 
+Pretty big dependency and should be reduced to an optional one for just the PDFFontExtractor tool eventually. Bare CFF should be easy unsure about Type0.
 
 ###### Contact me at <maddie.abboud@gmail.com> if I've vanished and you need maven creds or something.
