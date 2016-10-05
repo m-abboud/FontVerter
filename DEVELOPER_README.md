@@ -7,7 +7,10 @@ In the OpenTypeTable subclasses they have this questionably named method called 
 
 ##### DataTypeProperty Annotations
 So you might notices these DataTypeProperty annotation things over some font/table fields
-'''java@DataTypeProperty(dataType = DataTypeProperty.DataType.FIXED32)'''
+
+```java
+  @DataTypeProperty(dataType = DataTypeProperty.DataType.FIXED32)
+```  
 
 I added these annotations so you don't need a separate read/parse and write method and can just use a single line of code above the fields, makes sense right.
 It works perfectly for somewhat simple cases like OS2WinMetricsTable where the table spec is just a bunch of normal data types in a row, but for more complex cases
