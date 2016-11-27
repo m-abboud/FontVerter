@@ -18,6 +18,7 @@
 package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.*;
+import org.mabb.fontverter.converter.FontConverter;
 import org.mabb.fontverter.converter.IdentityConverter;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.io.FontDataOutputStream;
@@ -145,8 +146,7 @@ public class OpenTypeFont implements FVFont {
     }
 
     public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
-        switch(fontFormat)
-        {
+        switch (fontFormat) {
             case OTF:
                 return new IdentityConverter();
             case WOFF1:
@@ -226,7 +226,7 @@ public class OpenTypeFont implements FVFont {
     private String determineSfntFlavor() {
         if (getCffTable() != null)
             return SfntHeader.CFF_FLAVOR;
-        else if (getPost() != null )
+        else if (getPost() != null)
             return SfntHeader.toVersionString(getPost().getVersion());
 
         return VERSION_1;

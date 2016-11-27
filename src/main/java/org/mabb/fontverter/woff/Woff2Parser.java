@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class Woff2Parser extends WoffParser{
+public class Woff2Parser extends WoffParser {
     private static final Logger log = LoggerFactory.getLogger(Woff2Parser.class);
 
     protected void initalizeFont() {
@@ -79,7 +79,7 @@ public class Woff2Parser extends WoffParser{
         for (WoffTable tableOn : font.getTables()) {
             try {
                 int end = tableOn.transformLength + offset;
-                if(end > block.length)
+                if (end > block.length)
                     end = block.length;
 
                 tableOn.tableData = Arrays.copyOfRange(block, offset, end);

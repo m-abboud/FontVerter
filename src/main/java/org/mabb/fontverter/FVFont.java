@@ -17,11 +17,10 @@
 
 package org.mabb.fontverter;
 
-import org.mabb.fontverter.validator.RuleValidator;
+import org.mabb.fontverter.converter.FontConverter;
 import org.mabb.fontverter.validator.RuleValidator.FontValidatorError;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -66,6 +65,7 @@ public interface FVFont {
 
     /**
      * Fixes any validation issues with the font.
+     *
      * @throws IOException error reading font data
      */
     void normalize() throws IOException;

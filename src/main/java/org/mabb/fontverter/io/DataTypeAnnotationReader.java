@@ -106,7 +106,7 @@ class DataTypeAnnotationReader {
         Object fieldResult = tryGetFieldValue(ignoreIf, object);
 
         if (fieldResult == null) {
-            Method method = object.getClass().getMethod(ignoreIf.replace("()",""));
+            Method method = object.getClass().getMethod(ignoreIf.replace("()", ""));
             filterResult = (Boolean) method.invoke(object);
         }
 

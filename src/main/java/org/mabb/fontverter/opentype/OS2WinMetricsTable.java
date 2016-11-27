@@ -208,7 +208,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
 
     void normalize() throws IOException {
         super.normalize();
-        if(panose == null)
+        if (panose == null)
             panose = latinPanose.clone();
         calcPanose();
         calcEncodingRanges();
@@ -225,8 +225,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
             panose[0] = 5;
             panose[2] = 1;
             panose[4] = 1;
-        }
-        else
+        } else
             panose[0] = 2;
     }
 
@@ -246,7 +245,7 @@ public class OS2WinMetricsTable extends OpenTypeTable {
         unicodeRange2 = unicodeRanges.getRanges().get(1);
         unicodeRange3 = unicodeRanges.getRanges().get(2);
         unicodeRange4 = unicodeRanges.getRanges().get(3);
-        
+
         codePageRange1 = codePageRanges.getRanges().get(0);
         codePageRange2 = codePageRanges.getRanges().get(1);
     }

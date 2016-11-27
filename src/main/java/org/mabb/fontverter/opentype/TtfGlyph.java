@@ -19,7 +19,6 @@ package org.mabb.fontverter.opentype;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mabb.fontverter.FontVerterUtils;
-import org.mabb.fontverter.GlyphMapReader;
 import org.mabb.fontverter.io.*;
 import org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionParser;
 import org.slf4j.Logger;
@@ -34,7 +33,6 @@ import java.util.List;
 
 import static org.mabb.fontverter.io.DataTypeProperty.DataType.*;
 import static org.mabb.fontverter.opentype.TtfGlyph.CoordinateFlagType.*;
-import static org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionParser.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class TtfGlyph {
@@ -109,7 +107,7 @@ public class TtfGlyph {
 
         int t = 85;
         if (instructionLength > t)
-        instructionLength = t;
+            instructionLength = t;
 
         FontDataOutputStream writer = new FontDataOutputStream();
         DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();

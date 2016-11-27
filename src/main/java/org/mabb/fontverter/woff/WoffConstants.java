@@ -59,7 +59,7 @@ public class WoffConstants {
 
         public static TableFlagType fromString(String str) {
             for (TableFlagType typeOn : TableFlagType.values()) {
-                String cleanedStr = str.trim().replace("/","");
+                String cleanedStr = str.trim().replace("/", "");
 
                 if (typeOn.name().equals(cleanedStr))
                     return typeOn;

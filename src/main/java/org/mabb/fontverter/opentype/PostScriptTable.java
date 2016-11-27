@@ -24,7 +24,7 @@ import org.mabb.fontverter.io.DataTypeProperty.DataType;
 import java.io.IOException;
 import java.util.List;
 
-import static org.mabb.fontverter.GlyphMapReader.*;
+import static org.mabb.fontverter.opentype.GlyphMapReader.*;
 
 public class PostScriptTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataType.FIXED32)

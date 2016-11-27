@@ -20,7 +20,7 @@ package org.mabb.fontverter.converter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.pdfbox.pdmodel.font.*;
-import org.mabb.fontverter.GlyphMapReader.GlyphMapping;
+import org.mabb.fontverter.opentype.GlyphMapReader.GlyphMapping;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.FontVerterUtils;
@@ -71,7 +71,7 @@ public class PsType0ToOpenTypeConverter {
 
     private OpenTypeFont buildFromCff() throws IOException {
         byte[] cffData = type0Font.getFontDescriptor().getFontFile3().toByteArray();
-        OpenTypeFont otfFont =  (OpenTypeFont) FontVerter.convertFont(cffData, FontVerter.FontFormat.OTF);
+        OpenTypeFont otfFont = (OpenTypeFont) FontVerter.convertFont(cffData, FontVerter.FontFormat.OTF);
 
         return otfFont;
     }

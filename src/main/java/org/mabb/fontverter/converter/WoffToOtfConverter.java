@@ -19,7 +19,6 @@ package org.mabb.fontverter.converter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mabb.fontverter.FVFont;
-import org.mabb.fontverter.FontConverter;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.OpenTypeTable;
 import org.mabb.fontverter.woff.WoffFont;

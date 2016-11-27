@@ -15,7 +15,7 @@
  * along with FontVerter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mabb.fontverter;
+package org.mabb.fontverter.opentype;
 
 import org.apache.fontbox.encoding.Encoding;
 import org.slf4j.Logger;

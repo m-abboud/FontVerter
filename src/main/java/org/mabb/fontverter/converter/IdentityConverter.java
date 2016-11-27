@@ -18,7 +18,6 @@
 package org.mabb.fontverter.converter;
 
 import org.mabb.fontverter.FVFont;
-import org.mabb.fontverter.FontConverter;
 
 import java.io.IOException;
 

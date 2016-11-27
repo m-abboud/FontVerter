@@ -17,9 +17,8 @@
 
 package org.mabb.fontverter.converter;
 
-import org.mabb.fontverter.GlyphMapReader.GlyphMapping;
+import org.mabb.fontverter.opentype.GlyphMapReader.GlyphMapping;
 import org.mabb.fontverter.FVFont;
-import org.mabb.fontverter.FontConverter;
 import org.mabb.fontverter.cff.CffFontAdapter;
 import org.mabb.fontverter.opentype.*;
 

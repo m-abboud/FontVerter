@@ -22,8 +22,11 @@ import org.apache.fontbox.EncodedFont;
 import org.apache.fontbox.cff.*;
 import org.apache.fontbox.encoding.Encoding;
 import org.mabb.fontverter.converter.CFFToOpenTypeConverter;
+import org.mabb.fontverter.converter.CombinedFontConverter;
+import org.mabb.fontverter.converter.FontConverter;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.*;
+import org.mabb.fontverter.opentype.GlyphMapReader;
 import org.mabb.fontverter.validator.RuleValidator;
 
 import java.io.IOException;

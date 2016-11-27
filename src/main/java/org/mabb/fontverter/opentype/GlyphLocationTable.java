@@ -17,8 +17,6 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.mabb.fontverter.GlyphMapReader;
-import org.mabb.fontverter.io.DataTypeBindingDeserializer;
 import org.mabb.fontverter.io.DataTypeProperty;
 import org.mabb.fontverter.io.DataTypeProperty.DataType;
 import org.slf4j.Logger;

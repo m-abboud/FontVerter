@@ -15,7 +15,9 @@
  * along with FontVerter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mabb.fontverter;
+package org.mabb.fontverter.converter;
+
+import org.mabb.fontverter.FVFont;
 
 import java.io.IOException;
 

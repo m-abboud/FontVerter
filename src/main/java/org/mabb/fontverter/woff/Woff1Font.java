@@ -18,6 +18,8 @@
 package org.mabb.fontverter.woff;
 
 import org.mabb.fontverter.*;
+import org.mabb.fontverter.converter.CombinedFontConverter;
+import org.mabb.fontverter.converter.FontConverter;
 import org.mabb.fontverter.converter.OtfToWoffConverter.OtfToWoff2Converter;
 import org.mabb.fontverter.converter.WoffToOtfConverter;
 
@@ -118,7 +120,7 @@ public class Woff1Font extends WoffFont {
         }
 
         protected void readCompressedData(byte[] readData) throws IOException {
-            if(readData.length == originalLength) {
+            if (readData.length == originalLength) {
                 this.tableData = readData;
                 return;
             }

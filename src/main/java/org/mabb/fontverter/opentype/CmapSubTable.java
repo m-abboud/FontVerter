@@ -17,7 +17,7 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.mabb.fontverter.GlyphMapReader.GlyphMapping;
+import org.mabb.fontverter.opentype.GlyphMapReader.GlyphMapping;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 

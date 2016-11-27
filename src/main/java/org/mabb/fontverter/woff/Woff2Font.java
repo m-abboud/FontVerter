@@ -19,6 +19,8 @@ package org.mabb.fontverter.woff;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.mabb.fontverter.*;
+import org.mabb.fontverter.converter.CombinedFontConverter;
+import org.mabb.fontverter.converter.FontConverter;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.converter.WoffToOtfConverter;
 import org.meteogroup.jbrotli.Brotli;

@@ -18,14 +18,10 @@
 package org.mabb.fontverter.converter;
 
 import org.mabb.fontverter.FVFont;
-import org.mabb.fontverter.FontConverter;
 import org.mabb.fontverter.opentype.*;
-import org.mabb.fontverter.woff.WoffConstants.TableFlagType;
 import org.mabb.fontverter.woff.WoffFont;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class OtfToWoffConverter implements FontConverter {
     OpenTypeFont otfFont;

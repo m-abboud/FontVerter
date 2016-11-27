@@ -18,7 +18,6 @@
 package org.mabb.fontverter.opentype;
 
 import org.apache.fontbox.cff.CFFStandardEncoding;
-import org.mabb.fontverter.GlyphMapReader;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.slf4j.Logger;

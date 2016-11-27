@@ -51,7 +51,7 @@ public class InstructionStack extends Stack<Byte> {
     }
 
     private void push(byte[] bytes) {
-        for(byte byteOn : bytes)
+        for (byte byteOn : bytes)
             push(byteOn);
     }
 
