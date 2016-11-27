@@ -22,28 +22,19 @@ import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
-public abstract class TtfInstruction {
-    public int code;
-
-    public abstract int[] getCodeRanges();
-
-    public abstract void read(FontDataInputStream in) throws IOException;
-
-    public abstract void execute(FontDataInputStream in, InstructionStack stack) throws IOException;
-
-    public boolean doesMatch(int code) {
-        int[] range = getCodeRanges();
-        if (getCodeRanges().length == 1)
-            return code == range[0];
-        else
-            return code >= range[0] && code <= range[1];
+public class EvenInstruction extends TtfInstruction {
+    public int[] getCodeRanges() {
+        return new int[]{0x57};
     }
 
-    protected static Long boolToUint32(boolean value) {
-        Long uIntResult = 0L;
-        if (value)
-            uIntResult = 1L;
+    public void read(FontDataInputStream in) throws IOException {
+    }
 
-        return uIntResult;
+    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+        Float e1 = stack.popF26Dot6();
+
+        boolean isEven = (e1 % 2) == 0;
+
+        stack.push(boolToUint32(isEven));
     }
 }

@@ -21,21 +21,31 @@ import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class AndInstruction extends TtfInstruction {
+public class DeltaC2Instruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x5A};
+        return new int[]{0x74};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Number e1 = stack.popNumber();
-        Number e2 = stack.popNumber();
+        Long numExceptionPairs = stack.popUint32();
 
-        // what is with the ttf spec with this AND result of a 32 uint??
-        boolean result = e1.doubleValue() > 0 && e2.doubleValue() > 0;
-        stack.push(boolToUint32(result));
+        List<Long[]> cvtEntryPairs = new ArrayList<Long[]>();
+        for (long i = 0; i < numExceptionPairs; i++) {
+            Long cvtEntryNum = stack.popUint32();
+            Long exceptionNum = stack.popUint32();
+
+            cvtEntryPairs.add(new Long[]{cvtEntryNum, exceptionNum});
+        }
+
+        // todo should manipulate CVT table somehow after pops
+        // Spec: The DELTAC2[] instruction is exactly the same as the DELTAC1[] instruction except
+        // for operating at pixel per em sizes beginning with the (delta_base + 16) through the
+        // (delta_base + 31).
     }
 }

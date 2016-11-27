@@ -21,29 +21,30 @@ import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class TtfInstruction {
-    public int code;
-
-    public abstract int[] getCodeRanges();
-
-    public abstract void read(FontDataInputStream in) throws IOException;
-
-    public abstract void execute(FontDataInputStream in, InstructionStack stack) throws IOException;
-
-    public boolean doesMatch(int code) {
-        int[] range = getCodeRanges();
-        if (getCodeRanges().length == 1)
-            return code == range[0];
-        else
-            return code >= range[0] && code <= range[1];
+public class DeltaC3Instruction extends TtfInstruction {
+    public int[] getCodeRanges() {
+        return new int[]{0x75};
     }
 
-    protected static Long boolToUint32(boolean value) {
-        Long uIntResult = 0L;
-        if (value)
-            uIntResult = 1L;
+    public void read(FontDataInputStream in) throws IOException {
+    }
 
-        return uIntResult;
+    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+        Long numExceptionPairs = stack.popUint32();
+
+        List<Long[]> cvtEntryPairs = new ArrayList<Long[]>();
+        for (long i = 0; i < numExceptionPairs; i++) {
+            Long cvtEntryNum = stack.popUint32();
+            Long exceptionNum = stack.popUint32();
+
+            cvtEntryPairs.add(new Long[]{cvtEntryNum, exceptionNum});
+        }
+
+        // todo should manipulate CVT table somehow after pops
+        // Spec The DELTAC3[] instruction is exactly the same as the DELTAC1 instruction
+        // except for operating at pixel per em sizes beginning with the
     }
 }

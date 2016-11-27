@@ -34,7 +34,11 @@ public class TtfVirtualMachine {
 
     public void execute(List<TtfInstruction> instructions) throws IOException {
         for (TtfInstruction instructionOn : instructions)
-            instructionOn.execute(fontInput, stack);
+            execute(instructionOn);
+    }
+
+    public void execute(TtfInstruction instruction) throws IOException {
+        instruction.execute(fontInput, stack);
     }
 
     InstructionStack getStack() {

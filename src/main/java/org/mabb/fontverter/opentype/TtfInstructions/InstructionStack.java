@@ -31,6 +31,16 @@ public class InstructionStack extends Stack<Object> {
         return (Long) obj;
     }
 
+    public Integer popInt32() throws IOException {
+        Object obj = pop();
+        if (!(obj instanceof Integer)) {
+            String msg = "Expected type int32 but was type: " + obj.getClass().getSimpleName();
+            throw new InstructionStackWrongTypeException(msg);
+        }
+
+        return (Integer) obj;
+    }
+
     public Float popF26Dot6() throws IOException {
        Object obj = pop();
        if (!(obj instanceof Float)) {

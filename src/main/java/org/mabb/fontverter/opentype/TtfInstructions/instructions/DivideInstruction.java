@@ -22,28 +22,20 @@ import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
-public abstract class TtfInstruction {
-    public int code;
-
-    public abstract int[] getCodeRanges();
-
-    public abstract void read(FontDataInputStream in) throws IOException;
-
-    public abstract void execute(FontDataInputStream in, InstructionStack stack) throws IOException;
-
-    public boolean doesMatch(int code) {
-        int[] range = getCodeRanges();
-        if (getCodeRanges().length == 1)
-            return code == range[0];
-        else
-            return code >= range[0] && code <= range[1];
+public class DivideInstruction extends TtfInstruction {
+    public int[] getCodeRanges() {
+        return new int[]{0x62};
     }
 
-    protected static Long boolToUint32(boolean value) {
-        Long uIntResult = 0L;
-        if (value)
-            uIntResult = 1L;
+    public void read(FontDataInputStream in) throws IOException {
+    }
 
-        return uIntResult;
+    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+        float n1 = stack.popF26Dot6();
+        float n2 = stack.popF26Dot6();
+
+        // Spec a little odd: The division takes place in the following fashion,
+        // n1 is shifted left by six bits and then divided by 2.
+        stack.push((n1 * 64) / n2);
     }
 }
