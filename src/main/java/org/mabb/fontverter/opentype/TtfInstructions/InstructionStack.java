@@ -17,52 +17,33 @@
 
 package org.mabb.fontverter.opentype.TtfInstructions;
 
-import org.mabb.fontverter.FontVerterUtils;
-import org.mabb.fontverter.io.FontDataInputStream;
-import org.mabb.fontverter.io.FontDataOutputStream;
-
 import java.io.IOException;
 import java.util.Stack;
 
-/**
- * todo refactor to instruction elements can't go off byte vals alone since AND function takes generic
- * input ugh
- */
-public class InstructionStack extends Stack<Byte> {
-    public long popUint32() throws IOException {
-        FontDataInputStream input = createDataReader();
-        pop(4);
+public class InstructionStack extends Stack<Object> {
+    public Long popUint32() throws IOException {
+        Object obj = pop();
+        if (!(obj instanceof Long)) {
+            String msg = "Expected type Uint32 but was type: " + obj.getClass().getSimpleName();
+            throw new InstructionStackWrongTypeException(msg);
+        }
 
-        return input.readUnsignedInt();
+        return (Long) obj;
     }
 
-    public float popF26Dot6() throws IOException {
-        FontDataInputStream input = createDataReader();
-        pop(4);
+    public Float popF26Dot6() throws IOException {
+       Object obj = pop();
+       if (!(obj instanceof Float)) {
+           String msg = "Expected type F26Dot6 but was type: " + obj.getClass().getSimpleName();
+           throw new InstructionStackWrongTypeException(msg);
+       }
 
-        return input.readFixed32();
+       return (Float) obj;
     }
 
-    public void pushF26Dot6(float num) throws IOException {
-        FontDataOutputStream writer = new FontDataOutputStream();
-        writer.write32Fixed(num);
-
-        push(writer.toByteArray());
+    public class InstructionStackWrongTypeException extends IOException {
+        public InstructionStackWrongTypeException(String message) {
+            super(message);
+        }
     }
-
-    private void push(byte[] bytes) {
-        for (byte byteOn : bytes)
-            push(byteOn);
-    }
-
-    private void pop(int numBytes) {
-        for (int i = 0; i < numBytes; i++)
-            this.pop();
-    }
-
-    private FontDataInputStream createDataReader() {
-        Byte[] list = this.toArray(new Byte[this.size()]);
-        return new FontDataInputStream(FontVerterUtils.toPrimative(list));
-    }
-
 }

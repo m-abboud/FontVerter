@@ -20,6 +20,7 @@ package org.mabb.fontverter.opentype;
 import org.apache.commons.lang3.StringUtils;
 import org.mabb.fontverter.FontVerterUtils;
 import org.mabb.fontverter.io.*;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionParser;
 import org.slf4j.Logger;
 
@@ -361,7 +362,7 @@ public class TtfGlyph {
         return !isParsed && points.size() == 0 && rawData == null;
     }
 
-    public List<TtfInstructionParser.TtfInstruction> getInstructions()
+    public List<TtfInstruction> getInstructions()
             throws IllegalAccessException, IOException, InstantiationException {
         try {
             TtfInstructionParser parser = new TtfInstructionParser();
@@ -370,7 +371,7 @@ public class TtfGlyph {
         } catch (Exception ex) {
             log.info("Failed to parse ttfinstrctuins, currentley uneeded for conversion");
 
-            return new ArrayList<TtfInstructionParser.TtfInstruction>();
+            return new ArrayList<TtfInstruction>();
         }
     }
 

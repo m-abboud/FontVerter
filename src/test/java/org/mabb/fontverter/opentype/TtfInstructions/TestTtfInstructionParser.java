@@ -20,12 +20,12 @@ package org.mabb.fontverter.opentype.TtfInstructions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionParser;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.PushNBytes;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionParser.*;
 
 public class TestTtfInstructionParser {
     private TtfInstructionParser parser;
@@ -69,7 +69,7 @@ public class TestTtfInstructionParser {
     public void givenAbsInstrctionWithNegativeOnStack_whenParsed_then2PosValPushed() throws Exception {
         byte[] instructions = new byte[]{(byte) 0x64};
 
-        parser.getStack().pushF26Dot6(-31.4f);
+        parser.getStack().push(-31.4f);
         parser.parse(instructions);
 
         Assert.assertEquals(31.4f, parser.getStack().popF26Dot6(), 2);
