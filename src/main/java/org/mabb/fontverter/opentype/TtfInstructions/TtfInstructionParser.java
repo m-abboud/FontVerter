@@ -26,12 +26,17 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 
+/*
+    TTF uses it's own VM and instruction set to execute font hinting instructions. Crazy right.
+    Parsing the instructions is of intrest for us for fixing broken old fonts that don't render
+    in chrome correctley and is not really currentley of use for the actual font conversions we do.
+    Instruction set can be found here:
+    https://developer.apple.com/fonts/TrueType-Reference-Manual/RM05/Chap5.html
+ */
 public class TtfInstructionParser {
     private static List<Class> instructionTypes;
     private static final Object factoryLock = new Object();
     private static Logger log = LoggerFactory.getLogger(TtfInstructionParser.class);
-
-    InstructionStack stack = new InstructionStack();
 
     public List<TtfInstruction> parse(byte[] data) throws IOException, InstantiationException, IllegalAccessException {
         List<TtfInstruction> instructions = new LinkedList<TtfInstruction>();
@@ -46,8 +51,6 @@ public class TtfInstructionParser {
                 log.info("Position: " + in.getPosition() + " Length: " + data.length);
                 break;
             }
-
-            instruction.stack = stack;
 
             instruction.read(in);
             instructions.add(instruction);
@@ -82,11 +85,5 @@ public class TtfInstructionParser {
             }
         }
     }
-
-    InstructionStack getStack() {
-        return stack;
-//        return (Stack<Byte>) stack.clone();
-    }
-
 }
 

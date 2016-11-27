@@ -18,6 +18,7 @@
 package org.mabb.fontverter.opentype.TtfInstructions.instructions;
 
 import org.mabb.fontverter.io.FontDataInputStream;
+import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
@@ -33,7 +34,9 @@ public class PushBytes extends TtfInstruction {
         numBytes = code - 0xB0 + 1;
         if (in.available() < numBytes)
             throw new IOException("Num PushBytes greater than available input stream data.");
+    }
 
+    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
         bytes = in.readBytes(numBytes);
         for (byte byteOn : bytes)
             stack.push(byteOn);

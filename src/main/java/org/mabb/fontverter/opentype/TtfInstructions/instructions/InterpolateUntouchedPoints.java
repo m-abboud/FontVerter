@@ -18,6 +18,7 @@
 package org.mabb.fontverter.opentype.TtfInstructions.instructions;
 
 import org.mabb.fontverter.io.FontDataInputStream;
+import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
@@ -27,5 +28,9 @@ public class InterpolateUntouchedPoints extends TtfInstruction {
     }
 
     public void read(FontDataInputStream in) throws IOException {
+    }
+
+    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+
     }
 }

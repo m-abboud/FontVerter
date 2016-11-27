@@ -41,6 +41,16 @@ public class InstructionStack extends Stack<Object> {
        return (Float) obj;
     }
 
+    public Number popNumber() throws IOException {
+        Object obj = pop();
+        if (!(obj instanceof Number)) {
+            String msg = "Expected type number but was type: " + obj.getClass().getSimpleName();
+            throw new InstructionStackWrongTypeException(msg);
+        }
+
+        return (Number) obj;
+    }
+
     public class InstructionStackWrongTypeException extends IOException {
         public InstructionStackWrongTypeException(String message) {
             super(message);

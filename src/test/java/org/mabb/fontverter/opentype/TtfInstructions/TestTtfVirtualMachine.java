@@ -20,14 +20,12 @@ package org.mabb.fontverter.opentype.TtfInstructions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.PushNBytes;
+import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
-public class TestTtfInstructionParser {
+public class TestTtfVirtualMachine {
     private TtfInstructionParser parser;
 
     @Before
@@ -36,13 +34,37 @@ public class TestTtfInstructionParser {
     }
 
     @Test
-    public void givenPushNBytesInstrctionWith1Byte_whenParsed_thenInstructionCodeRead() throws Exception {
+    public void givenPushNBytesInstrctionWith1Byte_whenParsed_then1BytePushed() throws Exception {
         // 0x40 = code next byte is num bytes and last is the actual byte to push
         byte[] instructions = new byte[]{0x40, 0x01, 0x01};
 
         List<TtfInstruction> parsed = parser.parse(instructions);
-        TtfInstruction pushNBytes = parsed.get(0);
 
-        Assert.assertThat(pushNBytes, instanceOf(PushNBytes.class));
+        TtfVirtualMachine vm = new TtfVirtualMachine(new FontDataInputStream(instructions));
+        vm.execute(parsed);
+        Assert.assertEquals(1, vm.getStack().size());
+    }
+
+    @Test
+    public void givenPushBytesInstrctionWith2Bytes_whenParsed_then2BytesPushed() throws Exception {
+        byte[] instructions = new byte[]{(byte) 0xB1, 0x01, 0x05};
+
+        List<TtfInstruction> parsed = parser.parse(instructions);
+        TtfVirtualMachine vm = new TtfVirtualMachine(new FontDataInputStream(instructions));
+        vm.execute(parsed);
+
+        Assert.assertEquals(2, vm.getStack().size());
+    }
+
+    @Test
+    public void givenAbsInstrctionWithNegativeOnStack_whenParsed_then2PosValPushed() throws Exception {
+        byte[] instructions = new byte[]{(byte) 0x64};
+
+        List<TtfInstruction> parsed = parser.parse(instructions);
+        TtfVirtualMachine vm = new TtfVirtualMachine(new FontDataInputStream(instructions));
+        vm.getStack().push(-31.4f);
+        vm.execute(parsed);
+
+        Assert.assertEquals(31.4f, vm.getStack().popF26Dot6(), 2);
     }
 }

@@ -15,21 +15,29 @@
  * along with FontVerter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mabb.fontverter.opentype.TtfInstructions.instructions;
+package org.mabb.fontverter.opentype.TtfInstructions;
 
 import org.mabb.fontverter.io.FontDataInputStream;
-import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
+import java.util.List;
 
-public class SetZonePointer2 extends TtfInstruction {
-    public int[] getCodeRanges() {
-        return new int[]{0x15};
+public class TtfVirtualMachine {
+    private InstructionStack stack;
+    private final FontDataInputStream fontInput;
+
+    public TtfVirtualMachine(FontDataInputStream fontInput) {
+        this.fontInput = fontInput;
+        this.stack = new InstructionStack();
     }
 
-    public void read(FontDataInputStream in) throws IOException {
+    public void execute(List<TtfInstruction> instructions) throws IOException {
+        for (TtfInstruction instructionOn : instructions)
+            instructionOn.execute(fontInput, stack);
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    InstructionStack getStack() {
+        return stack;
     }
 }

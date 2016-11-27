@@ -18,6 +18,7 @@
 package org.mabb.fontverter.opentype.TtfInstructions.instructions;
 
 import org.mabb.fontverter.io.FontDataInputStream;
+import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
@@ -27,7 +28,10 @@ public class CallFunction extends TtfInstruction {
     }
 
     public void read(FontDataInputStream in) throws IOException {
-        long func = stack.popUint32();
+    }
+
+    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
         // todo
+        long func = stack.popUint32();
     }
 }

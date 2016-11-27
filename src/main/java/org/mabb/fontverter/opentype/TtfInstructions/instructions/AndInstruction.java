@@ -22,14 +22,25 @@ import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
-public class SetZonePointer2 extends TtfInstruction {
+public class AndInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x15};
+        return new int[]{0x5A};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+        Number e1 = stack.popNumber();
+        Number e2 = stack.popNumber();
+
+        // what is with the ttf spec with this AND result of a 32 uint??
+        Long result32UInt;
+        if (e1.doubleValue() > 0 && e2.doubleValue() > 0)
+            result32UInt = 1L;
+        else
+            result32UInt = 0L;
+
+        stack.push(result32UInt);
     }
 }

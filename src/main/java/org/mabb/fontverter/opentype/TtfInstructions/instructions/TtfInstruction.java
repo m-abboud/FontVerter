@@ -23,12 +23,13 @@ import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 import java.io.IOException;
 
 public abstract class TtfInstruction {
-    public InstructionStack stack;
     public int code;
 
     public abstract int[] getCodeRanges();
 
     public abstract void read(FontDataInputStream in) throws IOException;
+
+    public abstract void execute(FontDataInputStream in, InstructionStack stack) throws IOException;
 
     public boolean doesMatch(int code) {
         int[] range = getCodeRanges();

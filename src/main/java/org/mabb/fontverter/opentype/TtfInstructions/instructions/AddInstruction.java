@@ -18,6 +18,7 @@
 package org.mabb.fontverter.opentype.TtfInstructions.instructions;
 
 import org.mabb.fontverter.io.FontDataInputStream;
+import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
@@ -27,10 +28,12 @@ public class AddInstruction extends TtfInstruction {
     }
 
     public void read(FontDataInputStream in) throws IOException {
+    }
+
+    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
         float n1 = stack.popF26Dot6();
         float n2 = stack.popF26Dot6();
 
-        // todo seperate execute and read methods?
         Float result = n1 + n2;
         stack.push(result);
     }
