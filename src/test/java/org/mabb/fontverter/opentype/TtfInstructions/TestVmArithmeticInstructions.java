@@ -34,6 +34,26 @@ public class TestVmArithmeticInstructions {
     }
 
     @Test
+    public void givenGreaterOrEqualsInstructionWithSameNums_whenExecuted_pushesTrue() throws Exception {
+        vm.getStack().push(5);
+        vm.getStack().push(5);
+
+        vm.execute(new GreaterOrEqualsInstruction());
+
+        Assert.assertEquals(1L, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenGreaterThanInstructionWithFirstNumBigger_whenExecuted_pushesTrue() throws Exception {
+        vm.getStack().push(5);
+        vm.getStack().push(3);
+
+        vm.execute(new GreaterThanInstruction());
+
+        Assert.assertEquals(1L, vm.getStack().pop());
+    }
+
+    @Test
     public void givenEvenInstructionWithUnEvenFloat_whenExecuted_pushesFalse() throws Exception {
         vm.getStack().push(11f);
 

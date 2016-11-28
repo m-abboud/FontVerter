@@ -51,6 +51,16 @@ public class InstructionStack extends Stack<Object> {
        return (Float) obj;
     }
 
+    public Byte popEint8() throws IOException {
+       Object obj = pop();
+       if (!(obj instanceof Byte)) {
+           String msg = "Expected type Eint8 but was type: " + obj.getClass().getSimpleName();
+           throw new InstructionStackWrongTypeException(msg);
+       }
+
+       return (Byte) obj;
+    }
+
     public Number popNumber() throws IOException {
         Object obj = pop();
         if (!(obj instanceof Number)) {
