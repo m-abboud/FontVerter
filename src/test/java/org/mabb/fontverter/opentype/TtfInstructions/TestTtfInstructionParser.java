@@ -20,7 +20,7 @@ package org.mabb.fontverter.opentype.TtfInstructions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.PushNBytes;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.PushNBytes;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.util.List;

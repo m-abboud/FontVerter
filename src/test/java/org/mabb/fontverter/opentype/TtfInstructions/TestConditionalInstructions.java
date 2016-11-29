@@ -22,6 +22,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.*;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.IfInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.ClearInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.DuplicateInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.ElseInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.EndIfInstruction;
 
 import java.util.ArrayList;
 import java.util.List;

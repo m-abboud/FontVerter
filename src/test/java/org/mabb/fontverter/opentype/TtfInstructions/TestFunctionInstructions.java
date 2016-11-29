@@ -22,6 +22,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.*;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.CallFunction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.ClearInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.EndFunctionInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.FunctionDefInstruction;
 
 import java.util.ArrayList;
 import java.util.List;

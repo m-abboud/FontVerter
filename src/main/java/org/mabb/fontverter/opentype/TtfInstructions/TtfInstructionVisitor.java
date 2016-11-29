@@ -18,6 +18,11 @@
 package org.mabb.fontverter.opentype.TtfInstructions;
 
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.*;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.IfInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.ElseInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.EndFunctionInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.EndIfInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.FunctionDefInstruction;
 
 import java.io.IOException;
 
