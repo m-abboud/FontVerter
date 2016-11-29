@@ -22,19 +22,20 @@ import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
-public class GreaterOrEqualsInstruction extends TtfInstruction {
+public class LoopCallInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x53};
+        return new int[]{0x2A};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Number e2 = stack.popNumber();
-        Number e1 = stack.popNumber();
-        boolean result = e1.doubleValue() >= e2.doubleValue();
+        Integer functionId = (Integer) stack.pop();
+        Number loopCount = stack.popNumber();
 
-        stack.push(boolToUint32(result));
+        for (int i = 0; i < loopCount.longValue(); i++) {
+            // todo call function from maxp table
+        }
     }
 }

@@ -22,9 +22,9 @@ import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
-public class GreaterOrEqualsInstruction extends TtfInstruction {
+public class MaxInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x53};
+        return new int[]{0x8B};
     }
 
     public void read(FontDataInputStream in) throws IOException {
@@ -33,8 +33,8 @@ public class GreaterOrEqualsInstruction extends TtfInstruction {
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
         Number e2 = stack.popNumber();
         Number e1 = stack.popNumber();
-        boolean result = e1.doubleValue() >= e2.doubleValue();
+        Number result = Math.max(e2.doubleValue(), e1.doubleValue());
 
-        stack.push(boolToUint32(result));
+        stack.push(result);
     }
 }

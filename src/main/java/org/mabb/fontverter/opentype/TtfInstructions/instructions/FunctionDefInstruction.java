@@ -23,6 +23,8 @@ import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 import java.io.IOException;
 
 public class FunctionDefInstruction extends TtfInstruction {
+    private Integer functionId = 0;
+
     public int[] getCodeRanges() {
         return new int[]{0x2C};
     }
@@ -32,6 +34,10 @@ public class FunctionDefInstruction extends TtfInstruction {
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
         // todo unclear if unsigned or not in spec
-        Integer functionId = stack.popInt32();
+        functionId = stack.popInt32();
+    }
+
+    public Integer getFunctionId() {
+        return functionId;
     }
 }

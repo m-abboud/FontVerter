@@ -31,6 +31,9 @@ public class DuplicateInstruction extends TtfInstruction {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+        if (stack.size() == 0)
+            return;
+
         Object e = stack.pop();
 
         stack.push(e);

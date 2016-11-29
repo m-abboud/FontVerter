@@ -24,7 +24,7 @@ import java.io.IOException;
 
 public class IfInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x52};
+        return new int[]{0x58};
     }
 
     public boolean shouldExecute;

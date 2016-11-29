@@ -19,11 +19,13 @@ package org.mabb.fontverter.opentype.TtfInstructions.instructions;
 
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
+import org.mabb.fontverter.opentype.TtfInstructions.TtfVirtualMachine;
 
 import java.io.IOException;
 
 public abstract class TtfInstruction {
     public int code;
+    public TtfVirtualMachine vm;
 
     public abstract int[] getCodeRanges();
 

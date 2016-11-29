@@ -22,19 +22,21 @@ import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 
 import java.io.IOException;
 
-public class GreaterOrEqualsInstruction extends TtfInstruction {
+public class IntersectionInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x53};
+        return new int[]{0x0F};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Number e2 = stack.popNumber();
-        Number e1 = stack.popNumber();
-        boolean result = e1.doubleValue() >= e2.doubleValue();
+        Long line1Start = stack.popUint32();
+        Long line1End = stack.popUint32();
+        Long line2Start = stack.popUint32();
+        Long line2End = stack.popUint32();
 
-        stack.push(boolToUint32(result));
+        Long movePoint = stack.popUint32();
+        // todo graphical state
     }
 }

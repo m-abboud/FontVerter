@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.*;
 
-public class TestVmArithmeticInstructions {
+public class TestArithmeticInstructions {
     private TtfInstructionParser parser;
     private TtfVirtualMachine vm;
 
@@ -120,4 +120,36 @@ public class TestVmArithmeticInstructions {
         // n1 is shifted left by six bits and then divided by 2.
         Assert.assertEquals(32f, vm.getStack().pop());
     }
+
+
+    @Test
+    public void givenLessOrEqualsInstructionWithSameNums_whenExecuted_pushesTrue() throws Exception {
+        vm.getStack().push(5);
+        vm.getStack().push(5);
+
+        vm.execute(new LessThanOrEqualInstruction());
+
+        Assert.assertEquals(1L, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenLessThanInstructionWithFirstNumSmaller_whenExecuted_pushesTrue() throws Exception {
+        vm.getStack().push(3);
+        vm.getStack().push(5);
+
+        vm.execute(new LessThanInstruction());
+
+        Assert.assertEquals(1L, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenMaxInstruction_whenExecuted_pushesMaxNum() throws Exception {
+        vm.getStack().push(55);
+        vm.getStack().push(22);
+
+        vm.execute(new MaxInstruction());
+
+        Assert.assertEquals(55.0, vm.getStack().pop());
+    }
+
 }

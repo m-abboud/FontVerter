@@ -24,7 +24,7 @@ import java.io.IOException;
 
 public class IdefInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x52};
+        return new int[]{0x89};
     }
 
     public void read(FontDataInputStream in) throws IOException {

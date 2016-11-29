@@ -27,10 +27,14 @@ public class InterpolateUntouchedPoints extends TtfInstruction {
         return new int[]{0x30, 0x31};
     }
 
+    boolean interpolateInYDirection = true;
+
     public void read(FontDataInputStream in) throws IOException {
+        if (code == 0x31)
+            interpolateInYDirection = false;
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-
+        // todo graphical state
     }
 }

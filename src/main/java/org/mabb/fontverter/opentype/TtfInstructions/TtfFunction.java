@@ -15,26 +15,21 @@
  * along with FontVerter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mabb.fontverter.opentype.TtfInstructions.instructions;
+package org.mabb.fontverter.opentype.TtfInstructions;
 
-import org.mabb.fontverter.io.FontDataInputStream;
-import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class GreaterOrEqualsInstruction extends TtfInstruction {
-    public int[] getCodeRanges() {
-        return new int[]{0x53};
+public class TtfFunction {
+    private List<TtfInstruction> instructions = new ArrayList<TtfInstruction>();
+
+    public List<TtfInstruction> getInstructions() {
+        return instructions;
     }
 
-    public void read(FontDataInputStream in) throws IOException {
-    }
-
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Number e2 = stack.popNumber();
-        Number e1 = stack.popNumber();
-        boolean result = e1.doubleValue() >= e2.doubleValue();
-
-        stack.push(boolToUint32(result));
+    public void addInstruction(TtfInstruction instruction) {
+        instructions.add(instruction);
     }
 }
