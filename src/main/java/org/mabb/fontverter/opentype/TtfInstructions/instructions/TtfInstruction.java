@@ -19,6 +19,7 @@ package org.mabb.fontverter.opentype.TtfInstructions.instructions;
 
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
+import org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionVisitor;
 import org.mabb.fontverter.opentype.TtfInstructions.TtfVirtualMachine;
 
 import java.io.IOException;
@@ -32,6 +33,10 @@ public abstract class TtfInstruction {
     public abstract void read(FontDataInputStream in) throws IOException;
 
     public abstract void execute(FontDataInputStream in, InstructionStack stack) throws IOException;
+
+    public void accept(TtfInstructionVisitor visitor) throws IOException {
+        visitor.visitGeneric(this);
+    }
 
     public boolean doesMatch(int code) {
         int[] range = getCodeRanges();

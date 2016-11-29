@@ -15,27 +15,22 @@
  * along with FontVerter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mabb.fontverter.opentype.TtfInstructions.instructions;
+package org.mabb.fontverter.opentype.TtfInstructions;
 
-import org.mabb.fontverter.io.FontDataInputStream;
-import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
-import org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionVisitor;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.*;
 
 import java.io.IOException;
 
-public class EndIfInstruction extends TtfInstruction {
-    public int[] getCodeRanges() {
-        return new int[]{0x59};
-    }
+public interface TtfInstructionVisitor {
+    void visitGeneric(TtfInstruction instruction) throws IOException;
 
-    public void read(FontDataInputStream in) throws IOException {
-    }
+    void visit(IfInstruction instruction) throws IOException;
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-    }
+    void visit(ElseInstruction instruction) throws IOException;
 
-    @Override
-    public void accept(TtfInstructionVisitor visitor) throws IOException {
-        visitor.visit(this);
-    }
+    void visit(EndIfInstruction instruction) throws IOException;
+
+    void visit(FunctionDefInstruction instruction) throws IOException;
+
+    void visit(EndFunctionInstruction instruction) throws IOException;
 }

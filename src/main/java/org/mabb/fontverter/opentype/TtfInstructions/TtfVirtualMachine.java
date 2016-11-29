@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-public class TtfVirtualMachine {
+public class TtfVirtualMachine implements TtfInstructionVisitor {
     public int jumpOffset = 0;
 
     private InstructionStack stack;
@@ -56,31 +56,12 @@ public class TtfVirtualMachine {
     }
 
     public void execute(TtfInstruction instruction) throws IOException {
-        if (instruction instanceof EndIfInstruction) {
-            proccessEndIf();
+        instruction.accept(this);
+    }
+
+    public void visitGeneric(TtfInstruction instruction) throws IOException {
+        if (!shouldExecuteBranch())
             return;
-        }
-
-        if (instruction instanceof ElseInstruction) {
-            if (ifStack.size() == 0)
-                throw new TtfVmRuntimeException("Else with no matching If!!");
-
-            ifStack.peek().shouldExecute = !ifStack.peek().shouldExecute;
-        }
-
-        if (!shouldExecuteBranch()) {
-            if (instruction instanceof IfInstruction)
-                discardIf++;
-            return;
-        }
-
-        if (instruction instanceof EndFunctionInstruction) {
-            if (functionOn == null)
-                throw new TtfVmRuntimeException("End function with no matching func def start!!");
-
-            functionOn = null;
-            return;
-        }
 
         if (functionOn == null)
             instruction.execute(fontInput, stack);
@@ -88,19 +69,26 @@ public class TtfVirtualMachine {
             // since functions get their unique ID from the stack we must build the functions
             // at run time rather then in the parse stage
             functionOn.addInstruction(instruction);
-
-
-        if (instruction instanceof FunctionDefInstruction) {
-            functionOn = new TtfFunction();
-            int id = ((FunctionDefInstruction)instruction).getFunctionId();
-            functions.put(id, functionOn);
-        }
-
-        if (instruction instanceof IfInstruction)
-            ifStack.push((IfInstruction) instruction);
     }
 
-    private void proccessEndIf() throws TtfVmRuntimeException {
+    public void visit(IfInstruction instruction) throws IOException {
+        if (!shouldExecuteBranch()) {
+            discardIf++;
+            return;
+        }
+
+        instruction.execute(fontInput, stack);
+        ifStack.push(instruction);
+    }
+
+    public void visit(ElseInstruction instruction) throws IOException {
+        if (ifStack.size() == 0)
+            throw new TtfVmRuntimeException("Else with no matching If!!");
+
+        ifStack.peek().shouldExecute = !ifStack.peek().shouldExecute;
+    }
+
+    public void visit(EndIfInstruction instruction) throws IOException {
         if (discardIf > 0) {
             discardIf--;
             return;
@@ -110,6 +98,20 @@ public class TtfVirtualMachine {
             throw new TtfVmRuntimeException("End If with no matching If!!");
 
         ifStack.pop();
+    }
+
+    public void visit(FunctionDefInstruction instruction) throws IOException {
+        instruction.execute(fontInput, stack);
+
+        functionOn = new TtfFunction();
+        functions.put(instruction.getFunctionId(), functionOn);
+    }
+
+    public void visit(EndFunctionInstruction instruction) throws IOException {
+        if (functionOn == null)
+            throw new TtfVmRuntimeException("End function with no matching func def start!!");
+
+        functionOn = null;
     }
 
     public boolean shouldExecuteBranch() {

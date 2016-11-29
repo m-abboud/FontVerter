@@ -19,6 +19,7 @@ package org.mabb.fontverter.opentype.TtfInstructions.instructions;
 
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
+import org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionVisitor;
 
 import java.io.IOException;
 
@@ -31,5 +32,10 @@ public class ElseInstruction extends TtfInstruction {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    }
+
+    @Override
+    public void accept(TtfInstructionVisitor visitor) throws IOException {
+        visitor.visit(this);
     }
 }
