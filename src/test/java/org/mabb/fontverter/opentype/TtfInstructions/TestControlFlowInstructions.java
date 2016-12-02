@@ -34,11 +34,11 @@ public class TestControlFlowInstructions {
     @Before
     public void init() {
         parser = new TtfInstructionParser();
-        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]));
+        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]), null);
     }
 
     @Test
-    public void givenJumpInstruction() throws Exception {
+    public void givenJumpInstruction_whenExecuted_thenVmSkips3Instructions() throws Exception {
         vm.getStack().push(25);
         vm.getStack().push(3);
 
@@ -54,7 +54,7 @@ public class TestControlFlowInstructions {
     }
 
     @Test
-    public void givenJumpOnFalseInstruction_withFalseCondition() throws Exception {
+    public void givenJumpOnFalseInstruction_withFalseCondition_whenExecuted_thenSkipsInstructions() throws Exception {
         vm.getStack().push(25);
         vm.getStack().push(3);
         vm.getStack().push(0);
@@ -71,7 +71,7 @@ public class TestControlFlowInstructions {
     }
 
     @Test
-    public void givenJumpOnFalseInstruction_withTrueCondition() throws Exception {
+    public void givenJumpOnFalseInstruction_withTrueCondition_whenExecuted_thenDoesNotSkip() throws Exception {
         vm.getStack().push(25);
         vm.getStack().push(3);
         vm.getStack().push(1);
@@ -86,9 +86,8 @@ public class TestControlFlowInstructions {
         Assert.assertEquals(0, vm.getStack().size());
     }
 
-
     @Test
-    public void givenJumpOnTrueInstruction_withTrueCondition() throws Exception {
+    public void givenJumpOnTrueInstruction_withTrueCondition_whenExecuted_thenSkipsInstructions() throws Exception {
         vm.getStack().push(25);
         vm.getStack().push(3);
         vm.getStack().push(1);
@@ -102,5 +101,14 @@ public class TestControlFlowInstructions {
 
         Assert.assertEquals(25, vm.getStack().pop());
         Assert.assertEquals(25, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenSetLoopVarInstruction_whenExecuted_thenVmLoopVarSet() throws Exception {
+        vm.getStack().push(33);
+
+        vm.execute(new SetLoopVariableInstruction());
+
+        Assert.assertEquals(33, vm.getLoopVar().longValue());
     }
 }

@@ -15,7 +15,7 @@
  * along with FontVerter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mabb.fontverter.opentype.TtfInstructions.instructions.graphic;
+package org.mabb.fontverter.opentype.TtfInstructions.instructions.control;
 
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
@@ -23,16 +23,21 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
 
-public class SetZonePointer2 extends TtfInstruction {
+public class RollTop3Instruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x15};
+        return new int[]{0x8A};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Long id = stack.popUint32();
-        vm.getGraphicsState().zone2Id = id;
+        Object a = stack.pop();
+        Object b = stack.pop();
+        Object c = stack.pop();
+
+        stack.push(b);
+        stack.push(a);
+        stack.push(c);
     }
 }

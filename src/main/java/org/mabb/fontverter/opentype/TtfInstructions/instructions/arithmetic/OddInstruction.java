@@ -15,7 +15,7 @@
  * along with FontVerter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mabb.fontverter.opentype.TtfInstructions.instructions.graphic;
+package org.mabb.fontverter.opentype.TtfInstructions.instructions.arithmetic;
 
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
@@ -23,16 +23,18 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
 
-public class SetZonePointer2 extends TtfInstruction {
+public class OddInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x15};
+        return new int[]{0x56};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Long id = stack.popUint32();
-        vm.getGraphicsState().zone2Id = id;
+        Float e1 = stack.popF26Dot6();
+        boolean isOdd = (e1 % 2) == 1;
+
+        stack.push(boolToUint32(isOdd));
     }
 }

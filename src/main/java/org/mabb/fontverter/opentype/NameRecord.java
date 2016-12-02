@@ -26,26 +26,6 @@ import java.nio.charset.Charset;
 class NameRecord {
     static final int NAME_RECORD_SIZE = 12;
 
-    public static NameRecord createWindowsRecord(String name, OtfNameConstants.RecordType type, OtfNameConstants.Language language) {
-        NameRecord record = new NameRecord(name);
-        record.setNameID(type.getValue());
-        record.platformID = OtfNameConstants.WINDOWS_PLATFORM_ID;
-        record.encodingID = OtfNameConstants.WINDOWS_DEFAULT_ENCODING;
-        record.languageID = language.getValue();
-
-        return record;
-    }
-
-    public static NameRecord createMacRecord(String name, OtfNameConstants.RecordType type, OtfNameConstants.Language language) {
-        NameRecord record = new NameRecord(name);
-        record.setNameID(type.getValue());
-        record.platformID = OtfNameConstants.MAC_PLATFORM_ID;
-        record.encodingID = OtfNameConstants.MAC_DEFAULT_ENCODING;
-        record.languageID = 0;
-
-        return record;
-    }
-
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT, order = 0)
     int platformID;
 
@@ -65,6 +45,26 @@ class NameRecord {
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT, order = 5)
     int offset;
+
+    public static NameRecord createWindowsRecord(String name, OtfNameConstants.RecordType type, OtfNameConstants.Language language) {
+        NameRecord record = new NameRecord(name);
+        record.setNameID(type.getValue());
+        record.platformID = OtfNameConstants.WINDOWS_PLATFORM_ID;
+        record.encodingID = OtfNameConstants.WINDOWS_DEFAULT_ENCODING;
+        record.languageID = language.getValue();
+
+        return record;
+    }
+
+    public static NameRecord createMacRecord(String name, OtfNameConstants.RecordType type, OtfNameConstants.Language language) {
+        NameRecord record = new NameRecord(name);
+        record.setNameID(type.getValue());
+        record.platformID = OtfNameConstants.MAC_PLATFORM_ID;
+        record.encodingID = OtfNameConstants.MAC_DEFAULT_ENCODING;
+        record.languageID = 0;
+
+        return record;
+    }
 
     private NameRecord(String name) {
         string = name;

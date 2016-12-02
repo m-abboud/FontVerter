@@ -23,16 +23,32 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
 
-public class SetZonePointer2 extends TtfInstruction {
+import static org.mabb.fontverter.FontVerterUtils.isBitSet;
+
+public class MoveIndirectRelativePointInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x15};
+        return new int[]{0xE0, 0xFF};
     }
 
+    boolean resetRp0 = false;
+    boolean keepDistanceGreaterThanMin = false;
+    boolean roundDistance = false;
+    short engineDistanceType = 0;
+
     public void read(FontDataInputStream in) throws IOException {
+        // 32 values between the instruction code range are params and fit into a byte
+        byte flags = (byte) (code - 0xE0);
+        resetRp0 = isBitSet(0, flags);
+        keepDistanceGreaterThanMin = isBitSet(1, flags);
+        roundDistance = isBitSet(2, flags);
+
+        engineDistanceType = (short) (flags >> 3);
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Long id = stack.popUint32();
-        vm.getGraphicsState().zone2Id = id;
+        Float cvtEntry = stack.popF26Dot6();
+        Long pointId = stack.popUint32();
+
+        // todo graphics state handeling
     }
 }

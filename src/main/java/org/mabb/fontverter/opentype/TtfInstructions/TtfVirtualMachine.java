@@ -18,12 +18,10 @@
 package org.mabb.fontverter.opentype.TtfInstructions;
 
 import org.mabb.fontverter.io.FontDataInputStream;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.*;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.IfInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.ElseInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.EndFunctionInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.EndIfInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.FunctionDefInstruction;
+import org.mabb.fontverter.opentype.OpenTypeFont;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.*;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,26 +29,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+/**
+ * This is our interpreter for TTF outline hint programs. Current purpose is for figuring
+ * out and fixing older TTF fonts that don't render in some browsers correctly rather than
+ * actual font rasterization
+ *
+ * Currently can handle all stack and control operations but only like 15% of the graphics state
+ * related instructions
+ */
 public class TtfVirtualMachine implements TtfInstructionVisitor {
+    private static final Logger log = getLogger(TtfVirtualMachine.class);
+
     public int jumpOffset = 0;
 
-    private InstructionStack stack;
+    private OpenTypeFont font;
     private final FontDataInputStream fontInput;
+
+    private InstructionStack stack;
     private Stack<IfInstruction> ifStack = new Stack<IfInstruction>();
     private int discardIf = 0;
 
     private TtfFunction functionOn;
     private Map<Integer, TtfFunction> functions = new HashMap<Integer, TtfFunction>();
 
-    public TtfVirtualMachine(FontDataInputStream fontInput) {
+    private Integer loopVar = 1;
+    private TtfGraphicsState graphicsState;
+    private Long[] storageArea;
+
+    public TtfVirtualMachine(FontDataInputStream fontInput, OpenTypeFont font) {
+        this.font = font;
         this.fontInput = fontInput;
-        this.stack = new InstructionStack();
+
+        initialize();
     }
 
     public void execute(List<TtfInstruction> instructions) throws IOException {
         for (int i = 0; i < instructions.size(); i++) {
             TtfInstruction instructionOn = instructions.get(i);
-            instructionOn.vm = this;
+
             execute(instructionOn);
 
             if (jumpOffset > 0) {
@@ -60,7 +78,17 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
         }
     }
 
+    private void initialize() {
+        this.stack = new InstructionStack();
+        this.graphicsState = new TtfGraphicsState();
+        graphicsState.initialize(font);
+
+        if (font != null && font.getMxap() != null)
+            storageArea = new Long[font.getMxap().getMaxStorage()];
+    }
+
     public void execute(TtfInstruction instruction) throws IOException {
+        instruction.vm = this;
         instruction.accept(this);
     }
 
@@ -132,6 +160,40 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
 
     InstructionStack getStack() {
         return stack;
+    }
+
+    public OpenTypeFont getFont() {
+        return font;
+    }
+
+    public TtfGraphicsState getGraphicsState() {
+        return graphicsState;
+    }
+
+    public Long getStorageAreaValue(Long index) {
+        if (index > storageArea.length) {
+            log.error(String.format("Referenced Storage Value at Index: %d does not exist.", index));
+            return 1L;
+        }
+
+        return storageArea[index.intValue()];
+    }
+
+    public void setStorageAreaValue(Long index, Long value) {
+        if (index > storageArea.length) {
+            log.error(String.format("Referenced Storage Value at Index: %d does not exist.", index));
+            return;
+        }
+
+        storageArea[index.intValue()] = value;
+    }
+
+    public void setLoopVar(Integer loopVar) {
+        this.loopVar = loopVar;
+    }
+
+    public Integer getLoopVar() {
+        return loopVar;
     }
 
     public class TtfVmRuntimeException extends IOException {

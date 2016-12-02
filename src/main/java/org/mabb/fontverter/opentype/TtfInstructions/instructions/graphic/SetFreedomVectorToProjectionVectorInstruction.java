@@ -21,18 +21,18 @@ import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
+import java.awt.geom.Point2D;
 import java.io.IOException;
 
-public class SetZonePointer2 extends TtfInstruction {
+public class SetFreedomVectorToProjectionVectorInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x15};
+        return new int[]{0x0E};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Long id = stack.popUint32();
-        vm.getGraphicsState().zone2Id = id;
+        vm.getGraphicsState().freedomVector = (Point2D.Double) vm.getGraphicsState().projectionVector.clone();
     }
 }

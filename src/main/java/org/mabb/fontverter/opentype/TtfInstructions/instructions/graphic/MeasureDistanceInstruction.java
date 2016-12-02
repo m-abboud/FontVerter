@@ -23,16 +23,25 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
 
-public class SetZonePointer2 extends TtfInstruction {
+public class MeasureDistanceInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x15};
+        return new int[]{0x49, 0x4A};
     }
 
+    boolean gridFittedOutline = true;
+
     public void read(FontDataInputStream in) throws IOException {
+        if (code == 0x4A)
+            gridFittedOutline = false;
+
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Long id = stack.popUint32();
-        vm.getGraphicsState().zone2Id = id;
+        Long pointId2 = stack.popUint32();
+        Long pointId1 = stack.popUint32();
+
+        // todo graphics state to grab actual point values
+        Float distance = 0.0f;
+        stack.push(distance);
     }
 }

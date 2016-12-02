@@ -47,8 +47,8 @@ public class TtfInstructionParser {
 
             TtfInstruction instruction = createFromCode(code);
             if (instruction == null) {
-                log.info("No instruction found for code: 0x" + Integer.toHexString(code) + "/" + code);
-                log.info("Position: " + in.getPosition() + " Length: " + data.length);
+                log.error("No instruction found for code: 0x" + Integer.toHexString(code) + "/" + code);
+                log.error("Position: " + in.getPosition() + " Length: " + data.length);
                 break;
             }
 

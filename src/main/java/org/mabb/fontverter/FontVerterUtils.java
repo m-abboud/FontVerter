@@ -105,4 +105,12 @@ public class FontVerterUtils {
 
         return primArr;
     }
+
+    public static boolean isBitSet(int position, Byte val) {
+        return ((val >> position) & 1) == 1;
+    }
+
+    public static boolean isBitSet(int position, Long num) {
+        return ((num >> position) & 1) == 1;
+    }
 }

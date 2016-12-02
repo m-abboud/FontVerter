@@ -30,7 +30,7 @@ public class TestArithmeticInstructions {
     @Before
     public void init() {
         parser = new TtfInstructionParser();
-        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]));
+        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]), null);
     }
 
     @Test
@@ -60,6 +60,15 @@ public class TestArithmeticInstructions {
         vm.execute(new EvenInstruction());
 
         Assert.assertEquals(0L, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenOddInstructionWithOddNum_whenExecuted_pushesTrue() throws Exception {
+        vm.getStack().push(11f);
+
+        vm.execute(new OddInstruction());
+
+        Assert.assertEquals(1L, vm.getStack().pop());
     }
 
     @Test
@@ -150,6 +159,43 @@ public class TestArithmeticInstructions {
         vm.execute(new MaxInstruction());
 
         Assert.assertEquals(55.0, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenMinInstruction_whenExecuted_pushesMaxNum() throws Exception {
+        vm.getStack().push(55);
+        vm.getStack().push(22);
+
+        vm.execute(new MinInstruction());
+
+        Assert.assertEquals(22.0, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenMultiplyInstruction_whenExecuted_thenNumbersMultiplied() throws Exception {
+        vm.getStack().push(5f);
+        vm.getStack().push(2f);
+
+        vm.execute(new MultiplyInstruction());
+    }
+
+    @Test
+    public void givenNegateInstruction_whenExecuted_numberNegated() throws Exception {
+        vm.getStack().push(-5f);
+
+        vm.execute(new NegateInstruction());
+
+        Assert.assertEquals(5f, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenSubtractInstruction_whenExecuted_thenSubtractionResultPushed() throws Exception {
+        vm.getStack().push(8f);
+        vm.getStack().push(3f);
+
+        vm.execute(new SubtractInstruction());
+
+        Assert.assertEquals(5f, vm.getStack().pop());
     }
 
 }

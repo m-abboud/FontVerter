@@ -42,7 +42,6 @@ import static org.mabb.fontverter.opentype.SfntHeader.*;
  * Apple TrueType spec can be found here: https://developer.apple.com/fonts/TrueType-Reference-Manual
  */
 public class OpenTypeFont implements FVFont {
-
     SfntHeader sfntHeader;
     private List<OpenTypeTable> tables;
     private static Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
@@ -59,6 +58,25 @@ public class OpenTypeFont implements FVFont {
         font.initTable(PostScriptTable.createDefaultTable(3));
         font.initTable(CmapTable.createDefaultTable());
         font.initTable(HorizontalMetricsTable.createDefaultTable(font));
+
+        font.initTable(NameTable.createDefaultTable());
+        font.normalizeTables();
+        return font;
+    }
+
+    public static OpenTypeFont createBlankTtfFont() throws IOException {
+        OpenTypeFont font = new OpenTypeFont();
+        font.initTable(HeadTable.createDefaultTable());
+
+        font.initTable(OS2WinMetricsTable.createDefaultTable());
+        font.initTable(HorizontalHeadTable.createDefaultTable());
+        font.initTable(MaximumProfileTable.createDefaultV1Table());
+
+        font.initTable(PostScriptTable.createDefaultTable(3));
+        font.initTable(CmapTable.createDefaultTable());
+        font.initTable(HorizontalMetricsTable.createDefaultTable(font));
+        font.initTable(new ControlValueTable());
+        font.initTable(new GlyphTable());
 
         font.initTable(NameTable.createDefaultTable());
         font.normalizeTables();

@@ -21,12 +21,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mabb.fontverter.io.FontDataInputStream;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.*;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.IfInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.ClearInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.DuplicateInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.ElseInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.EndIfInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.arithmetic.NotInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.arithmetic.OrInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,7 @@ public class TestConditionalInstructions {
     @Before
     public void init() {
         parser = new TtfInstructionParser();
-        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]));
+        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]), null);
     }
 
     @Test
@@ -216,4 +214,34 @@ public class TestConditionalInstructions {
 
         Assert.assertEquals(0, vm.getStack().size());
     }
+
+    @Test
+    public void givenNotInstruction_withZeroOnStack_thenChangedToTrue() throws Exception {
+        vm.getStack().push(0L);
+
+        vm.execute(new NotInstruction());
+
+        Assert.assertEquals(1L, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenOrInstruction_withOneElementTrue_thenTruePushed() throws Exception {
+        vm.getStack().push(0L);
+        vm.getStack().push(1L);
+
+        vm.execute(new OrInstruction());
+
+        Assert.assertEquals(1L, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenOrInstruction_withBothElementsFalse_thenFalsePushed() throws Exception {
+        vm.getStack().push(0L);
+        vm.getStack().push(0L);
+
+        vm.execute(new OrInstruction());
+
+        Assert.assertEquals(0L, vm.getStack().pop());
+    }
+
 }

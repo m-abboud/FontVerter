@@ -19,20 +19,43 @@ package org.mabb.fontverter.opentype.TtfInstructions.instructions.graphic;
 
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
+import org.mabb.fontverter.opentype.TtfInstructions.TtfGraphicsState.ScanDropoutMode;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
+import java.util.List;
 
-public class SetZonePointer2 extends TtfInstruction {
+import static org.mabb.fontverter.FontVerterUtils.isBitSet;
+import static org.mabb.fontverter.opentype.TtfInstructions.TtfGraphicsState.ScanDropoutMode.*;
+
+public class ScanConversionControlInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x15};
+        return new int[]{0x85};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Long id = stack.popUint32();
-        vm.getGraphicsState().zone2Id = id;
+        long flags = stack.popNumber().longValue();
+
+        List<ScanDropoutMode> modes = vm.getGraphicsState().dropoutControlModes;
+        modes.clear();
+
+        if (isBitSet(8, flags))
+            modes.add(TRUE_IF_PPEM_LESS_THAN_THRESHOLD);
+        if (isBitSet(9, flags))
+            modes.add(TRUE_IF_GLYPH_IS_ROTATED);
+        if (isBitSet(10, flags))
+            modes.add(TRUE_IF_GLYPH_STRETCHED);
+
+        if (isBitSet(11, flags))
+            modes.add(FALSE_UNLESS_PPEM_LESS_THAN_THRESHOLD);
+        if (isBitSet(12, flags))
+            modes.add(FALSE_UNLESS_STRETCHED);
+        if (isBitSet(13, flags))
+            modes.add(FALSE_UNLESS_STRETCHED);
+
+        vm.getGraphicsState().droputThreshold = (flags & 0xFF);
     }
 }

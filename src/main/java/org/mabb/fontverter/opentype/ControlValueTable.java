@@ -58,4 +58,14 @@ public class ControlValueTable extends OpenTypeTable {
     public List<Short> getValues() {
         return values;
     }
+
+    public Short getValue(Long index) throws CvtValueNotFoundException {
+        if (index > values.size())
+            throw new CvtValueNotFoundException();
+
+        return values.get(index.intValue());
+    }
+
+    public static class CvtValueNotFoundException extends IOException {
+    }
 }

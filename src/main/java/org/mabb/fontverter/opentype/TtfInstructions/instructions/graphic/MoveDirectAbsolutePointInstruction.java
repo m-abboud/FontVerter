@@ -23,16 +23,21 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
 
-public class SetZonePointer2 extends TtfInstruction {
+public class MoveDirectAbsolutePointInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x15};
+        return new int[]{0x2E, 0x2F};
     }
 
+    boolean roundValue = false;
+
     public void read(FontDataInputStream in) throws IOException {
+        if (code == 0x2F)
+            roundValue = true;
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Long id = stack.popUint32();
-        vm.getGraphicsState().zone2Id = id;
+        Long pointId = stack.popUint32();
+
+        // todo graphics state handeling
     }
 }

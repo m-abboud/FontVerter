@@ -20,33 +20,6 @@ package org.mabb.fontverter.opentype;
 import org.mabb.fontverter.io.DataTypeProperty;
 
 public class MaximumProfileTable extends OpenTypeTable {
-    public static MaximumProfileTable createDefaultTable() {
-        MaximumProfileTable table = new MaximumProfileTable();
-        table.version = .3125f;
-        return table;
-    }
-
-    public static MaximumProfileTable createDefaultV1Table() {
-        MaximumProfileTable table = new MaximumProfileTable();
-        table.version = 1f;
-        table.numGlyphs = 1;
-        table.maxPoints = 1;
-        table.maxContours = 1;
-        table.maxCompositePoints = 1;
-        table.maxCompositeContours = 1;
-        table.maxZones = 1;
-        table.maxTwilightPoints = 1;
-        table.maxStorage = 1;
-        table.maxFunctionDefs = 1;
-        table.maxInstructionDefs = 1;
-        table.maxStackElements = 1;
-        table.maxSizeOfInstructions = 1;
-        table.maxComponentElements = 1;
-        table.maxComponentDepth = 1;
-
-        return table;
-    }
-
     @DataTypeProperty(dataType = DataTypeProperty.DataType.FIXED32)
     protected float version;
 
@@ -92,6 +65,33 @@ public class MaximumProfileTable extends OpenTypeTable {
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT, includeIf = "isVersionOne")
     private int maxComponentDepth;
 
+    public static MaximumProfileTable createDefaultTable() {
+        MaximumProfileTable table = new MaximumProfileTable();
+        table.version = .3125f;
+        return table;
+    }
+
+    public static MaximumProfileTable createDefaultV1Table() {
+        MaximumProfileTable table = new MaximumProfileTable();
+        table.version = 1f;
+        table.numGlyphs = 1;
+        table.maxPoints = 1;
+        table.maxContours = 1;
+        table.maxCompositePoints = 1;
+        table.maxCompositeContours = 1;
+        table.maxZones = 1;
+        table.maxTwilightPoints = 1;
+        table.maxStorage = 128;
+        table.maxFunctionDefs = 1;
+        table.maxInstructionDefs = 1;
+        table.maxStackElements = 1;
+        table.maxSizeOfInstructions = 1;
+        table.maxComponentElements = 1;
+        table.maxComponentDepth = 1;
+
+        return table;
+    }
+
     public String getTableType() {
         return "maxp";
     }
@@ -114,5 +114,13 @@ public class MaximumProfileTable extends OpenTypeTable {
 
     public void setNumGlyphs(int numGlyphs) {
         this.numGlyphs = numGlyphs;
+    }
+
+    public int getMaxStorage() {
+        return maxStorage;
+    }
+
+    public void setMaxStorage(int maxStorage) {
+        this.maxStorage = maxStorage;
     }
 }

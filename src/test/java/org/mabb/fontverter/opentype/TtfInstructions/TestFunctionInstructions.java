@@ -37,7 +37,7 @@ public class TestFunctionInstructions {
     @Before
     public void init() {
         parser = new TtfInstructionParser();
-        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]));
+        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]), null);
     }
 
     @Test

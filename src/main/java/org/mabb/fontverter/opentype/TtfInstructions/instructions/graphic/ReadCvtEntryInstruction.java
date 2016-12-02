@@ -23,16 +23,21 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
 
-public class SetZonePointer2 extends TtfInstruction {
+public class ReadCvtEntryInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x15};
+        return new int[]{0x45};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        Long id = stack.popUint32();
-        vm.getGraphicsState().zone2Id = id;
+        Long index = stack.popUint32();
+
+        // I have CVT table values as shorts but RCVT spec says to push a float. probabley
+        // needs investigation or will be resolved with further ttf interpretor work
+        Float cvtValue = Float.valueOf(vm.getGraphicsState().getCvtValue(index));
+
+        stack.push(cvtValue);
     }
 }
