@@ -35,7 +35,7 @@ public class ShiftCountourWithReferencePointInstruction extends TtfInstruction {
             useRp2 = false;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long contourId = stack.popUint32();
         // todo graphics state handeling
     }

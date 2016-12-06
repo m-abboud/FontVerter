@@ -31,7 +31,7 @@ public class AdjustAngle extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         // From spec: 'This instruction is anachronistic and has no other effect.'
         stack.popUint32();
     }

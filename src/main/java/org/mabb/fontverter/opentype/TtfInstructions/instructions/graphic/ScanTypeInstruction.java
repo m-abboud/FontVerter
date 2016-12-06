@@ -33,7 +33,7 @@ public class ScanTypeInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         int type = stack.popNumber().intValue();
         vm.getGraphicsState().scanConverterMode = ScanConverterMode.fromValue(type);
     }

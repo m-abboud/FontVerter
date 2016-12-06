@@ -35,7 +35,7 @@ public class InterpolateUntouchedPoints extends TtfInstruction {
             interpolateInYDirection = false;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         // todo graphical state
     }
 }

@@ -20,7 +20,6 @@ package org.mabb.fontverter.opentype.TtfInstructions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.arithmetic.*;
 
 public class TestArithmeticInstructions {
@@ -30,7 +29,7 @@ public class TestArithmeticInstructions {
     @Before
     public void init() {
         parser = new TtfInstructionParser();
-        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]), null);
+        vm = new TtfVirtualMachine(null);
     }
 
     @Test

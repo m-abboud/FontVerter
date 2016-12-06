@@ -20,7 +20,6 @@ package org.mabb.fontverter.opentype.TtfInstructions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.arithmetic.AndInstruction;
@@ -36,7 +35,7 @@ public class TestTtfVirtualMachine {
     @Before
     public void init() throws IOException {
         parser = new TtfInstructionParser();
-        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]), OpenTypeFont.createBlankTtfFont());
+        vm = new TtfVirtualMachine(OpenTypeFont.createBlankTtfFont());
     }
 
     @Test
@@ -124,7 +123,7 @@ public class TestTtfVirtualMachine {
 
         List<TtfInstruction> parsed = parser.parse(instructions);
 
-        TtfVirtualMachine vm = new TtfVirtualMachine(new FontDataInputStream(instructions), null);
+        TtfVirtualMachine vm = new TtfVirtualMachine(null);
         vm.execute(parsed);
         Assert.assertEquals(1, vm.getStack().size());
     }
@@ -134,7 +133,7 @@ public class TestTtfVirtualMachine {
         byte[] instructions = new byte[]{(byte) 0xB1, 0x01, 0x05};
 
         List<TtfInstruction> parsed = parser.parse(instructions);
-        TtfVirtualMachine vm = new TtfVirtualMachine(new FontDataInputStream(instructions), null);
+        TtfVirtualMachine vm = new TtfVirtualMachine(null);
         vm.execute(parsed);
 
         Assert.assertEquals(2, vm.getStack().size());
@@ -145,7 +144,7 @@ public class TestTtfVirtualMachine {
         byte[] instructions = new byte[]{(byte) 0x64};
 
         List<TtfInstruction> parsed = parser.parse(instructions);
-        TtfVirtualMachine vm = new TtfVirtualMachine(new FontDataInputStream(instructions), null);
+        TtfVirtualMachine vm = new TtfVirtualMachine(null);
         vm.getStack().push(-31.4f);
         vm.execute(parsed);
 

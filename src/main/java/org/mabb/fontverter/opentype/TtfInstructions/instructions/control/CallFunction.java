@@ -32,7 +32,7 @@ public class CallFunction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Integer functionId = stack.popNumber().intValue();
         TtfFunction func = vm.getFunction(functionId);
         vm.execute(func.getInstructions());

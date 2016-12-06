@@ -31,7 +31,7 @@ public class EvenInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Float e1 = stack.popF26Dot6();
 
         boolean isEven = (e1 % 2) == 0;

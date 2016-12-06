@@ -35,7 +35,7 @@ public class MoveStackIndirectRelPoint extends TtfInstruction {
             resetRp0 = true;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Float distance = stack.popF26Dot6();
         Long pointId = stack.popUint32();
 

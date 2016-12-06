@@ -35,7 +35,7 @@ public class SetDualProjectVectorLineInstruction extends TtfInstruction {
             isPerpendicularToLine = true;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long point2Id = stack.popUint32();
         Long point1Id = stack.popUint32();
 

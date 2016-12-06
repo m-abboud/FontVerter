@@ -31,7 +31,7 @@ public class SetLoopVariableInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Integer loopVar = (Integer) stack.pop();
         vm.setLoopVar(loopVar);
     }

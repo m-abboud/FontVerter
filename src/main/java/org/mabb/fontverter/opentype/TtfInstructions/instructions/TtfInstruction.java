@@ -32,7 +32,7 @@ public abstract class TtfInstruction {
 
     public abstract void read(FontDataInputStream in) throws IOException;
 
-    public abstract void execute(FontDataInputStream in, InstructionStack stack) throws IOException;
+    public abstract void execute(InstructionStack stack) throws IOException;
 
     public void accept(TtfInstructionVisitor visitor) throws IOException {
         visitor.visitGeneric(this);

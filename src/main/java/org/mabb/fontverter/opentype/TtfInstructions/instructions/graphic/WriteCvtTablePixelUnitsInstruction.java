@@ -31,7 +31,7 @@ public class WriteCvtTablePixelUnitsInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         float num = stack.popF26Dot6();
         Long index = stack.popUint32();
 

@@ -24,15 +24,19 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import java.io.IOException;
 
 public class PushWords extends TtfInstruction {
+    private byte[] bytes;
+
     public int[] getCodeRanges() {
         return new int[]{0xB8, 0xBF};
     }
 
     public void read(FontDataInputStream in) throws IOException {
         int numWords = code - 0xB8 + 1;
-        in.readBytes(numWords * 2);
+        bytes = in.readBytes(numWords * 2);
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
+        for (byte byteOn : bytes)
+            stack.push(byteOn);
     }
 }

@@ -36,7 +36,7 @@ public class PushNBytes extends TtfInstruction {
         bytes = in.readBytes(numBytes);
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         for (byte byteOn : bytes)
             stack.push(byteOn);
     }

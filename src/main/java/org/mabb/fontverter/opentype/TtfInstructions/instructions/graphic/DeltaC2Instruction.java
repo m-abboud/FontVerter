@@ -33,7 +33,7 @@ public class DeltaC2Instruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long numExceptionPairs = stack.popUint32();
 
         List<Long[]> cvtEntryPairs = new ArrayList<Long[]>();

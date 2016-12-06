@@ -36,7 +36,7 @@ public class MeasurePointSizeInstruction extends TtfInstruction {
 
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Short pointSize = 48;
         stack.push(pointSize);
     }

@@ -31,7 +31,7 @@ public class ReadCvtEntryInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long index = stack.popUint32();
 
         // I have CVT table values as shorts but RCVT spec says to push a float. probabley

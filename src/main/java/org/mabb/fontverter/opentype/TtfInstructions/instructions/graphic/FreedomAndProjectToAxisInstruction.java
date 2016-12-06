@@ -36,7 +36,7 @@ public class FreedomAndProjectToAxisInstruction extends TtfInstruction {
             isXAxis = true;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         TtfGraphicsState state = vm.getGraphicsState();
         if (isXAxis)
             state.projectionVector.x = state.freedomVector.x = 0;

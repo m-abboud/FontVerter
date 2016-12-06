@@ -31,7 +31,7 @@ public class NegateInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Float num = stack.popF26Dot6();
         stack.push(-num);
     }

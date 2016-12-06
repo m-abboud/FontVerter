@@ -31,7 +31,7 @@ public class SetControlValueCutInInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Float cutInValue = stack.popF26Dot6();
         vm.getGraphicsState().cvtCutInValue = cutInValue;
     }

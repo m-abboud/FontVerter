@@ -31,7 +31,7 @@ public class ReadStoreInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long index = stack.popUint32();
 
         Long value = vm.getStorageAreaValue(index);

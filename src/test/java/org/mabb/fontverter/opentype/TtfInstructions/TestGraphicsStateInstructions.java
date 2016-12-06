@@ -20,7 +20,6 @@ package org.mabb.fontverter.opentype.TtfInstructions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.TtfInstructions.graphicsengine.RoundSettings;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.graphic.*;
@@ -40,7 +39,7 @@ public class TestGraphicsStateInstructions {
         parser = new TtfInstructionParser();
         font = OpenTypeFont.createBlankTtfFont();
 
-        vm = new TtfVirtualMachine(new FontDataInputStream(new byte[0]), font);
+        vm = new TtfVirtualMachine(font);
     }
 
     @Test

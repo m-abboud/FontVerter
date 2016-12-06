@@ -31,7 +31,7 @@ public class CIndexInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         // Spec: Copy the INDEXed element to the top of the stack
         Integer index = stack.popInt32();
 

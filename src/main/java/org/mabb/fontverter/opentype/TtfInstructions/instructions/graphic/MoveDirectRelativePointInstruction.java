@@ -45,7 +45,7 @@ public class MoveDirectRelativePointInstruction extends TtfInstruction {
         engineDistanceType = (short) (flags >> 3);
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long pointId = stack.popUint32();
 
         // todo graphics state handeling

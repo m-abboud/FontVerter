@@ -31,7 +31,7 @@ public class MinInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Number e2 = stack.popNumber();
         Number e1 = stack.popNumber();
         Number result = Math.min(e2.doubleValue(), e1.doubleValue());

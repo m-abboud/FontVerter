@@ -35,7 +35,7 @@ public class SetProjectionVectorToAxisInstruction extends TtfInstruction {
             isXAxis = true;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         if (isXAxis)
             vm.getGraphicsState().projectionVector.x = 0;
         else

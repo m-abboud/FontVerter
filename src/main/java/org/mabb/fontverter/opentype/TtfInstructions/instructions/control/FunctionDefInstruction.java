@@ -34,7 +34,7 @@ public class FunctionDefInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         // todo unclear if unsigned or not in spec
         functionId = stack.popInt32();
     }

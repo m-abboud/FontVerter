@@ -36,6 +36,7 @@ public class WoffOutputStream extends FontDataOutputStream {
     public void writeUIntBase128(int num) throws IOException {
         List<Byte> bytes = new ArrayList<Byte>();
         String binary = Integer.toBinaryString(num);
+
         while (!binary.isEmpty()) {
             if (binary.length() < 7)
                 binary = StringUtils.repeat("0", 7 - (binary.length() % 7)) + binary;

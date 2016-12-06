@@ -31,7 +31,7 @@ public class OddInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Float e1 = stack.popF26Dot6();
         boolean isOdd = (e1 % 2) == 1;
 

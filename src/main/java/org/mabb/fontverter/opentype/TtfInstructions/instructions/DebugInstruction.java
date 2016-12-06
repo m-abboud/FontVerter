@@ -30,7 +30,7 @@ public class DebugInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long n = stack.popUint32();
         // todo, in debugger versions of vm should invoke the font developers debugger not sure
         // how to do this

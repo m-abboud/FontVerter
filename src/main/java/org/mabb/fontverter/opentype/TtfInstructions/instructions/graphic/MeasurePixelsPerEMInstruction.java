@@ -36,7 +36,7 @@ public class MeasurePixelsPerEMInstruction extends TtfInstruction {
 
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Short ppem = 0;
         stack.push(ppem);
     }

@@ -31,7 +31,7 @@ public class LoopCallInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Integer functionId = (Integer) stack.pop();
         Number loopCount = stack.popNumber();
 

@@ -17,7 +17,6 @@
 
 package org.mabb.fontverter.opentype.TtfInstructions;
 
-import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.*;
@@ -45,7 +44,6 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
     public int jumpOffset = 0;
 
     private OpenTypeFont font;
-    private final FontDataInputStream fontInput;
 
     private InstructionStack stack;
     private Stack<IfInstruction> ifStack = new Stack<IfInstruction>();
@@ -58,9 +56,8 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
     private TtfGraphicsState graphicsState;
     private Long[] storageArea;
 
-    public TtfVirtualMachine(FontDataInputStream fontInput, OpenTypeFont font) {
+    public TtfVirtualMachine(OpenTypeFont font) {
         this.font = font;
-        this.fontInput = fontInput;
 
         initialize();
     }
@@ -97,7 +94,7 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
             return;
 
         if (functionOn == null)
-            instruction.execute(fontInput, stack);
+            instruction.execute(stack);
         else
             // since functions get their unique ID from the stack we must build the functions
             // at run time rather then in the parse stage
@@ -110,7 +107,7 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
             return;
         }
 
-        instruction.execute(fontInput, stack);
+        instruction.execute(stack);
         ifStack.push(instruction);
     }
 
@@ -134,7 +131,7 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
     }
 
     public void visit(FunctionDefInstruction instruction) throws IOException {
-        instruction.execute(fontInput, stack);
+        instruction.execute(stack);
 
         functionOn = new TtfFunction();
         functions.put(instruction.getFunctionId(), functionOn);

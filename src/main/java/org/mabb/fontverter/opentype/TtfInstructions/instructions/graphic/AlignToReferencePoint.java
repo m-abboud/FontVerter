@@ -31,7 +31,7 @@ public class AlignToReferencePoint extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         long p1 = stack.popUint32();
         long p2 = stack.popUint32();
     }

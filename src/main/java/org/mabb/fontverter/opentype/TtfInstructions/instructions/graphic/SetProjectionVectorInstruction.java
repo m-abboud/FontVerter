@@ -31,7 +31,7 @@ public class SetProjectionVectorInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Float y = stack.popF26Dot6();
         Float x = stack.popF26Dot6();
 

@@ -31,7 +31,7 @@ public class SetReferencePoint0Instruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         vm.getGraphicsState().referencePoint0Id = stack.popUint32();
     }
 }

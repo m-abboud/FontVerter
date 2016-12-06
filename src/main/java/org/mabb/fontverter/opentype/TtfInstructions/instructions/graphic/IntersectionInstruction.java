@@ -31,7 +31,7 @@ public class IntersectionInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long line1Start = stack.popUint32();
         Long line1End = stack.popUint32();
         Long line2Start = stack.popUint32();

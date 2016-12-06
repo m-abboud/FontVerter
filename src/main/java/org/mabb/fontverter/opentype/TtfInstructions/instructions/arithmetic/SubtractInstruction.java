@@ -31,7 +31,7 @@ public class SubtractInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         float n2 = stack.popF26Dot6();
         float n1 = stack.popF26Dot6();
 

@@ -35,7 +35,7 @@ public class MoveIndirectAbsolutePointInstruction extends TtfInstruction {
             roundDistance = true;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Float cvtEntry = stack.popF26Dot6();
         Long pointId = stack.popUint32();
 

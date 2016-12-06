@@ -35,7 +35,7 @@ public class ShiftPointWithReferencePointInstruction extends TtfInstruction {
             useRp2 = false;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long pointId1 = stack.popUint32();
         Long pointId2 = stack.popUint32();
         Long ploopvalue = stack.popUint32();

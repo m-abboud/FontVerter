@@ -31,7 +31,7 @@ public class RollTop3Instruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Object a = stack.pop();
         Object b = stack.pop();
         Object c = stack.pop();

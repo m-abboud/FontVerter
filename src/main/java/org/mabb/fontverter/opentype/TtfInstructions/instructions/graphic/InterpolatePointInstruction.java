@@ -31,7 +31,7 @@ public class InterpolatePointInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long p1 = stack.popUint32();
         Long p2 = stack.popUint32();
         Long ploop = stack.popUint32();

@@ -31,7 +31,7 @@ public class GetProjectionVectorInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         // todo needs to graphical state handeling for projection vector
         Float x = 1f;
         Float y = 1f;

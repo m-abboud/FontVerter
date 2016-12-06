@@ -56,7 +56,6 @@ public class WoffConstants {
             return null;
         }
 
-
         public static TableFlagType fromString(String str) {
             for (TableFlagType typeOn : TableFlagType.values()) {
                 String cleanedStr = str.trim().replace("/", "");
@@ -67,7 +66,6 @@ public class WoffConstants {
 
             return arbitrary;
         }
-
 
         public String toString() {
             String name = this.name();

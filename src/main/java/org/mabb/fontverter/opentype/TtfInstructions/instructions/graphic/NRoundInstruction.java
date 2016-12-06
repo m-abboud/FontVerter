@@ -34,7 +34,7 @@ public class NRoundInstruction extends TtfInstruction {
         engineType = (short) (code - 0x6C);
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Float pixelCoordinate = stack.popF26Dot6();
         pixelCoordinate = vm.getGraphicsState().round(pixelCoordinate);
 

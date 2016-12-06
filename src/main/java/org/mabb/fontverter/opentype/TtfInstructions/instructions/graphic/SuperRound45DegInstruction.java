@@ -32,7 +32,7 @@ public class SuperRound45DegInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long flags = stack.popUint32();
 
         vm.getGraphicsState().roundState = RoundSettings.RoundState.SUPER_ROUND_45_DEG;

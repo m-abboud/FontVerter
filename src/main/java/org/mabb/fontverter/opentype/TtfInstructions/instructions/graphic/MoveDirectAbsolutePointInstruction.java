@@ -35,7 +35,7 @@ public class MoveDirectAbsolutePointInstruction extends TtfInstruction {
             roundValue = true;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long pointId = stack.popUint32();
 
         // todo graphics state handeling

@@ -35,10 +35,11 @@ public class PushBytes extends TtfInstruction {
         numBytes = code - 0xB0 + 1;
         if (in.available() < numBytes)
             throw new IOException("Num PushBytes greater than available input stream data.");
+
+        bytes = in.readBytes(numBytes);
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
-        bytes = in.readBytes(numBytes);
+    public void execute(InstructionStack stack) throws IOException {
         for (byte byteOn : bytes)
             stack.push(byteOn);
     }

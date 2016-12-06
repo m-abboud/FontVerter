@@ -34,7 +34,7 @@ public class GetCoordinateInstruction extends TtfInstruction {
         usePositionInOriginalOutline = code == 0x47;
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long pointNum = stack.popUint32();
 
         // todo needs to use projection vector

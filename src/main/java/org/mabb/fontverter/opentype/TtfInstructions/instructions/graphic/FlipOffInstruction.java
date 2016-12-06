@@ -31,7 +31,7 @@ public class FlipOffInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         // modifies graphical state stuff, not yet there with graphical state handeling
     }
 }

@@ -92,8 +92,10 @@ public class Woff2Parser extends WoffParser {
 
     private byte[] brotliDecompress(byte[] compressed) {
         BrotliLibraryLoader.loadBrotli();
+
         byte[] decompressed = new byte[compressed.length * 4];
         int decompressLength = new BrotliDeCompressor().deCompress(compressed, decompressed);
+
         return Arrays.copyOfRange(decompressed, 0, decompressLength);
     }
 }

@@ -31,7 +31,7 @@ public class AbsoluteValue extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         double n = stack.popF26Dot6();
         stack.push((float) Math.abs(n));
     }

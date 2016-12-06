@@ -31,7 +31,7 @@ public class WriteStoreInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Long value = stack.popUint32();
         Long index = stack.popUint32();
 

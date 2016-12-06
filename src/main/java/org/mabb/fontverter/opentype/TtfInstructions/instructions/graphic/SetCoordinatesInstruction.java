@@ -31,7 +31,7 @@ public class SetCoordinatesInstruction extends TtfInstruction {
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         Float coordinateValue = stack.popF26Dot6();
         Long pointId = stack.popUint32();
 

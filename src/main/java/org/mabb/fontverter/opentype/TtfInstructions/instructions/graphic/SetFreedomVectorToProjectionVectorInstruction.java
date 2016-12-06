@@ -32,7 +32,7 @@ public class SetFreedomVectorToProjectionVectorInstruction extends TtfInstructio
     public void read(FontDataInputStream in) throws IOException {
     }
 
-    public void execute(FontDataInputStream in, InstructionStack stack) throws IOException {
+    public void execute(InstructionStack stack) throws IOException {
         vm.getGraphicsState().freedomVector = (Point2D.Double) vm.getGraphicsState().projectionVector.clone();
     }
 }
