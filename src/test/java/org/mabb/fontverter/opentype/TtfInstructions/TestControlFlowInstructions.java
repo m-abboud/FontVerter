@@ -20,7 +20,9 @@ package org.mabb.fontverter.opentype.TtfInstructions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.*;
+import org.mabb.fontverter.io.FontDataInputStream;
+import org.mabb.fontverter.io.FontDataOutputStream;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.*;
 
 import java.util.ArrayList;
@@ -109,5 +111,61 @@ public class TestControlFlowInstructions {
         vm.execute(new SetLoopVariableInstruction());
 
         Assert.assertEquals(33, vm.getLoopVar().longValue());
+    }
+
+    @Test
+    public void givenPushWords_withNumWordsCodeParmTwo_whenExecuted_thenTwoWordsPushedAsInts() throws Exception {
+        PushWords instruction = new PushWords();
+        // 0xB9 num words = 2
+        instruction.code = 0xB9;
+
+        // since PushWords grabs things from the font input stream we must fake that too
+        FontDataOutputStream params = new FontDataOutputStream();
+        params.writeShort(55);
+        params.writeShort(42);
+        instruction.read(new FontDataInputStream(params.toByteArray()));
+
+
+        vm.execute(instruction);
+
+        Assert.assertEquals(42, (int) vm.getStack().popInt32());
+        Assert.assertEquals(55, (int) vm.getStack().popInt32());
+    }
+
+    @Test
+    public void givenPushNWords_withTwoOnStream_whenExecuted_thenTwoWordsPushedAsInts() throws Exception {
+        PushNWords instruction = new PushNWords();
+
+        // since PushNWords grabs things from the font input stream we must fake that too
+        FontDataOutputStream params = new FontDataOutputStream();
+        params.writeByte(2);
+        params.writeShort(55);
+        params.writeShort(42);
+        instruction.read(new FontDataInputStream(params.toByteArray()));
+
+
+        vm.execute(instruction);
+
+        Assert.assertEquals(42, (int) vm.getStack().popInt32());
+        Assert.assertEquals(55, (int) vm.getStack().popInt32());
+    }
+
+    @Test
+    public void givenPushBytes_withNumBytesCodeParmTwo_whenExecuted_thenTwoBytesPushedAsInts() throws Exception {
+        PushBytes instruction = new PushBytes();
+        // 0xB9 num words = 2
+        instruction.code = 0xB1;
+
+        // since PushBytes grabs things from the font input stream we must fake that too
+        FontDataOutputStream params = new FontDataOutputStream();
+        params.writeByte(55);
+        params.writeByte(42);
+        instruction.read(new FontDataInputStream(params.toByteArray()));
+
+
+        vm.execute(instruction);
+
+        Assert.assertEquals(42, (int) vm.getStack().popInt32());
+        Assert.assertEquals(55, (int) vm.getStack().popInt32());
     }
 }

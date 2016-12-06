@@ -41,6 +41,6 @@ public class PushBytes extends TtfInstruction {
 
     public void execute(InstructionStack stack) throws IOException {
         for (byte byteOn : bytes)
-            stack.push(byteOn);
+            stack.push((int) byteOn);
     }
 }

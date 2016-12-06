@@ -23,21 +23,23 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
 
-public class PushNBytes extends TtfInstruction {
-    private byte numBytes;
-    private byte[] bytes;
+public class PushNWords extends TtfInstruction {
+    private short[] words;
 
     public int[] getCodeRanges() {
-        return new int[]{0x40};
+        return new int[]{0x41};
     }
 
     public void read(FontDataInputStream in) throws IOException {
-        numBytes = in.readByte();
-        bytes = in.readBytes(numBytes);
+        byte numWords = in.readByte();
+        words = new short[numWords];
+
+        for (int i = 0; i < numWords; i++)
+            words[i] = in.readShort();
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        for (byte byteOn : bytes)
-            stack.push((int) byteOn);
+        for (short wordOn : words)
+            stack.push((int) wordOn);
     }
 }

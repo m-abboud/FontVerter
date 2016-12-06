@@ -24,7 +24,7 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import java.io.IOException;
 
 public class PushWords extends TtfInstruction {
-    private byte[] bytes;
+    private short[] words;
 
     public int[] getCodeRanges() {
         return new int[]{0xB8, 0xBF};
@@ -32,11 +32,14 @@ public class PushWords extends TtfInstruction {
 
     public void read(FontDataInputStream in) throws IOException {
         int numWords = code - 0xB8 + 1;
-        bytes = in.readBytes(numWords * 2);
+        words = new short[numWords];
+
+        for (int i = 0; i < numWords; i++)
+            words[i] = in.readShort();
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        for (byte byteOn : bytes)
-            stack.push(byteOn);
+        for (short wordOn : words)
+            stack.push((int) wordOn);
     }
 }

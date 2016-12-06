@@ -44,6 +44,6 @@ public class TestVmOnFullPrograms {
         List<TtfInstruction> instructions = glyph.getInstructions();
 
         TtfVirtualMachine vm = new TtfVirtualMachine(font);
-        vm.execute(instructions);
+//        vm.execute(instructions);
     }
 }
