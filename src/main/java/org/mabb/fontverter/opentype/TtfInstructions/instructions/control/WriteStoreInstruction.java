@@ -25,7 +25,7 @@ import java.io.IOException;
 
 public class WriteStoreInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x43};
+        return new int[]{0x42};
     }
 
     public void read(FontDataInputStream in) throws IOException {

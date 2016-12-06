@@ -38,7 +38,7 @@ public class ControlValueTable extends OpenTypeTable {
 
     public void readData(byte[] data) throws IOException {
         FontDataInputStream input = new FontDataInputStream(data);
-        while (input.available() > 2)
+        while (input.available() >= 2)
             values.add(input.readShort());
 
         if (input.available() == 1) {

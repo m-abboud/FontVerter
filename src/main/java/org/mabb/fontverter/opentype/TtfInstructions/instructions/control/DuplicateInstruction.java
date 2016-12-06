@@ -25,7 +25,7 @@ import java.io.IOException;
 
 public class DuplicateInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x24};
+        return new int[]{0x20};
     }
 
     public void read(FontDataInputStream in) throws IOException {

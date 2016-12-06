@@ -435,6 +435,8 @@ public class OpenTypeFont implements FVFont {
         return findTableType(GlyphTable.class);
     }
 
+    public FontProgramTable getFpgmTable() { return findTableType(FontProgramTable.class); }
+
     public List<OpenTypeTable> getTables() {
         return tables;
     }

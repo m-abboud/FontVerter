@@ -25,7 +25,7 @@ import java.io.IOException;
 
 public class NotInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x5A};
+        return new int[]{0x5C};
     }
 
     public void read(FontDataInputStream in) throws IOException {
