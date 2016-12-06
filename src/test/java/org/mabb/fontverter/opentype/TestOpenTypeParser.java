@@ -56,7 +56,7 @@ public class TestOpenTypeParser {
     }
 
     @Test
-    public void givenTtfWithFpgmTable_whenParsed_fontHasFpgmTableWithInstructions() throws Exception {
+    public void givenTtfWithFpgmTable_whenParsed_thenFontHasFpgmTableWithInstructions() throws Exception {
         OpenTypeParser parser = new OpenTypeParser();
         byte[] fontData = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "KJJTAM+TrebuchetMS.ttf"));
         OpenTypeFont font = parser.parse(fontData);

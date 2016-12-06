@@ -15,27 +15,32 @@
  * along with FontVerter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mabb.fontverter.opentype.TtfInstructions.instructions.arithmetic;
+package org.mabb.fontverter.opentype.TtfInstructions.instructions.graphic;
 
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
+import org.mabb.fontverter.opentype.TtfInstructions.TtfVirtualMachine.TtfVmRuntimeException;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
 
-public class OrInstruction extends TtfInstruction {
+public class SetZonePointerSInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x5B};
+        return new int[]{0x16};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Number e1 = stack.popNumber();
-        Number e2 = stack.popNumber();
+        Long zone = stack.popUint32();
 
-        boolean result = e1.longValue() > 0 || e2.longValue() > 0;
-        stack.push(boolToUint32(result));
+        if (zone > 1)
+            throw new TtfVmRuntimeException(
+                    "SetZonePointerS popped zone number must 0 (twilight zone) or 1 (glyph zone)");
+
+        vm.getGraphicsState().zone0Id = zone;
+        vm.getGraphicsState().zone1Id = zone;
+        vm.getGraphicsState().zone2Id = zone;
     }
 }

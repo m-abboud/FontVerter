@@ -23,19 +23,18 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 
 import java.io.IOException;
 
-public class OrInstruction extends TtfInstruction {
+public class NotEqualsInstruction extends TtfInstruction {
     public int[] getCodeRanges() {
-        return new int[]{0x5B};
+        return new int[]{0x55};
     }
 
     public void read(FontDataInputStream in) throws IOException {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Number e1 = stack.popNumber();
-        Number e2 = stack.popNumber();
+        Object e1 = stack.pop();
+        Object e2 = stack.pop();
 
-        boolean result = e1.longValue() > 0 || e2.longValue() > 0;
-        stack.push(boolToUint32(result));
+        stack.push(boolToUint32(!e1.equals(e2)));
     }
 }

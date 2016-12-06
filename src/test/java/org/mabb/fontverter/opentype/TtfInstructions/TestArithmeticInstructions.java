@@ -118,6 +118,16 @@ public class TestArithmeticInstructions {
     }
 
     @Test
+    public void givenNotEqualsInstruction_withEqualElements_whenExecuted_pushesFalse() throws Exception {
+        vm.getStack().push(11L);
+        vm.getStack().push(11L);
+
+        vm.execute(new NotEqualsInstruction());
+
+        Assert.assertEquals(0L, vm.getStack().pop());
+    }
+
+    @Test
     public void givenDivideInstruction_whenExecuted_thenDivisionResultPushed() throws Exception {
         vm.getStack().push(4f);
         vm.getStack().push(2f);

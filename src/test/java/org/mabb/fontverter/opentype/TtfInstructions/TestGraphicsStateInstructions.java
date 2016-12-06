@@ -179,4 +179,15 @@ public class TestGraphicsStateInstructions {
 
         Assert.assertEquals(0.42f, vm.getGraphicsState().freedomVector.y, DELTA);
     }
+
+    @Test
+    public void givenSetZonePointerStoGlyphZone_whenExecuted_thenAllThreeZonePointersSetToGlyphZone()
+            throws Exception {
+        vm.getStack().push(1L);
+        vm.execute(new SetZonePointerSInstruction());
+
+        Assert.assertEquals(1, (long) vm.getGraphicsState().zone0Id);
+        Assert.assertEquals(1, (long) vm.getGraphicsState().zone1Id);
+        Assert.assertEquals(1, (long) vm.getGraphicsState().zone2Id);
+    }
 }

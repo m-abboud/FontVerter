@@ -193,7 +193,7 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
         return loopVar;
     }
 
-    public class TtfVmRuntimeException extends IOException {
+    public static class TtfVmRuntimeException extends IOException {
         public TtfVmRuntimeException(String message) {
             super(message);
         }
