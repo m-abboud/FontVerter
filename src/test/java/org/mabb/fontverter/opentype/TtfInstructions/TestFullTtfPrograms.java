@@ -31,9 +31,9 @@ import java.util.List;
 
 import static org.mabb.fontverter.pdf.TestType0ToOpenTypeConverter.extractFont;
 
-public class TestVmOnFullPrograms {
+public class TestFullTtfPrograms {
     @Test
-    public void given_type0_withCFF_HelveticaNeueBug() throws Exception {
+    public void helveticaNeueTtfBug() throws Exception {
         PDDocument doc = PDDocument.load(TestUtils.readTestFile("pdf/HorariosMadrid_Segovia.pdf"));
 
         PDFont rawType0Font = extractFont(doc, "TCQDAA+HelveticaNeue-Light-Identity-H");
@@ -44,6 +44,7 @@ public class TestVmOnFullPrograms {
         List<TtfInstruction> instructions = glyph.getInstructions();
 
         TtfVirtualMachine vm = new TtfVirtualMachine(font);
+        vm.executeFpgmInstructions();
 //        vm.execute(instructions);
     }
 }

@@ -34,7 +34,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * This is our interpreter for TTF outline hint programs. Current purpose is for figuring
  * out and fixing older TTF fonts that don't render in some browsers correctly rather than
  * actual font rasterization
- *
+ * <p>
  * Currently can handle all stack and control operations but only like 15% of the graphics state
  * related instructions
  */
@@ -55,6 +55,7 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
     private Integer loopVar = 1;
     private TtfGraphicsState graphicsState;
     private Long[] storageArea;
+    private boolean hasFpgmRun = false;
 
     public TtfVirtualMachine(OpenTypeFont font) {
         this.font = font;
@@ -63,10 +64,16 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
     }
 
     public void execute(List<TtfInstruction> instructions) throws IOException {
+        executeFpgmInstructions();
+
         for (int i = 0; i < instructions.size(); i++) {
             TtfInstruction instructionOn = instructions.get(i);
-
-            execute(instructionOn);
+            try {
+                execute(instructionOn);
+            } catch (Exception ex) {
+                throw new TtfVmRuntimeException(String.format("Error on instruction #%d type: %s Message: %s",
+                        i, instructionOn.toString(), ex.getMessage()), ex);
+            }
 
             if (jumpOffset > 0) {
                 i += jumpOffset - 1;
@@ -80,13 +87,32 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
         this.graphicsState = new TtfGraphicsState();
         graphicsState.initialize(font);
 
+        // font == null for some lazy test code
         if (font != null && font.getMxap() != null)
             storageArea = new Long[font.getMxap().getMaxStorage()];
     }
 
+    public void executeFpgmInstructions() throws IOException {
+        // FPGM(Font Program) table instructions must be executed only once before anything else
+        // in the font get used
+        if (hasFpgmRun)
+            return;
+
+        hasFpgmRun = true;
+        // font == null for some lazy test code
+        if (font != null && font.getFpgmTable() != null)
+            execute(font.getFpgmTable().getInstructions());
+    }
+
     public void execute(TtfInstruction instruction) throws IOException {
         instruction.vm = this;
-        instruction.accept(this);
+
+        if (functionOn == null || instruction instanceof EndFunctionInstruction)
+            instruction.accept(this);
+        else
+            // since functions get their unique ID from the stack we must build the functions
+            // at run time rather then in the parse stage
+            functionOn.addInstruction(instruction);
     }
 
     public void visitGeneric(TtfInstruction instruction) throws IOException {
@@ -95,10 +121,7 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
 
         if (functionOn == null)
             instruction.execute(stack);
-        else
-            // since functions get their unique ID from the stack we must build the functions
-            // at run time rather then in the parse stage
-            functionOn.addInstruction(instruction);
+
     }
 
     public void visit(IfInstruction instruction) throws IOException {
@@ -196,6 +219,10 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
     public static class TtfVmRuntimeException extends IOException {
         public TtfVmRuntimeException(String message) {
             super(message);
+        }
+
+        public TtfVmRuntimeException(String message, Exception ex) {
+            super(message, ex);
         }
     }
 }

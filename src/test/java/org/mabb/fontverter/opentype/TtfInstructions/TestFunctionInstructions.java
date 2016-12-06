@@ -21,10 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.*;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.CallFunction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.ClearInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.EndFunctionInstruction;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.FunctionDefInstruction;
+import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,5 +96,21 @@ public class TestFunctionInstructions {
         vm.execute(instructions);
 
         Assert.assertEquals(0, vm.getStack().size());
+    }
+
+    @Test
+    public void givenIfInstructionInsideFunctionDef__whenExecuted_thenIfInstructionNotExecuted() throws Exception {
+        vm.getStack().push(5);
+
+        List<TtfInstruction> instructions = new ArrayList<TtfInstruction>();
+        instructions.add(new FunctionDefInstruction());
+        instructions.add(new IfInstruction());
+        instructions.add(new ClearInstruction());
+        instructions.add(new EndIfInstruction());
+        instructions.add(new EndFunctionInstruction());
+
+        vm.execute(instructions);
+
+        // will throw exception if the if instruction is called since nothing is on the stack
     }
 }

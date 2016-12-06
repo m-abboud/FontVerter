@@ -35,8 +35,7 @@ public class FunctionDefInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        // todo unclear if unsigned or not in spec
-        functionId = stack.popInt32();
+        functionId = stack.popNumber().intValue();
     }
 
     public Integer getFunctionId() {

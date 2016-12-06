@@ -77,6 +77,7 @@ public class OpenTypeFont implements FVFont {
         font.initTable(HorizontalMetricsTable.createDefaultTable(font));
         font.initTable(new ControlValueTable());
         font.initTable(new GlyphTable());
+        font.initTable(new FontProgramTable());
 
         font.initTable(NameTable.createDefaultTable());
         font.normalizeTables();

@@ -25,6 +25,8 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import java.io.IOException;
 
 public class CallFunction extends TtfInstruction {
+    private int functionId;
+
     public int[] getCodeRanges() {
         return new int[]{0x2B};
     }
@@ -33,8 +35,12 @@ public class CallFunction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Integer functionId = stack.popNumber().intValue();
+        functionId = stack.popNumber().intValue();
         TtfFunction func = vm.getFunction(functionId);
         vm.execute(func.getInstructions());
+    }
+
+    public String toString() {
+        return super.toString() + " Function ID: " + functionId;
     }
 }

@@ -25,6 +25,7 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import java.io.IOException;
 
 public class SetZonePointerSInstruction extends TtfInstruction {
+
     public int[] getCodeRanges() {
         return new int[]{0x16};
     }
@@ -33,7 +34,10 @@ public class SetZonePointerSInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Long zone = stack.popUint32();
+        Number zoneObj = stack.popNumber();
+        if (!(zoneObj instanceof Long))
+            log.warn("SetZonePointer Expected Uint32 but was int");
+        Long zone = zoneObj.longValue();
 
         if (zone > 1)
             throw new TtfVmRuntimeException(

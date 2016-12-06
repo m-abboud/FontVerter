@@ -26,16 +26,19 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.arithmetic.AndI
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.control.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestTtfVirtualMachine {
     private TtfInstructionParser parser;
     private TtfVirtualMachine vm;
+    private OpenTypeFont font;
 
     @Before
     public void init() throws IOException {
         parser = new TtfInstructionParser();
-        vm = new TtfVirtualMachine(OpenTypeFont.createBlankTtfFont());
+        font = OpenTypeFont.createBlankTtfFont();
+        vm = new TtfVirtualMachine(font);
     }
 
     @Test
@@ -192,5 +195,27 @@ public class TestTtfVirtualMachine {
         vm.execute(new SwapInstruction());
 
         Assert.assertEquals(10L, vm.getStack().pop());
+    }
+
+    @Test
+    public void givenFontWithFpgmTableWithFunction_whenCallFunctionExecuted_thenFunctionIsCalled() throws Exception {
+        vm.getStack().push(42);
+        vm.getStack().push(5);
+        vm.getStack().push(5);
+
+        List<TtfInstruction> fontProgram = new ArrayList<TtfInstruction>();
+        fontProgram.add(new FunctionDefInstruction());
+        fontProgram.add(new DuplicateInstruction());
+        fontProgram.add(new EndFunctionInstruction());
+        font.getFpgmTable().getInstructions().addAll(fontProgram);
+
+        List<TtfInstruction> glyphProgram = new ArrayList<TtfInstruction>();
+        glyphProgram.add(new CallFunction());
+
+        // functions must be built at run time since thier ID is grabbed from the stack
+        vm.execute(glyphProgram);
+
+        Assert.assertEquals(42, vm.getStack().pop());
+        Assert.assertEquals(42, vm.getStack().pop());
     }
 }

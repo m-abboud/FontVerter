@@ -21,10 +21,15 @@ import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.opentype.TtfInstructions.InstructionStack;
 import org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionVisitor;
 import org.mabb.fontverter.opentype.TtfInstructions.TtfVirtualMachine;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public abstract class TtfInstruction {
+    protected static final Logger log = getLogger(TtfInstruction.class);
+
     public int code;
     public TtfVirtualMachine vm;
 
@@ -52,5 +57,9 @@ public abstract class TtfInstruction {
             uIntResult = 1L;
 
         return uIntResult;
+    }
+
+    public String toString() {
+        return getClass().getSimpleName();
     }
 }

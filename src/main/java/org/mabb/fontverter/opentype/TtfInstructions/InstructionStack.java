@@ -17,58 +17,73 @@
 
 package org.mabb.fontverter.opentype.TtfInstructions;
 
+import org.slf4j.Logger;
+
 import java.io.IOException;
 import java.util.Stack;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class InstructionStack extends Stack<Object> {
+    private static final Logger log = getLogger(InstructionStack.class);
+    boolean typeCheckExceptions = false;
+
     public Long popUint32() throws IOException {
-        Object obj = pop();
+        Number obj = (Number) pop();
         if (!(obj instanceof Long)) {
             String msg = "Expected type Uint32 but was type: " + obj.getClass().getSimpleName();
-            throw new InstructionStackWrongTypeException(msg);
+            error(msg);
         }
 
-        return (Long) obj;
+        return obj.longValue();
     }
 
     public Integer popInt32() throws IOException {
-        Object obj = pop();
+        Number obj = (Number) pop();
         if (!(obj instanceof Integer)) {
             String msg = "Expected type int32 but was type: " + obj.getClass().getSimpleName();
-            throw new InstructionStackWrongTypeException(msg);
+            error(msg);
         }
 
-        return (Integer) obj;
+        return obj.intValue();
     }
 
     public Float popF26Dot6() throws IOException {
-       Object obj = pop();
+       Number obj = (Number) pop();
        if (!(obj instanceof Float)) {
            String msg = "Expected type F26Dot6 but was type: " + obj.getClass().getSimpleName();
-           throw new InstructionStackWrongTypeException(msg);
+           error(msg);
        }
 
-       return (Float) obj;
+       return obj.floatValue();
     }
 
     public Byte popEint8() throws IOException {
-       Object obj = pop();
+       Number obj = (Number) pop();
        if (!(obj instanceof Byte)) {
            String msg = "Expected type Eint8 but was type: " + obj.getClass().getSimpleName();
-           throw new InstructionStackWrongTypeException(msg);
+           error(msg); 
        }
 
-       return (Byte) obj;
+       return obj.byteValue();
     }
 
     public Number popNumber() throws IOException {
-        Object obj = pop();
+        Number obj = (Number) pop();
         if (!(obj instanceof Number)) {
             String msg = "Expected type number but was type: " + obj.getClass().getSimpleName();
-            throw new InstructionStackWrongTypeException(msg);
+            error(msg); 
         }
 
-        return (Number) obj;
+        return obj;
+    }
+
+
+    private void error(String msg) throws IOException {
+        if (typeCheckExceptions)
+            throw new InstructionStackWrongTypeException(msg);
+        else
+            log.warn("TTF stack pop type not expected: " + msg);
     }
 
     public class InstructionStackWrongTypeException extends IOException {
