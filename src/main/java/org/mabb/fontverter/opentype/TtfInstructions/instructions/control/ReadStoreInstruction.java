@@ -35,6 +35,11 @@ public class ReadStoreInstruction extends TtfInstruction {
         Long index = stack.popUint32();
 
         Long value = vm.getStorageAreaValue(index);
+        if (value == null) {
+            // unsure if non itialized storage area val is fine or if something that could effect other font libs
+            log.warn("ReadStore storage area index not initialized");
+            value = 0L;
+        }
         stack.push(value);
     }
 }

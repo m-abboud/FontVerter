@@ -56,6 +56,7 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
     private TtfGraphicsState graphicsState;
     private Long[] storageArea;
     private boolean hasFpgmRun = false;
+    private boolean onFpgm;
 
     public TtfVirtualMachine(OpenTypeFont font) {
         this.font = font;
@@ -92,16 +93,19 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
             storageArea = new Long[font.getMxap().getMaxStorage()];
     }
 
-    public void executeFpgmInstructions() throws IOException {
+    private void executeFpgmInstructions() throws IOException {
         // FPGM(Font Program) table instructions must be executed only once before anything else
         // in the font get used
         if (hasFpgmRun)
             return;
 
+        onFpgm = true;
         hasFpgmRun = true;
         // font == null for some lazy test code
         if (font != null && font.getFpgmTable() != null)
             execute(font.getFpgmTable().getInstructions());
+
+        onFpgm = false;
     }
 
     public void execute(TtfInstruction instruction) throws IOException {
@@ -119,9 +123,7 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
         if (!shouldExecuteBranch())
             return;
 
-        if (functionOn == null)
-            instruction.execute(stack);
-
+        instruction.execute(stack);
     }
 
     public void visit(IfInstruction instruction) throws IOException {

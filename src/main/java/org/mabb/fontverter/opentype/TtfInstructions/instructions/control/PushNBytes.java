@@ -37,7 +37,8 @@ public class PushNBytes extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
+        // bytes or unsigned
         for (byte byteOn : bytes)
-            stack.push((int) byteOn);
+            stack.push((int) byteOn & 0xFF);
     }
 }

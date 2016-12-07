@@ -35,7 +35,7 @@ public class IfInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Integer condition = (Integer) stack.pop();
+        Integer condition = stack.popNumber().intValue();
         shouldExecute = condition.equals(1);
     }
 

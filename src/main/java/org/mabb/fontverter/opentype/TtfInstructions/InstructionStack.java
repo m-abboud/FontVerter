@@ -49,30 +49,30 @@ public class InstructionStack extends Stack<Object> {
     }
 
     public Float popF26Dot6() throws IOException {
-       Number obj = (Number) pop();
-       if (!(obj instanceof Float)) {
-           String msg = "Expected type F26Dot6 but was type: " + obj.getClass().getSimpleName();
-           error(msg);
-       }
+        Number obj = (Number) pop();
+        if (!(obj instanceof Float)) {
+            String msg = "Expected type F26Dot6 but was type: " + obj.getClass().getSimpleName();
+            error(msg);
+        }
 
-       return obj.floatValue();
+        return obj.floatValue();
     }
 
     public Byte popEint8() throws IOException {
-       Number obj = (Number) pop();
-       if (!(obj instanceof Byte)) {
-           String msg = "Expected type Eint8 but was type: " + obj.getClass().getSimpleName();
-           error(msg); 
-       }
+        Number obj = (Number) pop();
+        if (!(obj instanceof Byte)) {
+            String msg = "Expected type Eint8 but was type: " + obj.getClass().getSimpleName();
+            error(msg);
+        }
 
-       return obj.byteValue();
+        return obj.byteValue();
     }
 
     public Number popNumber() throws IOException {
         Number obj = (Number) pop();
         if (!(obj instanceof Number)) {
             String msg = "Expected type number but was type: " + obj.getClass().getSimpleName();
-            error(msg); 
+            error(msg);
         }
 
         return obj;
@@ -83,7 +83,7 @@ public class InstructionStack extends Stack<Object> {
         if (typeCheckExceptions)
             throw new InstructionStackWrongTypeException(msg);
         else
-            log.warn("TTF stack pop type not expected: " + msg);
+            log.debug("TTF stack pop type not expected: " + msg);
     }
 
     public class InstructionStackWrongTypeException extends IOException {
