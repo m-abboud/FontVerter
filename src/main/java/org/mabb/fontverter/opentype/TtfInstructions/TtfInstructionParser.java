@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
     TTF uses it's own VM and instruction set to execute font hinting instructions. Crazy right.
@@ -34,8 +35,8 @@ import java.util.*;
     https://developer.apple.com/fonts/TrueType-Reference-Manual/RM05/Chap5.html
  */
 public class TtfInstructionParser {
-    private static List<Class> instructionTypes;
-    private static final Object factoryLock = new Object();
+    private static ConcurrentHashMap<Integer, Class> instructionTypes = new ConcurrentHashMap<Integer, Class>();
+
     private static Logger log = LoggerFactory.getLogger(TtfInstructionParser.class);
 
     public List<TtfInstruction> parse(byte[] data) throws IOException, InstantiationException, IllegalAccessException {
@@ -64,26 +65,37 @@ public class TtfInstructionParser {
             throws IllegalAccessException, InstantiationException, IOException {
         initInstructionTypes();
 
-        for (Class typeOn : instructionTypes) {
-            TtfInstruction instructOn = (TtfInstruction) typeOn.newInstance();
+        Class type = instructionTypes.get(code);
+        if (type == null)
+            return null;
 
-            if (instructOn.doesMatch(code)) {
-                instructOn.code = code;
-                return instructOn;
-            }
-        }
+        TtfInstruction instruction = (TtfInstruction) type.newInstance();
+        instruction.code = code;
 
-        return null;
+        return instruction;
     }
 
-    private static void initInstructionTypes() {
-        synchronized (factoryLock) {
-            if (instructionTypes == null) {
-                Reflections reflections = new Reflections("org.mabb.fontverter");
-                Set<Class<? extends TtfInstruction>> adapterClasses = reflections.getSubTypesOf(TtfInstruction.class);
-                instructionTypes = Arrays.asList(adapterClasses.toArray(new Class[adapterClasses.size()]));
+    private static void initInstructionTypes() throws IllegalAccessException, InstantiationException {
+        // uses reflection to grab all TtfInstruction implementations than grabs their code ranges and adds an entry
+        // into a code=> instruction class map to be used when creating instruction objects from a code when parsing
+        // to remove the need for a giant if/switch block
+        if (instructionTypes.isEmpty()) {
+            Reflections reflections = new Reflections("org.mabb.fontverter");
+            Set<Class<? extends TtfInstruction>> adapterClasses = reflections.getSubTypesOf(TtfInstruction.class);
+            List<Class> instructionClasses = Arrays.asList(adapterClasses.toArray(new Class[adapterClasses.size()]));
+
+            for (Class typeOn : instructionClasses) {
+                // instiante a test object once to grab it's code ranges to use in code=>instruction class type map
+                TtfInstruction instructOn = (TtfInstruction) typeOn.newInstance();
+
+                int[] range = instructOn.getCodeRanges();
+                if (range.length == 1)
+                    instructionTypes.put(range[0], typeOn);
+                else {
+                    for (int i = range[0]; i <= range[1]; i++)
+                        instructionTypes.put(i, typeOn);
+                }
             }
         }
     }
 }
-

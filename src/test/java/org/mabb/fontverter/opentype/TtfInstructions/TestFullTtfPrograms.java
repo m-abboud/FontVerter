@@ -37,7 +37,7 @@ import static org.mabb.fontverter.pdf.TestType0ToOpenTypeConverter.extractFont;
 
 public class TestFullTtfPrograms {
 
-    // Currentley only testing the the real world full font programs execute without error in these tests
+    // Currentley only testing that real world full font programs execute without error in these tests
     @Test
     public void executeSecondGlyphIn_BrokenHelveticaNeueTtf() throws Exception {
         PDDocument doc = PDDocument.load(TestUtils.readTestFile("pdf/HorariosMadrid_Segovia.pdf"));
