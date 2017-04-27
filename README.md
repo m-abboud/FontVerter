@@ -22,7 +22,7 @@ Java library for converting and manipulating various font formats, normalizing i
 		<dependency>
 			<groupId>org.fontverter</groupId>
 			<artifactId>FontVerter</artifactId>
-			<version>1.2.18</version>
+			<version>1.2.19</version>
 		</dependency>
     </dependencies>
 
