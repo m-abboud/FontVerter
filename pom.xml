@@ -13,7 +13,7 @@
 
     <developers>
         <developer>
-            <name>Matt Abboud</name>
+            <name>Maddie Abboud</name>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -96,8 +96,8 @@
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
-            <artifactId>reflections-maven</artifactId>
-            <version>0.9.9-RC2</version>
+            <artifactId>reflections</artifactId>
+            <version>0.9.9</version>
         </dependency>
         <!--jbrotli is for woff2 generation and is not on central repo so dependency currently set to optional-->
         <dependency>
