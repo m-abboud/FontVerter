@@ -84,7 +84,7 @@ class DataTypeAnnotationReader {
             throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
         Field field = FontVerterUtils.findPrivateField(property.arrayLength(), object.getClass());
         if (field != null)
-            return field.getInt(object);
+            return (int) field.getLong(object);
         Method method = FontVerterUtils.findPrivateMethod(property.arrayLength(), object.getClass());
 
         return ((Number) method.invoke(object)).intValue();
