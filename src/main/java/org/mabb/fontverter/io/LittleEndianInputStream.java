@@ -39,7 +39,11 @@ public class LittleEndianInputStream extends FilterInputStream implements FontDa
     }
 
     public byte[] readBytes(int length) throws IOException {
-        return new byte[0];
+        byte[] bytes = new byte[length];
+        for (int i = 0;i < length; i++)
+            bytes[i] = (byte) in.read();
+
+        return  bytes;
     }
 
     public void seek(int offset) {
@@ -82,7 +86,7 @@ public class LittleEndianInputStream extends FilterInputStream implements FontDa
     }
 
     public byte readByte() throws IOException {
-        return 0;
+        return (byte) in.read();
     }
 
     public int readUnsignedByte() throws IOException {

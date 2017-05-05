@@ -42,7 +42,18 @@ public class TestEotReader {
         EotFont font = new EotFont();
         font.read(data);
 
-        Assert.assertEquals("", font.getHeader().getRootString());
+        Assert.assertTrue(font.getHeader().getFullNameString().startsWith("A"));
+    }
+
+    @Test
+    public void givenEotFontUncompressedEmbeddedFont_whenRead_thenEmbeddedFontIsValid() throws Exception {
+        byte[] data = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "/eot/arial.eot"));
+
+        EotFont font = new EotFont();
+        font.read(data);
+
+        Assert.assertEquals(25, font.getEmbeddedFont().getSfntHeader().numTables);
+        Assert.assertTrue(font.isValid());
     }
 
 }

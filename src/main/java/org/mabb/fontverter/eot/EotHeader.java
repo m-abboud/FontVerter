@@ -20,6 +20,7 @@ package org.mabb.fontverter.eot;
 import com.google.common.primitives.Bytes;
 import org.mabb.fontverter.io.DataTypeProperty;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import static org.mabb.fontverter.io.DataTypeProperty.DataType.*;
@@ -117,7 +118,7 @@ public class EotHeader {
     @DataTypeProperty(dataType = USHORT)
     int versionNameSize;
 
-    @DataTypeProperty(dataType = BYTE, isArray = true,arrayLength = "versionNameSize")
+    @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "versionNameSize")
     Byte[] versionName;
 
     @DataTypeProperty(dataType = USHORT)
@@ -138,8 +139,8 @@ public class EotHeader {
     @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "rootStringSize")
     Byte[] rootString;
 
-    @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "fontDataSize")
-    Byte[] fontData;
+//    @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "fontDataSize")
+//    Byte[] fontData;
 
     public String getFamilyName() {
         byte[] family = Bytes.toArray(Arrays.asList(familyName));
@@ -147,7 +148,16 @@ public class EotHeader {
     }
 
     public String getRootString() {
-        byte[] family = Bytes.toArray(Arrays.asList(rootString));
-        return new String(family);
+        byte[] root = Bytes.toArray(Arrays.asList(rootString));
+        return new String(root);
+    }
+
+    public String getFullNameString() {
+        byte[] fullName = Bytes.toArray(Arrays.asList(this.fullName));
+        try {
+            return new String(fullName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return "";
+        }
     }
 }

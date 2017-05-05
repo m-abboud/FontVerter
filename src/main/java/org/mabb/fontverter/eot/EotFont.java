@@ -21,10 +21,12 @@ import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontNotSupportedException;
 import org.mabb.fontverter.FontProperties;
 import org.mabb.fontverter.FontVerter;
+import org.mabb.fontverter.converter.EotToOpenTypeConverter;
 import org.mabb.fontverter.converter.FontConverter;
+import org.mabb.fontverter.converter.IdentityConverter;
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
-import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.LittleEndianInputStream;
+import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.validator.RuleValidator;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ import java.util.List;
 
 public class EotFont implements FVFont {
     private EotHeader header;
+    private OpenTypeFont font;
 
     public byte[] getData() throws IOException {
         return new byte[0];
@@ -47,14 +50,21 @@ public class EotFont implements FVFont {
         DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
         header = (EotHeader) deserializer.deserialize(data, EotHeader.class);
 
+        byte[] fontData = data.readBytes((int) header.fontDataSize);
+        font = (OpenTypeFont) FontVerter.readFont(fontData);
     }
 
     public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {
-        return null;
+        if (fontFormat == FontVerter.FontFormat.OTF)
+            return new EotToOpenTypeConverter();
+        if (fontFormat == FontVerter.FontFormat.EOT)
+            return new IdentityConverter();
+
+        throw new FontNotSupportedException("");
     }
 
     public String getName() {
-        return null;
+        return header.getFullNameString();
     }
 
     public boolean isValid() {
@@ -70,10 +80,18 @@ public class EotFont implements FVFont {
     }
 
     public FontProperties getProperties() {
-        return null;
+        FontProperties properties = new FontProperties();
+        properties.setCssFontFaceFormat("embedded-opentype");
+        properties.setFileEnding("EOT");
+        properties.setMimeType("application/vnd.ms-fontobject");
+        return properties;
     }
 
     public EotHeader getHeader() {
         return header;
+    }
+
+    public OpenTypeFont getEmbeddedFont() {
+        return font;
     }
 }
