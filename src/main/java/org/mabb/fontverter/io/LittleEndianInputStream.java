@@ -18,15 +18,110 @@
 package org.mabb.fontverter.io;
 
 import org.apache.commons.io.EndianUtils;
-import java.io.IOException;
 
-public class LittleEndianInputStream extends FontDataInputStream {
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+
+public class LittleEndianInputStream extends FilterInputStream implements FontDataInput {
+    Charset encoding = FontDataOutputStream.OPEN_TYPE_CHARSET;
+
     public LittleEndianInputStream(byte[] data) {
-        super(data);
+        super(new FontDataInputStream.SeekableByteArrayInputStream(data));
     }
 
     public long readUnsignedInt() throws IOException {
         return EndianUtils.readSwappedUnsignedInteger(this);
     }
 
+    public String readString(int length) throws IOException {
+        return null;
+    }
+
+    public byte[] readBytes(int length) throws IOException {
+        return new byte[0];
+    }
+
+    public void seek(int offset) {
+
+    }
+
+    public int readUIntBase128() throws IOException {
+        return 0;
+    }
+
+    public float readFixed32() throws IOException {
+        return 0;
+    }
+
+    public int getPosition() {
+        return 0;
+    }
+
+    public int[] readSplitBits(int numUpperBits) throws IOException {
+        return new int[0];
+    }
+
+    public int[] readUnsignedShortArray(int length) throws IOException {
+        return new int[0];
+    }
+
+    public void readFully(byte[] b) throws IOException {
+    }
+
+    public void readFully(byte[] b, int off, int len) throws IOException {
+
+    }
+
+    public int skipBytes(int n) throws IOException {
+        return 0;
+    }
+
+    public boolean readBoolean() throws IOException {
+        return false;
+    }
+
+    public byte readByte() throws IOException {
+        return 0;
+    }
+
+    public int readUnsignedByte() throws IOException {
+        return 0;
+    }
+
+    public short readShort() throws IOException {
+        return EndianUtils.readSwappedShort(this);
+    }
+
+    public int readUnsignedShort() throws IOException {
+        return EndianUtils.readSwappedUnsignedShort(this);
+    }
+
+    public char readChar() throws IOException {
+        return 0;
+    }
+
+    public int readInt() throws IOException {
+        return 0;
+    }
+
+    public long readLong() throws IOException {
+        return 0;
+    }
+
+    public float readFloat() throws IOException {
+        return 0;
+    }
+
+    public double readDouble() throws IOException {
+        return 0;
+    }
+
+    public String readLine() throws IOException {
+        return null;
+    }
+
+    public String readUTF() throws IOException {
+        return null;
+    }
 }

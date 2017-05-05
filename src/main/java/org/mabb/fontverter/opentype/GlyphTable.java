@@ -17,6 +17,7 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class GlyphTable extends OpenTypeTable {
 
     public void readData(byte[] data) throws IOException {
         super.readData(data);
-        FontDataInputStream reader = new FontDataInputStream(data);
+        FontDataInput reader = new FontDataInputStream(data);
         Long[] offsets = font.getLocaTable().getOffsets();
 
         for (int i = 0; i < offsets.length - 1; i++) {

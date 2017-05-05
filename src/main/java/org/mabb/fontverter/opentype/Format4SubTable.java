@@ -18,6 +18,7 @@
 package org.mabb.fontverter.opentype;
 
 import org.apache.fontbox.cff.CFFStandardEncoding;
+import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.slf4j.Logger;
@@ -187,7 +188,7 @@ class Format4SubTable extends CmapSubTable {
         idRangeGlyphs = new LinkedList<List<IndexedGlyph>>();
     }
 
-    public void readData(FontDataInputStream input) throws IOException {
+    public void readData(FontDataInput input) throws IOException {
         int length = input.readUnsignedShort();
         rawReadData = input.readBytes(length - 4);
         input = new FontDataInputStream(rawReadData);

@@ -17,6 +17,7 @@
 
 package org.mabb.fontverter.eot;
 
+import com.google.common.primitives.Bytes;
 import org.mabb.fontverter.io.DataTypeProperty;
 
 import java.util.Arrays;
@@ -125,7 +126,7 @@ public class EotHeader {
     @DataTypeProperty(dataType = USHORT)
     int fullNameSize;
 
-    @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "versionNameSize")
+    @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "fullNameSize")
     Byte[] fullName;
 
     @DataTypeProperty(dataType = USHORT)
@@ -135,9 +136,18 @@ public class EotHeader {
     int rootStringSize;
 
     @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "rootStringSize")
-    Byte[] RootString;
+    Byte[] rootString;
+
+    @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "fontDataSize")
+    Byte[] fontData;
 
     public String getFamilyName() {
-        return Arrays.toString(familyName);
+        byte[] family = Bytes.toArray(Arrays.asList(familyName));
+        return new String(family);
+    }
+
+    public String getRootString() {
+        byte[] family = Bytes.toArray(Arrays.asList(rootString));
+        return new String(family);
     }
 }

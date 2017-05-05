@@ -32,7 +32,7 @@ public class DataTypeBindingDeserializer {
     private static Logger log = LoggerFactory.getLogger(DataTypeBindingDeserializer.class);
 
     private DataTypeAnnotationReader propReader = new DataTypeAnnotationReader();
-    private FontDataInputStream input;
+    private FontDataInput input;
     private boolean recoverFromEOF;
     private boolean stopDeserializeEarly = false;
 
@@ -40,7 +40,7 @@ public class DataTypeBindingDeserializer {
         return deserialize(new FontDataInputStream(data), toClass);
     }
 
-    public Object deserialize(FontDataInputStream dataInput, Class toClass) throws DataTypeSerializerException {
+    public Object deserialize(FontDataInput dataInput, Class toClass) throws DataTypeSerializerException {
         try {
             return deserialize(dataInput, toClass.newInstance());
         } catch (Exception ex) {
@@ -48,7 +48,7 @@ public class DataTypeBindingDeserializer {
         }
     }
 
-    public Object deserialize(FontDataInputStream dataInput, Object toObj) throws DataTypeSerializerException {
+    public Object deserialize(FontDataInput dataInput, Object toObj) throws DataTypeSerializerException {
         try {
             input = dataInput;
 

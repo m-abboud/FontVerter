@@ -18,6 +18,7 @@
 package org.mabb.fontverter.woff;
 
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
+import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.woff.Woff1Font.Woff1Table;
 
@@ -25,7 +26,7 @@ import java.io.IOException;
 
 public class WoffParser {
     protected WoffFont font;
-    protected FontDataInputStream input;
+    protected FontDataInput input;
 
     public WoffFont parse(byte[] data) throws IOException {
         return parse(data, null);

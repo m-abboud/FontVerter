@@ -43,7 +43,7 @@ public class EotFont implements FVFont {
     }
 
     public void read(byte[] fontFile) throws IOException {
-        FontDataInputStream data = new LittleEndianInputStream(fontFile);
+        LittleEndianInputStream data = new LittleEndianInputStream(fontFile);
         DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
         header = (EotHeader) deserializer.deserialize(data, EotHeader.class);
 

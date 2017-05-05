@@ -17,20 +17,19 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class OpenTypeParser {
     private static final Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
 
     private OpenTypeFont font;
-    private FontDataInputStream input;
+    private FontDataInput input;
 
     public OpenTypeFont parse(byte[] data) throws IOException, InstantiationException, IllegalAccessException {
         return parse(data, new OpenTypeFont());

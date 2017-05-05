@@ -18,6 +18,7 @@
 package org.mabb.fontverter.opentype;
 
 
+import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.opentype.GlyphMapReader.GlyphMapping;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
@@ -71,7 +72,7 @@ public class CmapTable extends OpenTypeTable {
     }
 
     public void readData(byte[] data) throws IOException {
-        FontDataInputStream input = new FontDataInputStream(data);
+        FontDataInput input = new FontDataInputStream(data);
         version = input.readUnsignedShort();
         int numTables = input.readUnsignedShort();
 

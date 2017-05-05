@@ -35,14 +35,14 @@ public class TestEotReader {
         Assert.assertEquals(EotHeader.VERSION_TWO, font.getHeader().version);
     }
 
-//    @Test
-//    public void givenEotFont_whenHeaderRead_thenHeaderHasStringValues() throws Exception {
-//        byte[] data = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "/eot/arial.eot"));
-//
-//        EotFont font = new EotFont();
-//        font.read(data);
-//
-//        Assert.assertEquals("", font.getHeader().getFamilyName());
-//    }
+    @Test
+    public void givenEotFont_whenHeaderRead_thenHeaderHasStringValues() throws Exception {
+        byte[] data = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "/eot/arial.eot"));
+
+        EotFont font = new EotFont();
+        font.read(data);
+
+        Assert.assertEquals("", font.getHeader().getRootString());
+    }
 
 }

@@ -26,7 +26,7 @@ import java.nio.charset.Charset;
  * Adds special font data type read functionality to data input stream
  * todo split out into woff/otf specific maybe
  */
-public class FontDataInputStream extends DataInputStream {
+public class FontDataInputStream extends DataInputStream implements FontDataInput {
     private final SeekableByteArrayInputStream byteInput;
     Charset encoding = FontDataOutputStream.OPEN_TYPE_CHARSET;
 
