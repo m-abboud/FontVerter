@@ -25,6 +25,7 @@ import org.mabb.fontverter.converter.EotToOpenTypeConverter;
 import org.mabb.fontverter.converter.FontConverter;
 import org.mabb.fontverter.converter.IdentityConverter;
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
+import org.mabb.fontverter.io.DataTypeBindingSerializer;
 import org.mabb.fontverter.io.LittleEndianInputStream;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.validator.RuleValidator;
@@ -38,7 +39,8 @@ public class EotFont implements FVFont {
     private OpenTypeFont font;
 
     public byte[] getData() throws IOException {
-        return new byte[0];
+        DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
+        return serializer.serialize(header);
     }
 
     public boolean detectFormat(byte[] fontFile) {
@@ -93,5 +95,9 @@ public class EotFont implements FVFont {
 
     public OpenTypeFont getEmbeddedFont() {
         return font;
+    }
+
+    public void setFont(OpenTypeFont font) {
+        this.font = font;
     }
 }

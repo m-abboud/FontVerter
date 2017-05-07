@@ -10,6 +10,8 @@ Java library for converting and manipulating various font formats, normalizing i
 
 - WOFF 1.0 -> OpenType and WOFF 2.0
 
+- EOT (uncompressed v2 only) -> OpenType
+
 #### With PdfFontExctractor utility
 - Supports extracting PostScript Type0/Compsoite, Bare CFF and TTF fonts. 
 - PdfFontExtractor will normalize TTF fonts to make sure they are valid in all major web browsers.
