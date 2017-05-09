@@ -18,7 +18,10 @@
 package org.mabb.fontverter.eot;
 
 import com.google.common.primitives.Bytes;
+import org.mabb.fontverter.io.DataTypeBindingSerializer;
 import org.mabb.fontverter.io.DataTypeProperty;
+import org.mabb.fontverter.io.DataTypeSerializerException;
+import org.mabb.fontverter.io.LittleEndianOutputStream;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -34,10 +37,10 @@ public class EotHeader {
     long eotSize = 0;
 
     @DataTypeProperty(dataType = ULONG)
-    long fontDataSize;
+    long fontDataSize = 0;
 
     @DataTypeProperty(dataType = ULONG)
-    long version = 0;
+    long version = VERSION_TWO;
 
     @DataTypeProperty(dataType = ULONG)
     long flags = 0;
@@ -54,9 +57,8 @@ public class EotHeader {
     @DataTypeProperty(dataType = ULONG)
     long weight = 0;
 
-
     @DataTypeProperty(dataType = USHORT)
-    int fsType;
+    int fsType = 0;
 
     @DataTypeProperty(dataType = USHORT)
     int magicNumber = 0x504C;
@@ -98,10 +100,10 @@ public class EotHeader {
     int padding1 = 0;
 
     @DataTypeProperty(dataType = USHORT)
-    int familyNameSize;
+    int familyNameSize = 0;
 
     @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "familyNameSize")
-    Byte[] familyName;
+    Byte[] familyName = new Byte[0];
 
     @DataTypeProperty(dataType = USHORT)
     int padding2 = 0;
@@ -110,7 +112,7 @@ public class EotHeader {
     int styleNameSize;
 
     @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "styleNameSize")
-    Byte[] styleName;
+    Byte[] styleName = new Byte[0];
 
     @DataTypeProperty(dataType = USHORT)
     int Padding3 = 0;
@@ -119,28 +121,26 @@ public class EotHeader {
     int versionNameSize;
 
     @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "versionNameSize")
-    Byte[] versionName;
+    Byte[] versionName = new Byte[0];
 
     @DataTypeProperty(dataType = USHORT)
     int Padding4 = 0;
 
     @DataTypeProperty(dataType = USHORT)
-    int fullNameSize;
+    int fullNameSize = 0;
 
     @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "fullNameSize")
-    Byte[] fullName;
+    Byte[] fullName = new Byte[0];
 
     @DataTypeProperty(dataType = USHORT)
-    int padding5;
+    int padding5 = 0;
+    ;
 
     @DataTypeProperty(dataType = USHORT)
-    int rootStringSize;
+    int rootStringSize = 0;
 
     @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "rootStringSize")
-    Byte[] rootString;
-
-//    @DataTypeProperty(dataType = BYTE, isArray = true, arrayLength = "fontDataSize")
-//    Byte[] fontData;
+    Byte[] rootString = new Byte[0];
 
     public String getFamilyName() {
         byte[] family = Bytes.toArray(Arrays.asList(familyName));
@@ -159,5 +159,18 @@ public class EotHeader {
         } catch (UnsupportedEncodingException e) {
             return "";
         }
+    }
+
+    public byte[] getData() throws DataTypeSerializerException {
+        DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
+        return serializer.serialize(this, new LittleEndianOutputStream());
+    }
+
+    public boolean isValid() {
+        boolean versionMatches = version == VERSION_ONE || version == VERSION_TWO
+                || version == VERSION_THREE;
+
+        return magicNumber == 0x504C && versionMatches;
+
     }
 }

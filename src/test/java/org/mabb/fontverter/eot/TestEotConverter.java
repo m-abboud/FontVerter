@@ -42,4 +42,22 @@ public class TestEotConverter {
         Assert.assertThat(converted, instanceOf(OpenTypeFont.class));
     }
 
+    @Test
+    public void givenOtfFont_whenConvertedToEotAndBack_thenOtfStillValid() throws Exception {
+        byte[] data = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "/ttf/arial.ttf"));
+
+        OpenTypeFont originalFont = (OpenTypeFont) FontVerter.readFont(data);
+
+
+        FVFont eot = FontVerter.convertFont(originalFont, FontVerter.FontFormat.EOT);
+        Assert.assertTrue(eot.isValid());
+        Assert.assertThat(eot, instanceOf(EotFont.class));
+
+        byte[] eotData = eot.getData();
+        OpenTypeFont reconvertedFont = (OpenTypeFont) FontVerter.convertFont(eotData, FontVerter.FontFormat.OTF);
+        reconvertedFont.isValid();
+
+        Assert.assertEquals(originalFont.getSfntHeader().numTables, reconvertedFont.getSfntHeader().numTables);
+    }
+
 }

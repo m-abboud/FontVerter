@@ -24,9 +24,7 @@ import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.converter.EotToOpenTypeConverter;
 import org.mabb.fontverter.converter.FontConverter;
 import org.mabb.fontverter.converter.IdentityConverter;
-import org.mabb.fontverter.io.DataTypeBindingDeserializer;
-import org.mabb.fontverter.io.DataTypeBindingSerializer;
-import org.mabb.fontverter.io.LittleEndianInputStream;
+import org.mabb.fontverter.io.*;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.validator.RuleValidator;
 
@@ -38,13 +36,42 @@ public class EotFont implements FVFont {
     private EotHeader header;
     private OpenTypeFont font;
 
+    public EotFont() {
+        header = new EotHeader();
+    }
+
     public byte[] getData() throws IOException {
-        DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
-        return serializer.serialize(header);
+        normalize();
+
+        FontDataOutputStream os = new FontDataOutputStream();
+        os.write(header.getData());
+
+        if (font == null)
+            throw new IOException("Embedded font is not set");
+        os.write(font.getData());
+
+        byte[] data = os.toByteArray();
+        os.close();
+        return data;
+    }
+
+    public void normalize() throws IOException {
+        header.fontDataSize = font.getData().length;
+        header.eotSize = header.fontDataSize + header.getData().length;
     }
 
     public boolean detectFormat(byte[] fontFile) {
-        return false;
+        try {
+            // slow move to low priority for detect format. FontVerter api needs
+            // refactor for priority for detect format
+            LittleEndianInputStream data = new LittleEndianInputStream(fontFile);
+            DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
+            header = (EotHeader) deserializer.deserialize(data, EotHeader.class);
+
+            return header.isValid();
+        } catch (DataTypeSerializerException e) {
+            return false;
+        }
     }
 
     public void read(byte[] fontFile) throws IOException {
@@ -77,9 +104,6 @@ public class EotFont implements FVFont {
         return new ArrayList<RuleValidator.FontValidatorError>();
     }
 
-    public void normalize() throws IOException {
-
-    }
 
     public FontProperties getProperties() {
         FontProperties properties = new FontProperties();
