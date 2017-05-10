@@ -26,7 +26,7 @@ import java.nio.charset.Charset;
  * Adds special font data type write functionality to data output stream
  * todo split out into woff/otf specific maybe
  */
-public class FontDataOutputStream extends DataOutputStream {
+public class FontDataOutputStream extends DataOutputStream implements FontDataOutput {
     public static final Charset OPEN_TYPE_CHARSET = Charset.forName("ISO-8859-1");
     private final Charset encoding;
 

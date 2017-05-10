@@ -23,11 +23,14 @@ import java.lang.reflect.*;
 import java.util.*;
 
 public class DataTypeBindingSerializer {
-    private FontDataOutputStream writer;
+    private FontDataOutput writer;
     private DataTypeAnnotationReader propReader = new DataTypeAnnotationReader();
 
     public byte[] serialize(Object object) throws DataTypeSerializerException {
-        writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
+        return serialize(object, new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET));
+    }
+    public byte[] serialize(Object object, FontDataOutput writer) throws DataTypeSerializerException {
+        this.writer = writer;
         Class type = object.getClass();
         List<AccessibleObject> properties = propReader.getProperties(type);
 

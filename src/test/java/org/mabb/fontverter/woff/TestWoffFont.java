@@ -17,6 +17,7 @@
 
 package org.mabb.fontverter.woff;
 
+import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class TestWoffFont {
     public void givenOneByteUIntBase128_ByteDataInputStreamReadsCorrectly() throws Exception {
         byte data[] = new byte[]{0x3F};
 
-        FontDataInputStream in = new FontDataInputStream(data);
+        FontDataInput in = new FontDataInputStream(data);
         int readerResult = in.readUIntBase128();
 
         Assert.assertEquals(63, readerResult);
@@ -81,7 +82,7 @@ public class TestWoffFont {
     public void givenFlagEnum_writtenAs6BitFlagValue_2bittransform_thenInputReadsCorrect() throws Exception {
         WoffOutputStream out = new WoffOutputStream();
         out.writeFlagByte(WoffConstants.TableFlagType.maxp.getValue(), 0);
-        FontDataInputStream in = new FontDataInputStream(out.toByteArray());
+        FontDataInput in = new FontDataInputStream(out.toByteArray());
 
         int[] split = in.readSplitBits(6);
         int flag = split[1];
@@ -93,7 +94,7 @@ public class TestWoffFont {
     public void oneByteUIntBase128_withInvalidSigBit_throwsException() throws Exception {
         byte data[] = new byte[]{(byte) 0x81};
 
-        FontDataInputStream in = new FontDataInputStream(data);
+        FontDataInput in = new FontDataInputStream(data);
         int readerResult = in.readUIntBase128();
     }
 
@@ -101,7 +102,7 @@ public class TestWoffFont {
     public void twoByteUIntBase128_lastByteInvalidSigBit_throwsException() throws Exception {
         byte data[] = new byte[]{(byte) 0x81, (byte) 0x83};
 
-        FontDataInputStream in = new FontDataInputStream(data);
+        FontDataInput in = new FontDataInputStream(data);
         int readerResult = in.readUIntBase128();
     }
 
@@ -114,7 +115,7 @@ public class TestWoffFont {
     }
 
     private int readUIntBase128(byte[] data) throws IOException {
-        FontDataInputStream in = new FontDataInputStream(data);
+        FontDataInput in = new FontDataInputStream(data);
         return in.readUIntBase128();
     }
 }

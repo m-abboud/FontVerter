@@ -74,7 +74,7 @@ public class TtfGlyph {
     private boolean useRawData = false;
 
     public static TtfGlyph parse(byte[] data, OpenTypeFont font) throws IOException {
-        FontDataInputStream reader = new FontDataInputStream(data);
+        FontDataInput reader = new FontDataInputStream(data);
 
         DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
         TtfGlyph glyph = (TtfGlyph) deserializer.deserialize(reader, TtfGlyph.class);
@@ -135,12 +135,12 @@ public class TtfGlyph {
         return writer.toByteArray();
     }
 
-    private void readSimpleGlyphData(FontDataInputStream reader) throws IOException {
+    private void readSimpleGlyphData(FontDataInput reader) throws IOException {
         readFlags(reader);
         readCoordinates(reader);
     }
 
-    private void readFlags(FontDataInputStream reader) throws IOException {
+    private void readFlags(FontDataInput reader) throws IOException {
         for (int i = 0; i < getNumberOfPoints(); i++) {
             CoordinateFlagSet flagSet = CoordinateFlagSet.flagsFromByte(reader.readByte());
 
@@ -153,7 +153,7 @@ public class TtfGlyph {
         }
     }
 
-    private void readCoordinates(FontDataInputStream reader) throws IOException {
+    private void readCoordinates(FontDataInput reader) throws IOException {
         for (CoordinateFlagSet flagSetOn : flags) {
             List<Integer> coords = tryGetXCoords(reader, flagSetOn);
             if (coords == null)
@@ -182,7 +182,7 @@ public class TtfGlyph {
         }
     }
 
-    private List<Integer> readCoordinatesForFlag(FontDataInputStream reader, CoordinateFlagSet coordFlags, int lastCoord)
+    private List<Integer> readCoordinatesForFlag(FontDataInput reader, CoordinateFlagSet coordFlags, int lastCoord)
             throws IOException {
         boolean isX = coordFlags.forX;
         boolean is1Byte = coordFlags.contains(isX ? IS_X_1_BYTE : IS_Y_1_BYTE);
@@ -209,7 +209,7 @@ public class TtfGlyph {
         return coords;
     }
 
-    private List<Integer> tryGetXCoords(FontDataInputStream reader, CoordinateFlagSet flagSetOn)
+    private List<Integer> tryGetXCoords(FontDataInput reader, CoordinateFlagSet flagSetOn)
             throws IOException {
         try {
             int lastCoord = points.size() == 0 ? 0 : (int) points.get(points.size() - 1).x;
@@ -221,7 +221,7 @@ public class TtfGlyph {
         }
     }
 
-    private List<Integer> tryGetYCoords(FontDataInputStream reader, CoordinateFlagSet flagSetOn, int yIndex)
+    private List<Integer> tryGetYCoords(FontDataInput reader, CoordinateFlagSet flagSetOn, int yIndex)
             throws IOException {
         try {
             CoordinateFlagSet coordFlags = new CoordinateFlagSet(flagSetOn);

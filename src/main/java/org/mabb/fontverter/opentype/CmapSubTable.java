@@ -17,6 +17,7 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.opentype.GlyphMapReader.GlyphMapping;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
@@ -79,7 +80,7 @@ abstract class CmapSubTable {
 
     public abstract int glyphCount();
 
-    public abstract void readData(FontDataInputStream input) throws IOException;
+    public abstract void readData(FontDataInput input) throws IOException;
 
     public List<GlyphMapping> getGlyphMappings() {
         return new ArrayList<GlyphMapping>();
@@ -133,7 +134,7 @@ abstract class CmapSubTable {
             charCodeToGlyphId.put(characterCode, glyphId);
         }
 
-        public void readData(FontDataInputStream input) throws IOException {
+        public void readData(FontDataInput input) throws IOException {
             int length = input.readUnsignedShort();
             rawReadData = input.readBytes(length - 4);
             input = new FontDataInputStream(rawReadData);
@@ -159,7 +160,7 @@ abstract class CmapSubTable {
             return 0;
         }
 
-        public void readData(FontDataInputStream input) throws IOException {
+        public void readData(FontDataInput input) throws IOException {
             int length = input.readUnsignedShort();
             rawReadData = input.readBytes(length - 4);
             input = new FontDataInputStream(rawReadData);
@@ -186,7 +187,7 @@ abstract class CmapSubTable {
             return 0;
         }
 
-        public void readData(FontDataInputStream input) throws IOException {
+        public void readData(FontDataInput input) throws IOException {
             int length = input.readUnsignedShort();
             rawReadData = input.readBytes(length - 4);
             input = new FontDataInputStream(rawReadData);
@@ -215,7 +216,7 @@ abstract class CmapSubTable {
             return 0;
         }
 
-        public void readData(FontDataInputStream input) throws IOException {
+        public void readData(FontDataInput input) throws IOException {
             int reserved = input.readUnsignedShort();
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 8));
@@ -245,7 +246,7 @@ abstract class CmapSubTable {
             return 0;
         }
 
-        public void readData(FontDataInputStream input) throws IOException {
+        public void readData(FontDataInput input) throws IOException {
             int reserved = input.readUnsignedShort();
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 8));
@@ -275,7 +276,7 @@ abstract class CmapSubTable {
             return 0;
         }
 
-        public void readData(FontDataInputStream input) throws IOException {
+        public void readData(FontDataInput input) throws IOException {
             int reserved = input.readUnsignedShort();
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 8));
@@ -306,7 +307,7 @@ abstract class CmapSubTable {
             return 0;
         }
 
-        public void readData(FontDataInputStream input) throws IOException {
+        public void readData(FontDataInput input) throws IOException {
             int reserved = input.readUnsignedShort();
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 8));
@@ -335,7 +336,7 @@ abstract class CmapSubTable {
             return 0;
         }
 
-        public void readData(FontDataInputStream input) throws IOException {
+        public void readData(FontDataInput input) throws IOException {
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 6));
             input = new FontDataInputStream(rawReadData);

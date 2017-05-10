@@ -18,9 +18,7 @@
 package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.*;
-import org.mabb.fontverter.converter.FontConverter;
-import org.mabb.fontverter.converter.IdentityConverter;
-import org.mabb.fontverter.converter.OtfToWoffConverter;
+import org.mabb.fontverter.converter.*;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.validator.RuleValidator;
 import org.slf4j.Logger;
@@ -172,6 +170,8 @@ public class OpenTypeFont implements FVFont {
                 return new OtfToWoffConverter();
             case WOFF2:
                 return new OtfToWoffConverter.OtfToWoff2Converter();
+            case EOT:
+                return new OpenTypeToEotConverter();
             default:
                 throw new FontNotSupportedException("Font conversion not supported");
         }

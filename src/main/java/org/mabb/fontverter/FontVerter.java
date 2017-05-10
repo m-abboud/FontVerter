@@ -40,7 +40,8 @@ public class FontVerter {
         OTF,
         WOFF1,
         WOFF2,
-        BARE_CFF;
+        BARE_CFF,
+        EOT;
 
         public static final FontFormat TTF = OTF;
 
@@ -51,6 +52,8 @@ public class FontVerter {
                 return OTF;
             if (value.equalsIgnoreCase("TrueType"))
                 return OTF;
+            if (value.equalsIgnoreCase("EOT"))
+                return EOT;
 
             return FontFormat.valueOf(value.toUpperCase());
         }
