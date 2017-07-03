@@ -17,16 +17,14 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.validator.RuleValidator;
 import org.mabb.fontverter.validator.ValidateRule;
-import org.mabb.fontverter.opentype.OtfNameConstants;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.mabb.fontverter.opentype.OtfNameConstants.*;
-import static org.mabb.fontverter.validator.RuleValidator.ValidatorErrorType.*;
+import static org.mabb.fontverter.opentype.OtfNameConstants.RecordType;
+import static org.mabb.fontverter.validator.RuleValidator.ValidatorErrorType.WARNING;
 
 public class OpenTypeValidator extends RuleValidator<OpenTypeFont> {
     public OpenTypeValidator() {
@@ -76,7 +74,7 @@ public class OpenTypeValidator extends RuleValidator<OpenTypeFont> {
     }
 
     public static class NameTableRules {
-        @ValidateRule(message = "Version string does not match Open Type spec")
+        @ValidateRule(message = "Version string does not match Open Type spec", type = WARNING)
         public String versionStringSyntax(OpenTypeFont font) {
             if (font.getNameTable() == null)
                 return "";

@@ -21,12 +21,14 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mabb.fontverter.FVFont;
+import org.mabb.fontverter.FontProperties;
 import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.TestUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.mabb.fontverter.validator.RuleValidator.*;
 
@@ -62,13 +64,13 @@ public class TestOpenTypeFont {
     }
 
     @Test
-    public void given_TTF_MissingPostScriptTable_strictValidatorFails() throws IOException, IllegalAccessException, InstantiationException {
+    public void given_TTF_MissingPostScriptTable_strictValidatorFails() throws Exception {
         FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
         Assert.assertNotNull(findErrorContaining(font, "postscript"));
     }
 
     @Test
-    public void given_TTF_MissingPostScriptTable_normalizeAddsOne() throws IOException, IllegalAccessException, InstantiationException {
+    public void given_TTF_MissingPostScriptTable_normalizeAddsOne() throws Exception {
         OpenTypeFont otfFont = normalizeFont("ttf/GKQXJT+Timetable.ttf");
 
         Assert.assertNotNull(otfFont.getPost());
@@ -76,13 +78,13 @@ public class TestOpenTypeFont {
     }
 
     @Test
-    public void given_TTF_MissingNameTable_strictValidatorFails() throws IOException, IllegalAccessException, InstantiationException {
+    public void given_TTF_MissingNameTable_strictValidatorFails() throws Exception {
         FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
         Assert.assertNotNull(findErrorContaining(font, "name"));
     }
 
     @Test
-    public void given_TTF_MissingNameTable_normalizeAddsOne() throws IOException, IllegalAccessException, InstantiationException {
+    public void given_TTF_MissingNameTable_normalizeAddsOne() throws Exception {
         OpenTypeFont otfFont = normalizeFont("ttf/GKQXJT+Timetable.ttf");
 
         Assert.assertNotNull(otfFont.getNameTable());
@@ -95,16 +97,40 @@ public class TestOpenTypeFont {
     }
 
     @Test
-    public void given_TTF_withUnevenCvtTableLength_strictValidatorFails() throws IOException, IllegalAccessException, InstantiationException {
+    public void given_TTF_withUnevenCvtTableLength_strictValidatorFails() throws Exception {
         FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "ttf/GKQXJT+Timetable.ttf");
         Assert.assertNotNull(findErrorContaining(font, "cvt "));
     }
 
     @Test
-    public void given_OTF_whenRead_fontNameIsValid() throws IOException, IllegalAccessException, InstantiationException {
+    public void given_OTF_cfftype_whenRead_fontNameIsValid() throws Exception {
         // for github issue #4
         FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "NameReadTestFont.otf");
         Assert.assertThat(font.getName(), containsString("Avenir"));
+    }
+
+    @Test
+    public void given_OTF_cffTypeFont_thenPropertyNamesValid() throws IOException {
+        FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "FontVerter+FullAlphabetFont.otf");
+        FontProperties properties = font.getProperties();
+
+        Assert.assertEquals(properties.getFullName(), "Full Alphabet Font");
+        Assert.assertEquals("FontVerter+FullAlphabetFont", properties.getName());
+        Assert.assertEquals("None of your business!", properties.getSubFamilyName());
+        Assert.assertEquals("001.000", properties.getVersion());
+        Assert.assertEquals("it's a test font! i dunno MIT license or something ", properties.getTrademarkNotice());
+    }
+
+    @Test
+    public void given_TTF_whenRead_thenPropertyNamesValid() throws IOException {
+        FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "KJJTAM+TrebuchetMS.ttf");
+        FontProperties properties = font.getProperties();
+
+        Assert.assertEquals("Trebuchet MS", properties.getFullName());
+        Assert.assertEquals("Trebuchet MS", properties.getName());
+        Assert.assertEquals("Regular", properties.getSubFamilyName());
+        Assert.assertEquals("Version 1.15", properties.getVersion());
+        Assert.assertEquals("Copyright (c) 1996 Microsoft Corporation. All rights reserved.", properties.getTrademarkNotice());
     }
 
     private FontValidatorError findErrorContaining(FVFont font, String containing) {

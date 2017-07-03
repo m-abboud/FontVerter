@@ -54,7 +54,7 @@ public class NameTable extends OpenTypeTable {
     public void readData(byte[] data) throws IOException {
         FontDataInput reader = new FontDataInputStream(data);
         formatSelector = reader.readUnsignedShort();
-        if (formatSelector > 0){
+        if (formatSelector > 0) {
             log.warn("nametable format 1 reading not implemented");
             return;
         }
@@ -62,18 +62,25 @@ public class NameTable extends OpenTypeTable {
         // read record headers first then thier actual strings
         int count = reader.readUnsignedShort();
         int stringOffset = reader.readUnsignedShort();
-        for (int i = 0; i<count; i++) {
+        for (int i = 0; i < count; i++) {
             DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
-            NameRecord record = (NameRecord) deserializer.deserialize(data, NameRecord.class);
+            NameRecord record = (NameRecord) deserializer.deserialize(reader, NameRecord.class);
             nameRecords.add(record);
         }
 
-        for (int i =0; i<count; i++) {
+
+        // discard junk bytes between offset to actual string storage
+//        reader.readBytes(stringOffset - reader.getPosition());
+
+        for (int i = 0; i < count; i++) {
             NameRecord recordOn = nameRecords.get(i);
+            reader.seek(recordOn.offset + stringOffset);
+
             String nameOn = reader.readString(recordOn.length);
             recordOn.setStringData(nameOn);
         }
     }
+
     protected byte[] generateUnpaddedData() throws IOException {
         FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
         writer.writeUnsignedShort(formatSelector);

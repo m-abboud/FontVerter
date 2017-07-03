@@ -80,7 +80,7 @@ public class TestCFFToOtfConverter {
         OpenTypeFont font = convert("cff/FontVerter+SimpleTestFont");
 
         Assert.assertEquals("SimpleTestFont", font.getNameTable().getName(FONT_FAMILY));
-        Assert.assertEquals("FontVerter+SimpleTestFont", font.getNameTable().getName(FULL_FONT_NAME));
+        Assert.assertEquals("SimpleTestFont", font.getNameTable().getName(FULL_FONT_NAME));
         Assert.assertEquals("Medium", font.getNameTable().getName(FONT_SUB_FAMILY));
     }
 

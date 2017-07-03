@@ -86,7 +86,11 @@ public class CffFontAdapter implements FVFont {
     }
 
     public String getName() {
-        return getFullName();
+        String name = font.getName();
+        if (name.isEmpty())
+            name = nonNullDictEntry("FullName", String.class);
+
+        return name;
     }
 
     public CFFFont getFont() {
@@ -94,11 +98,7 @@ public class CffFontAdapter implements FVFont {
     }
 
     public String getFullName() {
-        String name = font.getName();
-        if (name.isEmpty())
-            name = nonNullDictEntry("FullName", String.class);
-
-        return name;
+        return nonNullDictEntry("FullName", String.class);
     }
 
     public String getFamilyName() {

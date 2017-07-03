@@ -155,18 +155,7 @@ public class OpenTypeFont implements FVFont {
     }
 
     public FontProperties getProperties() {
-        FontProperties properties = new FontProperties();
-        if (isCffType()) {
-            properties.setMimeType("application/x-font-opentype");
-            properties.setFileEnding("otf");
-            properties.setCssFontFaceFormat("opentype");
-        } else {
-            properties.setMimeType("application/x-font-truetype");
-            properties.setFileEnding("ttf");
-            properties.setCssFontFaceFormat("truetype");
-        }
-
-        return properties;
+        return OpenTypeFontProperties.createFrom(this);
     }
 
     public FontConverter createConverterForType(FontVerter.FontFormat fontFormat) throws FontNotSupportedException {

@@ -17,10 +17,18 @@
 
 package org.mabb.fontverter;
 
+import static org.mabb.fontverter.FontVerterUtils.*;
+
 public class FontProperties {
     private String fileEnding;
     private String mimeType;
     private String cssFontFaceFormat;
+    private String name;
+    private String fullName;
+    private String version;
+    private String trademarkNotice;
+    private String subFamilyName;
+    private String family;
 
     public String getFileEnding() {
         return fileEnding;
@@ -44,5 +52,53 @@ public class FontProperties {
 
     public void setCssFontFaceFormat(String cssFontFaceFormat) {
         this.cssFontFaceFormat = cssFontFaceFormat;
+    }
+
+    public String getName() {
+        return nonNullString(name);
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getFullName() {
+        return nonNullString(fullName);
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getVersion() {
+        return nonNullString(version);
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getTrademarkNotice() {
+        return nonNullString(trademarkNotice);
+    }
+
+    public void setTrademarkNotice(String trademarkNotice) {
+        this.trademarkNotice = trademarkNotice;
+    }
+
+    public String getSubFamilyName() {
+        return nonNullString(subFamilyName);
+    }
+
+    public void setSubFamilyName(String subFamilyName) {
+        this.subFamilyName = subFamilyName;
+    }
+
+    public String getFamily() {
+        return nonNullString(family);
+    }
+
+    public void setFamily(String family) {
+        this.family = family;
     }
 }

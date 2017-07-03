@@ -113,4 +113,11 @@ public class FontVerterUtils {
     public static boolean isBitSet(int position, Long num) {
         return ((num >> position) & 1) == 1;
     }
+
+    public static String nonNullString(String string) {
+        if (string == null)
+            return "";
+
+        return string;
+    }
 }
