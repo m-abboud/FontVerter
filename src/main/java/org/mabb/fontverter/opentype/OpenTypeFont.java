@@ -17,6 +17,7 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mabb.fontverter.*;
 import org.mabb.fontverter.converter.*;
 import org.mabb.fontverter.io.FontDataOutputStream;
@@ -105,7 +106,13 @@ public class OpenTypeFont implements FVFont {
     }
 
     public String getName() {
-        return getNameTable().getName(OtfNameConstants.RecordType.FULL_FONT_NAME);
+        String name = getNameTable().getName(OtfNameConstants.RecordType.FULL_FONT_NAME);
+        if (StringUtils.isEmpty(name) && isCffType()) {
+            // sometimes name table won't have any valid entrys for CFF
+            name = getCffTable().getCffFont().getFullName();
+        }
+
+        return name;
     }
 
     public boolean isValid() {

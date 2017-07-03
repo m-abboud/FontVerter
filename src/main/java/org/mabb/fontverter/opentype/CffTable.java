@@ -51,7 +51,7 @@ public class CffTable extends OpenTypeTable {
         return getCffFont().getGlyphs();
     }
 
-    public CffFontAdapter getCffFont() throws IOException {
+    public CffFontAdapter getCffFont() {
         return cff;
     }
 }

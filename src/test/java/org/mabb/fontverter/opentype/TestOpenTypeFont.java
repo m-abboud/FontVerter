@@ -27,7 +27,7 @@ import org.mabb.fontverter.TestUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
+import static org.hamcrest.CoreMatchers.*;
 import static org.mabb.fontverter.validator.RuleValidator.*;
 
 public class TestOpenTypeFont {
@@ -100,11 +100,12 @@ public class TestOpenTypeFont {
         Assert.assertNotNull(findErrorContaining(font, "cvt "));
     }
 
-//    @Test
-//    public void given_OTF_whenRead_fontNameIsValid() throws IOException, IllegalAccessException, InstantiationException {
-//        FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "NameReadTestFont.otf");
-//        Assert.assertNotNull(font.getName());
-//    }
+    @Test
+    public void given_OTF_whenRead_fontNameIsValid() throws IOException, IllegalAccessException, InstantiationException {
+        // for github issue #4
+        FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "NameReadTestFont.otf");
+        Assert.assertThat(font.getName(), containsString("Avenir"));
+    }
 
     private FontValidatorError findErrorContaining(FVFont font, String containing) {
         Assert.assertFalse(font.isValid());
