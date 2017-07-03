@@ -143,22 +143,23 @@ public class EotHeader {
     Byte[] rootString = new Byte[0];
 
     public String getFamilyName() {
-        byte[] family = Bytes.toArray(Arrays.asList(familyName));
-        return new String(family);
+        return headerEntryToString(familyName);
     }
 
-    public String getRootString() {
-        byte[] root = Bytes.toArray(Arrays.asList(rootString));
-        return new String(root);
+    public String getRootName() {
+        return headerEntryToString(rootString);
     }
 
-    public String getFullNameString() {
-        byte[] fullName = Bytes.toArray(Arrays.asList(this.fullName));
-        try {
-            return new String(fullName, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return "";
-        }
+    public String getFullName() {
+        return headerEntryToString(fullName);
+    }
+
+    public String getVersionName() {
+        return headerEntryToString(versionName);
+    }
+
+    public String getStyleName() {
+        return headerEntryToString(styleName);
     }
 
     public byte[] getData() throws DataTypeSerializerException {
@@ -171,6 +172,16 @@ public class EotHeader {
                 || version == VERSION_THREE;
 
         return magicNumber == 0x504C && versionMatches;
+    }
 
+    private String headerEntryToString(Byte[] data) {
+        // since our annotation deserializer has to have the propertys as Byte objects instead of
+        // byte primative we have to do a wierd little dance to read our strings
+        byte[] fullName = Bytes.toArray(Arrays.asList(data));
+        try {
+            return new String(fullName, "UTF-16");
+        } catch (UnsupportedEncodingException e) {
+            return "";
+        }
     }
 }

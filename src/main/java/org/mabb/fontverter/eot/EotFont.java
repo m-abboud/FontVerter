@@ -93,7 +93,7 @@ public class EotFont implements FVFont {
     }
 
     public String getName() {
-        return header.getFullNameString();
+        return header.getFullName();
     }
 
     public boolean isValid() {
@@ -107,9 +107,17 @@ public class EotFont implements FVFont {
 
     public FontProperties getProperties() {
         FontProperties properties = new FontProperties();
+
         properties.setCssFontFaceFormat("embedded-opentype");
         properties.setFileEnding("EOT");
         properties.setMimeType("application/vnd.ms-fontobject");
+
+        properties.setFullName(header.getFullName());
+        properties.setFamily(header.getFamilyName());
+        properties.setVersion(header.getVersionName());
+        properties.setName(header.getFullName());
+        properties.setSubFamilyName(header.getStyleName());
+
         return properties;
     }
 

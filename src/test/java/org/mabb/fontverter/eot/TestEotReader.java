@@ -20,6 +20,7 @@ package org.mabb.fontverter.eot;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mabb.fontverter.FontProperties;
 import org.mabb.fontverter.TestUtils;
 
 import java.io.File;
@@ -36,16 +37,6 @@ public class TestEotReader {
     }
 
     @Test
-    public void givenEotFont_whenHeaderRead_thenHeaderHasStringValues() throws Exception {
-        byte[] data = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "/eot/arial.eot"));
-
-        EotFont font = new EotFont();
-        font.read(data);
-
-        Assert.assertTrue(font.getHeader().getFullNameString().startsWith("A"));
-    }
-
-    @Test
     public void givenEotFontUncompressedEmbeddedFont_whenRead_thenEmbeddedFontIsValid() throws Exception {
         byte[] data = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "/eot/arial.eot"));
 
@@ -54,6 +45,21 @@ public class TestEotReader {
 
         Assert.assertEquals(25, font.getEmbeddedFont().getSfntHeader().numTables);
         Assert.assertTrue(font.isValid());
+    }
+
+    @Test
+    public void givenEotFont_whenRead_thenFontPropertiesNamesCorrect() throws Exception {
+        byte[] data = FileUtils.readFileToByteArray(new File(TestUtils.TEST_PATH + "/eot/fontverterfullalphabetfont-webfont.eot"));
+
+        EotFont font = new EotFont();
+        font.read(data);
+        FontProperties properties = font.getProperties();
+
+        Assert.assertEquals(properties.getFullName(), "FontVerter+FullAlphabetFont");
+        Assert.assertEquals(properties.getName(), "FontVerter+FullAlphabetFont");
+        Assert.assertEquals(properties.getWeight(), "Medium");
+        Assert.assertEquals(properties.getVersion(), "Version 1.000");
+        Assert.assertEquals(properties.getFamily(), "FullAlphabetFont");
     }
 
 }

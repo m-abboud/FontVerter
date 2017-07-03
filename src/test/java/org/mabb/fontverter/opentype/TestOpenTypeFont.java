@@ -116,7 +116,7 @@ public class TestOpenTypeFont {
 
         Assert.assertEquals(properties.getFullName(), "Full Alphabet Font");
         Assert.assertEquals("FontVerter+FullAlphabetFont", properties.getName());
-        Assert.assertEquals("None of your business!", properties.getSubFamilyName());
+        Assert.assertEquals("None of your business!", properties.getWeight());
         Assert.assertEquals("001.000", properties.getVersion());
         Assert.assertEquals("it's a test font! i dunno MIT license or something ", properties.getTrademarkNotice());
     }
@@ -128,7 +128,7 @@ public class TestOpenTypeFont {
 
         Assert.assertEquals("Trebuchet MS", properties.getFullName());
         Assert.assertEquals("Trebuchet MS", properties.getName());
-        Assert.assertEquals("Regular", properties.getSubFamilyName());
+        Assert.assertEquals("Regular", properties.getWeight());
         Assert.assertEquals("Version 1.15", properties.getVersion());
         Assert.assertEquals("Copyright (c) 1996 Microsoft Corporation. All rights reserved.", properties.getTrademarkNotice());
     }

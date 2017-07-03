@@ -86,7 +86,7 @@ public class FontProperties {
         this.trademarkNotice = trademarkNotice;
     }
 
-    public String getSubFamilyName() {
+    public String getWeight() {
         return nonNullString(subFamilyName);
     }
 
