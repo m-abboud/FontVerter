@@ -17,6 +17,9 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.io.DataTypeBindingDeserializer;
+import org.mabb.fontverter.io.FontDataInput;
+import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +51,54 @@ public class NameTable extends OpenTypeTable {
         return table;
     }
 
-    /* big old kludge to handle conversion of tables types that arn't deserializable/parsable yet remove asap*/
-    protected boolean isParsingImplemented() {
-        return false;
+    public void readData(byte[] data) throws IOException {
+        FontDataInput reader = new FontDataInputStream(data);
+        formatSelector = reader.readUnsignedShort();
+        if (formatSelector > 0){
+            log.warn("nametable format 1 reading not implemented");
+            return;
+        }
+
+        // read record headers first then thier actual strings
+        int count = reader.readUnsignedShort();
+        int stringOffset = reader.readUnsignedShort();
+        for (int i = 0; i<count; i++) {
+            DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
+            NameRecord record = (NameRecord) deserializer.deserialize(data, NameRecord.class);
+            nameRecords.add(record);
+        }
+
+        for (int i =0; i<count; i++) {
+            NameRecord recordOn = nameRecords.get(i);
+            String nameOn = reader.readString(recordOn.length);
+            recordOn.setStringData(nameOn);
+        }
+    }
+    protected byte[] generateUnpaddedData() throws IOException {
+        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
+        writer.writeUnsignedShort(formatSelector);
+        writer.writeUnsignedShort(nameRecords.size());
+        writer.writeUnsignedShort(getOffsetToStringStorage());
+
+        calculateOffsets();
+
+        Collections.sort(nameRecords, new Comparator<NameRecord>() {
+            @Override
+            public int compare(NameRecord o1, NameRecord o2) {
+                if (o1.platformID != o2.platformID)
+                    return o1.platformID < o2.platformID ? -1 : 1;
+                return o1.nameID < o2.nameID ? -1 : o1.nameID == o2.nameID ? 0 : 1;
+
+            }
+        });
+
+        for (NameRecord record : nameRecords)
+            writer.write(record.getRecordData());
+
+        for (NameRecord record : nameRecords)
+            writer.write(record.getStringData());
+
+        return writer.toByteArray();
     }
 
     public String getTableType() {
@@ -84,38 +132,12 @@ public class NameTable extends OpenTypeTable {
             nameRecords.remove(recordOn);
     }
 
-    protected byte[] generateUnpaddedData() throws IOException {
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        writer.writeUnsignedShort(formatSelector);
-        writer.writeUnsignedShort(nameRecords.size());
-        writer.writeUnsignedShort(getOffsetToStringStorage());
-
-        calculateOffsets();
-
-        Collections.sort(nameRecords, new Comparator<NameRecord>() {
-            @Override
-            public int compare(NameRecord o1, NameRecord o2) {
-                if (o1.platformID != o2.platformID)
-                    return o1.platformID < o2.platformID ? -1 : 1;
-                return o1.nameID < o2.nameID ? -1 : o1.nameID == o2.nameID ? 0 : 1;
-
-            }
-        });
-
-        for (NameRecord record : nameRecords)
-            writer.write(record.getRecordData());
-
-        for (NameRecord record : nameRecords)
-            writer.write(record.getStringData());
-
-        return writer.toByteArray();
-    }
 
     private void calculateOffsets() throws IOException {
         int offset = 0;
         for (NameRecord recordOn : nameRecords) {
             recordOn.setOffset(offset);
-            offset += recordOn.getLength();
+            offset += recordOn.length;
         }
     }
 

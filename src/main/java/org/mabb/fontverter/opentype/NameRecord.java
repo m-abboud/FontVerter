@@ -23,7 +23,7 @@ import org.mabb.fontverter.io.DataTypeBindingSerializer;
 
 import java.nio.charset.Charset;
 
-class NameRecord {
+public class NameRecord {
     static final int NAME_RECORD_SIZE = 12;
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT, order = 0)
@@ -39,12 +39,12 @@ class NameRecord {
     int nameID;
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT, order = 4)
-    int getLength() {
-        return getStringData().length;
-    }
+    int length;
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT, order = 5)
     int offset;
+
+    private String string;
 
     public static NameRecord createWindowsRecord(String name, OtfNameConstants.RecordType type, OtfNameConstants.Language language) {
         NameRecord record = new NameRecord(name);
@@ -70,6 +70,8 @@ class NameRecord {
         string = name;
     }
 
+    public NameRecord() {
+    }
 
     public int getOffset() {
         return offset;
@@ -86,8 +88,6 @@ class NameRecord {
     public void setNameID(int nameID) {
         this.nameID = nameID;
     }
-
-    private String string;
 
     public byte[] getStringData() {
         return string.getBytes(getEncoding());
@@ -108,6 +108,7 @@ class NameRecord {
     }
 
     public byte[] getRecordData() throws DataTypeSerializerException {
+        length = getStringData().length;
         DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
         return serializer.serialize(this);
     }

@@ -100,6 +100,12 @@ public class TestOpenTypeFont {
         Assert.assertNotNull(findErrorContaining(font, "cvt "));
     }
 
+//    @Test
+//    public void given_OTF_whenRead_fontNameIsValid() throws IOException, IllegalAccessException, InstantiationException {
+//        FVFont font = FontVerter.readFont(TestUtils.TEST_PATH + "NameReadTestFont.otf");
+//        Assert.assertNotNull(font.getName());
+//    }
+
     private FontValidatorError findErrorContaining(FVFont font, String containing) {
         Assert.assertFalse(font.isValid());
         List<FontValidatorError> errors = font.getValidationErrors();
