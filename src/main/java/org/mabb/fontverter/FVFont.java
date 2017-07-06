@@ -29,6 +29,7 @@ import java.util.List;
 public interface FVFont {
     /**
      * @return generated font data
+     * @throws IOException error generating font data
      */
     byte[] getData() throws IOException;
 
