@@ -49,6 +49,20 @@ public class TestOtfToWoffConverter {
     }
 
     @Test
+    public void convertTtf_withUnsignedFlagByte() throws Exception {
+        Woff2Font woffFont = (Woff2Font) FontVerter.convertFont(TEST_PATH + "comic.ttf", FontFormat.WOFF2);
+        int otfLength = woffFont.getFonts().get(0).getData().length;
+
+        byte[] fontData = woffFont.getData();
+        saveTempFile(fontData, "comic.woff2");
+
+        Woff2Parser parser = new Woff2Parser();
+        WoffFont reparsedFont = parser.parse(woffFont.getData());
+
+        Assert.assertEquals(otfLength, reparsedFont.header.totalSfntSize);
+    }
+
+    @Test
     public void convertCffToWoff_woffFontHasSameNumberOfTables() throws Exception {
         WoffFont woffFont = (WoffFont) FontVerter.convertFont(TEST_PATH + "cff/test.cff", FontFormat.WOFF1);
         Assert.assertEquals(9, woffFont.getTables().size());

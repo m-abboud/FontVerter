@@ -64,7 +64,8 @@ public class WoffOutputStream extends FontDataOutputStream {
             binary = StringUtils.repeat("0", 6 - binary.length()) + binary;
 
         binary = transBinary + binary;
-        byte byteOn = (Byte.parseByte(binary, 2));
+        byte byteOn = (byte) (Integer.parseInt(binary, 2));
+
         write(byteOn);
     }
 

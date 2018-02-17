@@ -76,7 +76,7 @@ public class Woff2Font extends WoffFont {
                 .setMode(Brotli.Mode.TEXT)
                 .setQuality(11)
                 .setLgwin(10)
-                .setLgblock(0);
+                .setLgblock(24);
         BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(param);
         byte[] compressed = streamCompressor.compressArray(bytes, true);
         streamCompressor.close();
