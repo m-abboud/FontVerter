@@ -37,11 +37,11 @@ public class Woff2Font extends WoffFont {
     private byte[] cachedCompressedBlock;
 
     public WoffTable createTable() {
-        return new Woff2Font.Woff2Table(new byte[0], arbitrary);
+        return new Woff2Font.Woff2Table(new byte[0], "arbitrary");
     }
 
     public void addFontTable(byte[] data, String tag, long checksum) {
-        WoffTable table = new Woff2Table(data, WoffConstants.TableFlagType.fromString(tag));
+        WoffTable table = new Woff2Table(data, tag);
         tables.add(table);
     }
 
@@ -103,11 +103,11 @@ public class Woff2Font extends WoffFont {
 
     public static class Woff2Table extends WoffTable {
         private int transform = -1;
-        protected WoffConstants.TableFlagType flag;
+        protected String tag = "";
 
-        public Woff2Table(byte[] table, WoffConstants.TableFlagType flag) {
+        public Woff2Table(byte[] table, String tag) {
             super(table);
-            this.flag = flag;
+            this.tag = tag;
         }
 
         protected byte[] compress(byte[] bytes) throws IOException {
@@ -119,8 +119,15 @@ public class Woff2Font extends WoffFont {
         public byte[] getDirectoryData() throws IOException {
             WoffOutputStream writer = new WoffOutputStream();
 
+            WoffConstants.TableFlagType flag = WoffConstants.TableFlagType.fromString(tag);
             writer.writeFlagByte(flag.getValue(), getTransform());
-            // todo tag here for arbitrary flag type
+
+            if (flag == arbitrary) {
+                // maybe should string pad < 4
+                assert tag.length() == 4;
+                writer.writeString(tag);
+            }
+
             writer.writeUIntBase128(tableData.length);
 
             if (isTableTransformed())
@@ -147,24 +154,24 @@ public class Woff2Font extends WoffFont {
         }
 
         private int initTransformValue() {
-            if (flag == glyf || flag == loca)
+            if (getFlag() == glyf || getFlag() == loca)
                 return 3;
             return 0;
         }
 
         boolean isTableTransformed() {
-            if (flag == WoffConstants.TableFlagType.glyf || flag == loca)
+            if (getFlag() == WoffConstants.TableFlagType.glyf || getFlag() == loca)
                 return transform != 3;
 
             return transform != 0;
         }
 
         public WoffConstants.TableFlagType getFlag() {
-            return flag;
+            return WoffConstants.TableFlagType.fromString(tag);
         }
 
         public String getTag() {
-            return flag.toString();
+            return getFlag().toString();
         }
     }
 }

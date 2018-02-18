@@ -53,6 +53,9 @@ public class TestOtfToWoffConverter {
         Woff2Font woffFont = (Woff2Font) FontVerter.convertFont(TEST_PATH + "comic.ttf", FontFormat.WOFF2);
         int otfLength = woffFont.getFonts().get(0).getData().length;
 
+        byte[] ttf = FontVerter.readFont(TEST_PATH + "comic.ttf").getData();
+        saveTempFile(ttf, "comic.ttf");
+
         byte[] fontData = woffFont.getData();
         saveTempFile(fontData, "comic.woff2");
 
@@ -98,7 +101,7 @@ public class TestOtfToWoffConverter {
         for (TableFlagType flagOn : flags) {
             boolean flagFound = false;
             for (WoffTable table : parsedFont.getTables()) {
-                if (flagOn == ((Woff2Font.Woff2Table)table).flag)
+                if (flagOn == ((Woff2Font.Woff2Table)table).getFlag())
                     flagFound = true;
             }
 

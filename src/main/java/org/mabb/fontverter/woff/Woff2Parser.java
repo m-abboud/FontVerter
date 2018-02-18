@@ -50,9 +50,10 @@ public class Woff2Parser extends WoffParser {
         int[] rawFlag = input.readSplitBits(2);
 
         table.setTransform(rawFlag[0]);
-        table.flag = TableFlagType.fromInt(rawFlag[1]);
+        TableFlagType flag = TableFlagType.fromInt(rawFlag[1]);
+        table.tag = flag.toString();
 
-        if (table.flag.getValue() == 63) {
+        if (flag.getValue() == 63) {
             String tagStr = new String(ByteBuffer.allocate(4).putInt(input.readInt()).array());
             log.error("!! arbitrary flag type not tested" + tagStr);
         }
@@ -66,7 +67,7 @@ public class Woff2Parser extends WoffParser {
             table.transformLength = table.originalLength;
 
         log.debug("Woff2 parse table dir read: {} {} o-len:" + table.originalLength + " t-len:" + table.transformLength,
-                table.flag, table.getTransform());
+                table.tag, table.getTransform());
 
         font.getTables().add(table);
     }

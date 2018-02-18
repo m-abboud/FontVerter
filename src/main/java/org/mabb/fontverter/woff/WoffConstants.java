@@ -53,7 +53,8 @@ public class WoffConstants {
                 if (typeOn.getValue() == i) {
                     return typeOn;
                 }
-            return null;
+
+            return arbitrary;
         }
 
         public static TableFlagType fromString(String str) {

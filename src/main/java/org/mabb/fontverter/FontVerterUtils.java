@@ -95,7 +95,7 @@ public class FontVerterUtils {
         if (nBits > 8)
             throw new IOException("Number of bits exceeds 8");
 
-        return inByte & (0x1F);
+        return inByte & (0x3F);
     }
 
     public static byte[] toPrimative(Byte[] objArray) {
