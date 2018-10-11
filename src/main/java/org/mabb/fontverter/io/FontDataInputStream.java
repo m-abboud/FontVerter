@@ -19,7 +19,10 @@ package org.mabb.fontverter.io;
 
 import org.mabb.fontverter.FontVerterUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.IOException;
 import java.nio.charset.Charset;
 
 /**
@@ -52,6 +55,9 @@ public class FontDataInputStream extends DataInputStream implements FontDataInpu
     }
 
     public byte[] readBytes(int length) throws IOException {
+        if (in.available() < length)
+            throw new IOException("Read length is larger than the available stream size");
+
         byte[] bytes = new byte[length];
         for (int i = 0; i < bytes.length; i++)
             bytes[i] = (byte) in.read();

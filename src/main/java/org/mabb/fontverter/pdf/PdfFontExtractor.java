@@ -186,6 +186,11 @@ public class PdfFontExtractor extends PDFTextStripper {
         FVFont readFont = null;
 
         if (font instanceof PDTrueTypeFont) {
+            if (font.getFontDescriptor() == null || font.getFontDescriptor().getFontFile2() == null) {
+                log.warn("Skipped font: '{}'. No font file 2 found", font.getName());
+                return null;
+            }
+
             byte[] data = font.getFontDescriptor().getFontFile2().toByteArray();
             readFont = FontVerter.readFont(data);
 

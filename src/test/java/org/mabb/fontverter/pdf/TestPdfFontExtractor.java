@@ -33,6 +33,18 @@ import java.util.List;
 
 public class TestPdfFontExtractor {
     @Test
+    public void givenCorruptOverlyLargeOpenTypeTableLength_doesNotThrowOomError() throws IOException {
+        PDDocument doc = PDDocument.load(
+                TestUtils.readTestFile("pdf/corrupt_overly_large_opentype_table_length.pdf"));
+        PdfFontExtractor extractor = new PdfFontExtractor();
+
+        List<FVFont> fonts = extractor.extractToFVFonts(doc);
+
+        Assert.assertEquals(40, fonts.size());
+        doc.close();
+    }
+
+    @Test
     public void givenPdfWith2Fonts_extractFontsToFVFontList_thenListHasSameNumberOfFonts() throws IOException {
         PDDocument doc = PDDocument.load(TestUtils.readTestFile("pdf/brno30.pdf"));
         PdfFontExtractor extractor = new PdfFontExtractor();
