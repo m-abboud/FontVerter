@@ -17,9 +17,6 @@
 
 package org.mabb.fontverter.cff;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.EncodedFont;
 import org.apache.fontbox.cff.*;
 import org.apache.fontbox.encoding.Encoding;
@@ -30,15 +27,19 @@ import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.*;
 import org.mabb.fontverter.opentype.GlyphMapReader;
 import org.mabb.fontverter.validator.RuleValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class CffFontAdapter implements FVFont {
+
+	private CFFFont font;
     private byte[] data = new byte[]{};
-    private CFFFont font;
-    private static final Log LOG = LogFactory.getLog(CffFontAdapter.class);
+    
+    private static Logger log = LoggerFactory.getLogger(CffFontAdapter.class);
 
     public static CffFontAdapter parse(byte[] cffData) throws IOException {
         CFFFont cfffont = fontboxParse(cffData);
@@ -206,7 +207,7 @@ public class CffFontAdapter implements FVFont {
 					return encoding;
 				}
 			} catch (IOException error) {
-				LOG.error("", error);
+				log.error("", error);
 			}
 		}
 
