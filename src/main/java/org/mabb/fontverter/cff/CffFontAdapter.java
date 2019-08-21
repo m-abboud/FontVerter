@@ -196,16 +196,20 @@ public class CffFontAdapter implements FVFont {
     }
 
     public Encoding getEncoding() {
-        if (font instanceof EncodedFont) {
-            try {
-                return ((EncodedFont) font).getEncoding();
-            } catch (IOException e) {
-                return CFFStandardEncoding.getInstance();
-            }
-        }
+		if (font instanceof EncodedFont) {
+			try {
+				Encoding encoding = ((EncodedFont) font).getEncoding();
+				if (encoding.getCodeToNameMap().values().size() > 1) {
+					return encoding;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
-        return CFFStandardEncoding.getInstance();
-    }
+		return CFFStandardEncoding.getInstance();
+	}
+
 
     private <X> X nonNullDictEntry(String key, Class<X> type) {
         Object value = font.getTopDict().get(key);
