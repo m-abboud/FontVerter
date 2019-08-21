@@ -18,6 +18,8 @@
 package org.mabb.fontverter.cff;
 
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.EncodedFont;
 import org.apache.fontbox.cff.*;
 import org.apache.fontbox.encoding.Encoding;
@@ -36,6 +38,7 @@ import java.util.*;
 public class CffFontAdapter implements FVFont {
     private byte[] data = new byte[]{};
     private CFFFont font;
+    private static final Log LOG = LogFactory.getLog(CffFontAdapter.class);
 
     public static CffFontAdapter parse(byte[] cffData) throws IOException {
         CFFFont cfffont = fontboxParse(cffData);
@@ -196,16 +199,20 @@ public class CffFontAdapter implements FVFont {
     }
 
     public Encoding getEncoding() {
-        if (font instanceof EncodedFont) {
-            try {
-                return ((EncodedFont) font).getEncoding();
-            } catch (IOException e) {
-                return CFFStandardEncoding.getInstance();
-            }
-        }
+		if (font instanceof EncodedFont) {
+			try {
+				Encoding encoding = ((EncodedFont) font).getEncoding();
+				if (encoding.getCodeToNameMap().values().size() > 1) {
+					return encoding;
+				}
+			} catch (IOException error) {
+				LOG.error("", error);
+			}
+		}
 
-        return CFFStandardEncoding.getInstance();
-    }
+		return CFFStandardEncoding.getInstance();
+	}
+
 
     private <X> X nonNullDictEntry(String key, Class<X> type) {
         Object value = font.getTopDict().get(key);
