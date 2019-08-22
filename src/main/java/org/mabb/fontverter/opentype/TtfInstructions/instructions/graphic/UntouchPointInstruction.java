@@ -32,7 +32,8 @@ public class UntouchPointInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-//        Long id = stack.popUint32();
+//        Long id = 
+    	stack.popUint32();
         // todo graphics state handeling
     }
 }

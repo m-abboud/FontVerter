@@ -47,9 +47,9 @@ public class GlyphTable extends OpenTypeTable {
 		}
     }
 
-    public void readData(byte[] data) throws IOException {
-        super.readData(data);
-        
+	public void readData(byte[] data) throws IOException {
+		super.readData(data);
+
 		try (FontDataInputStream reader = new FontDataInputStream(data)) {
 			Long[] offsets = font.getLocaTable().getOffsets();
 
@@ -68,14 +68,18 @@ public class GlyphTable extends OpenTypeTable {
 					continue;
 				}
 
-				reader.seek(offset.intValue());
-				byte[] glyphData = reader.readBytes((int) length);
+				try {
+					reader.seek(offset.intValue());
+					byte[] glyphData = reader.readBytes((int) length);
 
-				TtfGlyph glyph = TtfGlyph.parse(glyphData, font);
-				glyphs.add(glyph);
+					TtfGlyph glyph = TtfGlyph.parse(glyphData, font);
+					glyphs.add(glyph);
+				} catch (Exception ex) {
+					log.error("", ex);
+				}
 			}
 		}
-    }
+	}
 
     public List<TtfGlyph> getGlyphs() {
         return glyphs;

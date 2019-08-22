@@ -32,11 +32,13 @@ public class LoopCallInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-//        Integer functionId = (Integer) stack.pop();
-        Number loopCount = stack.popNumber();
+//        Integer functionId = (Integer) 
+        stack.pop();
+//        Number loopCount = 
+        		stack.popNumber();
 
-        for (int i = 0; i < loopCount.longValue(); i++) {
-            // todo call function from maxp table
-        }
+//        for (int i = 0; i < loopCount.longValue(); i++) {
+//            // todo call function from maxp table
+//        }
     }
 }

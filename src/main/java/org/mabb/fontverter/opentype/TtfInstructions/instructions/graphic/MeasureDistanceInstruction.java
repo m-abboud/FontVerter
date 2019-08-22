@@ -37,8 +37,10 @@ public class MeasureDistanceInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-//        Long pointId2 = stack.popUint32();
-//        Long pointId1 = stack.popUint32();
+//        Long pointId2 = 
+        stack.popUint32();
+//        Long pointId1 = 
+        stack.popUint32();
 
         // todo graphics state to grab actual point values
         Float distance = 0.0f;

@@ -32,8 +32,10 @@ public class SetCoordinatesInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-//        Float coordinateValue = stack.popF26Dot6();
-//        Long pointId = stack.popUint32();
+//        Float coordinateValue = 
+    	stack.popF26Dot6();
+//        Long pointId = 
+    	stack.popUint32();
 
         // todo graphics state handeling
     }

@@ -36,7 +36,8 @@ public class ShiftZoneWithReferencePointInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-//        Long zoneId = stack.popUint32();
+//        Long zoneId = 
+    	stack.popUint32();
         // todo graphics state handeling
     }
 }

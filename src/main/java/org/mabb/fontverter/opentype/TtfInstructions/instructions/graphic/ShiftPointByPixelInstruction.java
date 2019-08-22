@@ -32,7 +32,8 @@ public class ShiftPointByPixelInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-//        Float shift = stack.popF26Dot6();
+//        Float shift = 
+    	stack.popF26Dot6();
         // todo graphics state handeling
     }
 }

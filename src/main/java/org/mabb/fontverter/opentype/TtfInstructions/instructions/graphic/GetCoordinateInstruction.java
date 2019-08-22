@@ -35,7 +35,8 @@ public class GetCoordinateInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-//        Long pointNum = stack.popUint32();
+//        Long pointNum = 
+    	stack.popUint32();
 
         // todo needs to use projection vector
         Float coordinateLocation = 0f;

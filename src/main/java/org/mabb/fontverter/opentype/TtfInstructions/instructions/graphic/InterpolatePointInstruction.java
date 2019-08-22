@@ -32,9 +32,12 @@ public class InterpolatePointInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-//        Long p1 = stack.popUint32();
-//        Long p2 = stack.popUint32();
-//        Long ploop = stack.popUint32();
+//        Long p1 = 
+    	stack.popUint32();
+//        Long p2 = 
+    	stack.popUint32();
+//        Long ploop = 
+    	stack.popUint32();
         // todo graphical state
     }
 }
