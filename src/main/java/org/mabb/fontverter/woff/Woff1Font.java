@@ -112,12 +112,11 @@ public class Woff1Font extends WoffFont {
         }
 
         protected byte[] compress(byte[] bytes) throws IOException {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            DeflaterOutputStream compressStream = new DeflaterOutputStream(out);
-            compressStream.write(bytes);
-            compressStream.close();
-
-            return out.toByteArray();
+			try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+					DeflaterOutputStream compressStream = new DeflaterOutputStream(out)) {
+				compressStream.write(bytes);
+				return out.toByteArray();
+			}
         }
 
         protected void readCompressedData(byte[] readData) throws IOException {
@@ -126,17 +125,16 @@ public class Woff1Font extends WoffFont {
                 return;
             }
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            InflaterOutputStream compressStream = new InflaterOutputStream(out);
-            compressStream.write(readData);
-            compressStream.close();
-
-            tableData = out.toByteArray();
+			try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+					InflaterOutputStream compressStream = new InflaterOutputStream(out)) {
+				compressStream.write(readData);
+				tableData = out.toByteArray();
+			}
         }
 
         public byte[] getDirectoryData() throws IOException {
 			try (WoffOutputStream writer = new WoffOutputStream()) {
-				
+
 				writer.writeString(tag);
 				writer.writeInt(offset);
 				writer.writeInt(getCompressedData().length - paddingAdded);

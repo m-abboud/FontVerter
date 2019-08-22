@@ -145,7 +145,8 @@ public class CffFontAdapter implements FVFont {
         return getBoundingBox().get(3);
     }
 
-    private ArrayList<Integer> getBoundingBox() {
+    @SuppressWarnings("unchecked")
+	private ArrayList<Integer> getBoundingBox() {
         Object obj = font.getTopDict().get("FontBBox");
         ArrayList<Integer> boundingBox = null;
 
@@ -215,7 +216,8 @@ public class CffFontAdapter implements FVFont {
 	}
 
 
-    private <X> X nonNullDictEntry(String key, Class<X> type) {
+    @SuppressWarnings("unchecked")
+	private <X> X nonNullDictEntry(String key, Class<X> type) {
         Object value = font.getTopDict().get(key);
         if (value != null)
             return (X) value;
@@ -224,7 +226,7 @@ public class CffFontAdapter implements FVFont {
             return (X) "";
 
         if (type == Integer.class)
-            return (X) new Integer(1);
+            return (X) Integer.valueOf(1);
 
         return (X) "";
     }

@@ -18,7 +18,6 @@
 package org.mabb.fontverter.woff;
 
 import org.mabb.fontverter.opentype.OpenTypeFont;
-import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.validator.RuleValidator;
 import org.mabb.fontverter.validator.ValidateRule;
 
