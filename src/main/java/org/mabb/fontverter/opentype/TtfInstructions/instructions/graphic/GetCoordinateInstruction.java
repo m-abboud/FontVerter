@@ -24,18 +24,18 @@ import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import java.io.IOException;
 
 public class GetCoordinateInstruction extends TtfInstruction {
-    private boolean usePositionInOriginalOutline;
+//    private boolean usePositionInOriginalOutline;
 
     public int[] getCodeRanges() {
         return new int[]{0x46, 0x47};
     }
 
     public void read(FontDataInputStream in) throws IOException {
-        usePositionInOriginalOutline = code == 0x47;
+//        usePositionInOriginalOutline = code == 0x47;
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Long pointNum = stack.popUint32();
+//        Long pointNum = stack.popUint32();
 
         // todo needs to use projection vector
         Float coordinateLocation = 0f;
