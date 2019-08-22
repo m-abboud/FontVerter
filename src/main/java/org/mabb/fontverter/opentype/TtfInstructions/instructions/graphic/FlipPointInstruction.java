@@ -32,9 +32,9 @@ public class FlipPointInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Long p1 = stack.popUint32();
-        Long p2 = stack.popUint32();
-        Long ploopValue = stack.popUint32();
+//        Long p1 = stack.popUint32();
+//        Long p2 = stack.popUint32();
+//        Long ploopValue = stack.popUint32();
         // modifies graphical state stuff, not yet there with graphical state handeling
     }
 }
