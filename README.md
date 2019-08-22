@@ -1,3 +1,5 @@
+This fork is intended to use this library on Java 12.
+
 # FontVerter
 [![Build Status](https://travis-ci.org/m-abboud/FontVerter.svg?branch=master)](https://travis-ci.org/m-abboud/FontVerter)
 
