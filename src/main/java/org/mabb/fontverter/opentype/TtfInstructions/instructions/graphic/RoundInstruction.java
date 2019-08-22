@@ -28,10 +28,10 @@ public class RoundInstruction extends TtfInstruction {
         return new int[]{0x68, 0x6B};
     }
 
-    private short engineType = 0;
+//    private short engineType = 0;
 
     public void read(FontDataInputStream in) throws IOException {
-        engineType = (short) (code - 0x6C);
+//        engineType = (short) (code - 0x6C);
     }
 
     public void execute(InstructionStack stack) throws IOException {

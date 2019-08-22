@@ -36,7 +36,7 @@ public class MoveDirectAbsolutePointInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Long pointId = stack.popUint32();
+//        Long pointId = stack.popUint32();
 
         // todo graphics state handeling
     }
