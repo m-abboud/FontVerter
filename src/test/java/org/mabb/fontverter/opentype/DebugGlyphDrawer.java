@@ -23,7 +23,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.junit.Test;
 import org.mabb.fontverter.TestUtils;
-import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
+//import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
 import org.mabb.fontverter.pdf.PdfFontExtractor;
 
 import java.awt.*;
@@ -82,7 +82,7 @@ public class DebugGlyphDrawer {
                 font.getData());
         List<TtfGlyph> glyphs = font.getGlyfTable().getNonEmptyGlyphs();
         TtfGlyph glyph = glyphs.get(1);
-        List<TtfInstruction> instructions = glyph.getInstructions();
+//        List<TtfInstruction> instructions = glyph.getInstructions();
 
         DebugGlyphDrawer.drawGlyph(glyph);
     }
