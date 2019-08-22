@@ -32,8 +32,8 @@ public class FlipRangeOnInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Long high = stack.popUint32();
-        Long low = stack.popUint32();
+//        Long high = stack.popUint32();
+//        Long low = stack.popUint32();
         // modifies graphical state stuff, not yet there with graphical state handeling
     }
 }
