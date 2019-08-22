@@ -20,6 +20,7 @@ package org.mabb.fontverter.opentype;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
+@SuppressWarnings("serial")
 public class Countour extends LinkedList<Point2D.Double> {
 
 }
