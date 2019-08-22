@@ -29,12 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestControlFlowInstructions {
-    private TtfInstructionParser parser;
     private TtfVirtualMachine vm;
 
     @Before
     public void init() {
-        parser = new TtfInstructionParser();
         vm = new TtfVirtualMachine(null);
     }
 
@@ -120,10 +118,11 @@ public class TestControlFlowInstructions {
         instruction.code = 0xB9;
 
         // since PushWords grabs things from the font input stream we must fake that too
-        FontDataOutputStream params = new FontDataOutputStream();
-        params.writeShort(55);
-        params.writeShort(42);
-        instruction.read(new FontDataInputStream(params.toByteArray()));
+		try (FontDataOutputStream params = new FontDataOutputStream()) {
+			params.writeShort(55);
+			params.writeShort(42);
+			instruction.read(new FontDataInputStream(params.toByteArray()));
+		}
 
 
         vm.execute(instruction);
@@ -137,11 +136,12 @@ public class TestControlFlowInstructions {
         PushNWords instruction = new PushNWords();
 
         // since PushNWords grabs things from the font input stream we must fake that too
-        FontDataOutputStream params = new FontDataOutputStream();
-        params.writeByte(2);
-        params.writeShort(55);
-        params.writeShort(42);
-        instruction.read(new FontDataInputStream(params.toByteArray()));
+		try (FontDataOutputStream params = new FontDataOutputStream()) {
+			params.writeByte(2);
+			params.writeShort(55);
+			params.writeShort(42);
+			instruction.read(new FontDataInputStream(params.toByteArray()));
+		}
 
 
         vm.execute(instruction);
@@ -157,10 +157,11 @@ public class TestControlFlowInstructions {
         instruction.code = 0xB1;
 
         // since PushBytes grabs things from the font input stream we must fake that too
-        FontDataOutputStream params = new FontDataOutputStream();
-        params.writeByte(55);
-        params.writeByte(42);
-        instruction.read(new FontDataInputStream(params.toByteArray()));
+		try (FontDataOutputStream params = new FontDataOutputStream()) {
+			params.writeByte(55);
+			params.writeByte(42);
+			instruction.read(new FontDataInputStream(params.toByteArray()));
+		}
 
 
         vm.execute(instruction);

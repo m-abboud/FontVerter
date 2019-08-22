@@ -29,12 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestConditionalInstructions {
-    private TtfInstructionParser parser;
     private TtfVirtualMachine vm;
 
     @Before
     public void init() {
-        parser = new TtfInstructionParser();
         vm = new TtfVirtualMachine(null);
     }
 
