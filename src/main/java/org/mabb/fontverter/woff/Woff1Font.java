@@ -31,6 +31,7 @@ import java.util.zip.InflaterOutputStream;
 import static org.mabb.fontverter.woff.Woff1Font.Woff1Table.WOFF1_TABLE_DIRECTORY_ENTRY_SIZE;
 
 public class Woff1Font extends WoffFont {
+	
     static final int WOFF1_HEADER_SIZE = 44;
 
     public WoffTable createTable() {
@@ -134,15 +135,16 @@ public class Woff1Font extends WoffFont {
         }
 
         public byte[] getDirectoryData() throws IOException {
-            WoffOutputStream writer = new WoffOutputStream();
+			try (WoffOutputStream writer = new WoffOutputStream()) {
+				
+				writer.writeString(tag);
+				writer.writeInt(offset);
+				writer.writeInt(getCompressedData().length - paddingAdded);
+				writer.writeInt(tableData.length);
+				writer.writeUnsignedInt((int) checksum);
 
-            writer.writeString(tag);
-            writer.writeInt(offset);
-            writer.writeInt(getCompressedData().length - paddingAdded);
-            writer.writeInt(tableData.length);
-            writer.writeUnsignedInt((int) checksum);
-
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public void setOffset(int offset) {
