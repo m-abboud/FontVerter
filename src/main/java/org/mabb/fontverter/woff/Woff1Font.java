@@ -134,15 +134,16 @@ public class Woff1Font extends WoffFont {
         }
 
         public byte[] getDirectoryData() throws IOException {
-            WoffOutputStream writer = new WoffOutputStream();
+			try (WoffOutputStream writer = new WoffOutputStream()) {
 
-            writer.writeString(tag);
-            writer.writeInt(offset);
-            writer.writeInt(getCompressedData().length - paddingAdded);
-            writer.writeInt(tableData.length);
-            writer.writeUnsignedInt((int) checksum);
+				writer.writeString(tag);
+				writer.writeInt(offset);
+				writer.writeInt(getCompressedData().length - paddingAdded);
+				writer.writeInt(tableData.length);
+				writer.writeUnsignedInt((int) checksum);
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public void setOffset(int offset) {

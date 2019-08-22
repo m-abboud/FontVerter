@@ -19,7 +19,6 @@ package org.mabb.fontverter.woff;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.mabb.fontverter.FontVerterUtils;
-import org.mabb.fontverter.woff.WoffConstants.TableFlagType;
 
 import java.io.IOException;
 
