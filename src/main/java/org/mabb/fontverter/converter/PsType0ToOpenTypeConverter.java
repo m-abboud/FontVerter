@@ -122,7 +122,6 @@ public class PsType0ToOpenTypeConverter {
         otfFont.setName(names);
     }
 
-    @SuppressWarnings("unchecked")
     private Map<Integer, String> getType0CharToUnicode() throws IllegalAccessException {
         CMap cmap = (CMap) FontVerterUtils.findPrivateField("toUnicodeCMap", PDFont.class).get(type0Font);
         if (cmap == null)
