@@ -32,7 +32,7 @@ public class AlignPoints extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        long p1 = stack.popUint32();
-        long p2 = stack.popUint32();
+//        long p1 = stack.popUint32();
+//        long p2 = stack.popUint32();
     }
 }
