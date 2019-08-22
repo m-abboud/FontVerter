@@ -60,38 +60,41 @@ public abstract class WoffFont implements FVFont {
     }
 
     byte[] getRawData() throws IOException {
-        FontDataOutputStream out = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
+		try (FontDataOutputStream out = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
 
-        Collections.sort(tables, new Comparator<WoffTable>() {
-            public int compare(WoffTable o1, WoffTable o2) {
-                String c1 = o1.getTag();
-                String c2 = o2.getTag();
-                return c1.compareTo(c2);
-            }
-        });
+			Collections.sort(tables, new Comparator<WoffTable>() {
+				public int compare(WoffTable o1, WoffTable o2) {
+					String c1 = o1.getTag();
+					String c2 = o2.getTag();
+					return c1.compareTo(c2);
+				}
+			});
 
-        out.write(header.getData());
-        out.write(getTableDirectoryData());
-        out.write(getCompressedDataBlock());
+			out.write(header.getData());
+			out.write(getTableDirectoryData());
+			out.write(getCompressedDataBlock());
 
-        return out.toByteArray();
+			return out.toByteArray();
+		}
     }
 
-    byte[] getTableDirectoryData() throws IOException {
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        for (WoffTable tableOn : tables)
-            writer.write(tableOn.getDirectoryData());
+	byte[] getTableDirectoryData() throws IOException {
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			for (WoffTable tableOn : tables)
+				writer.write(tableOn.getDirectoryData());
 
-        return writer.toByteArray();
-    }
+			return writer.toByteArray();
+		}
+	}
 
-    byte[] getCompressedDataBlock() throws IOException {
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        for (WoffTable tableOn : tables)
-            writer.write(tableOn.getCompressedData());
+	byte[] getCompressedDataBlock() throws IOException {
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			for (WoffTable tableOn : tables)
+				writer.write(tableOn.getCompressedData());
 
-        return writer.toByteArray();
-    }
+			return writer.toByteArray();
+		}
+	}
 
     public void addFont(FVFont adapter) {
         fonts.add(adapter);

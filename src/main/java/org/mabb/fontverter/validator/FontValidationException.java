@@ -17,6 +17,7 @@
 
 package org.mabb.fontverter.validator;
 
+@SuppressWarnings("serial")
 public class FontValidationException extends Exception {
     public FontValidationException(String message) {
         super(message);
