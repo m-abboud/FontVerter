@@ -17,32 +17,36 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.mabb.fontverter.cff.CffFontAdapter;
 import org.mabb.fontverter.opentype.TtfInstructions.TtfInstructionParser;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.TtfInstruction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 public class FontProgramTable extends OpenTypeTable {
+	
     private byte[] rawInstructions = new byte[0];
-    private List<TtfInstruction> instructions = new LinkedList<TtfInstruction>();
+    private List<TtfInstruction> instructions = new LinkedList<>();
+    
+    private static Logger log = LoggerFactory.getLogger(CffFontAdapter.class);
 
     public String getTableType() {
         return "fpgm";
     }
 
-    public void readData(byte[] data) throws IOException {
+    public void readData(byte[] data) {
         rawInstructions = data;
 
         try {
-            TtfInstructionParser parser = new TtfInstructionParser();
-            instructions = parser.parse(rawInstructions);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        	TtfInstructionParser parser = new TtfInstructionParser();
+			instructions = parser.parse(rawInstructions);
+		} catch (Throwable error) {
+			log.error("", error);
+		}
     }
 
     protected byte[] generateUnpaddedData() throws IOException {
