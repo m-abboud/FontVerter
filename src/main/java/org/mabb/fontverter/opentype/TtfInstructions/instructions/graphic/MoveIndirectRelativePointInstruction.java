@@ -46,8 +46,8 @@ public class MoveIndirectRelativePointInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Float cvtEntry = stack.popF26Dot6();
-        Long pointId = stack.popUint32();
+//        Float cvtEntry = stack.popF26Dot6();
+//        Long pointId = stack.popUint32();
 
         // todo graphics state handeling
     }

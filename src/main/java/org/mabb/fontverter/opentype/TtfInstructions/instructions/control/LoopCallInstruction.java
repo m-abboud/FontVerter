@@ -32,7 +32,7 @@ public class LoopCallInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Integer functionId = (Integer) stack.pop();
+//        Integer functionId = (Integer) stack.pop();
         Number loopCount = stack.popNumber();
 
         for (int i = 0; i < loopCount.longValue(); i++) {

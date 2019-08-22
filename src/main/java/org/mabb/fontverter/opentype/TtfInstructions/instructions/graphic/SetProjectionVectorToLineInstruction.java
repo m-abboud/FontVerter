@@ -36,8 +36,8 @@ public class SetProjectionVectorToLineInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Long pointId2 = stack.popUint32();
-        Long pointId1 = stack.popUint32();
+//        Long pointId2 = stack.popUint32();
+//        Long pointId1 = stack.popUint32();
         // todo graphics state handeling
     }
 }

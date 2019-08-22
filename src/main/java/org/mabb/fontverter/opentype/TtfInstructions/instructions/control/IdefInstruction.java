@@ -32,6 +32,6 @@ public class IdefInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Number opCode = stack.popEint8();
+//        Number opCode = stack.popEint8();
     }
 }

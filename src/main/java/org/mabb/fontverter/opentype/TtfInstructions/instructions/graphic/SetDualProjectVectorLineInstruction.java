@@ -28,16 +28,16 @@ public class SetDualProjectVectorLineInstruction extends TtfInstruction {
         return new int[]{0x86, 0x87};
     }
 
-    private boolean isPerpendicularToLine = false;
+//    private boolean isPerpendicularToLine = false;
 
     public void read(FontDataInputStream in) throws IOException {
-        if (code == 0x87)
-            isPerpendicularToLine = true;
+//        if (code == 0x87)
+//            isPerpendicularToLine = true;
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Long point2Id = stack.popUint32();
-        Long point1Id = stack.popUint32();
+//        Long point2Id = stack.popUint32();
+//        Long point1Id = stack.popUint32();
 
         // todo graphics state handeling
     }
