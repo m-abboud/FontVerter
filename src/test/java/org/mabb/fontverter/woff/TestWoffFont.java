@@ -17,7 +17,6 @@
 
 package org.mabb.fontverter.woff;
 
-import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,21 +28,23 @@ public class TestWoffFont {
     public void givenOneByteUIntBase128_ByteDataInputStreamReadsCorrectly() throws Exception {
         byte data[] = new byte[]{0x3F};
 
-        FontDataInput in = new FontDataInputStream(data);
-        int readerResult = in.readUIntBase128();
+		try (FontDataInputStream in = new FontDataInputStream(data)) {
+			int readerResult = in.readUIntBase128();
 
-        Assert.assertEquals(63, readerResult);
+			Assert.assertEquals(63, readerResult);
+		}
     }
 
     @Test
     public void oneByteInt_writenAsUIntBase128_thenInputStreamReadsCorrectly() throws Exception {
         int oneByteInt = 99;
-        WoffOutputStream out = new WoffOutputStream();
-        out.writeUIntBase128(oneByteInt);
-        byte[] data = out.toByteArray();
+		try (WoffOutputStream out = new WoffOutputStream()) {
+			out.writeUIntBase128(oneByteInt);
+			byte[] data = out.toByteArray();
 
-        int readerResult = readUIntBase128(data);
-        Assert.assertEquals(oneByteInt, readerResult);
+			int readerResult = readUIntBase128(data);
+			Assert.assertEquals(oneByteInt, readerResult);
+		}
     }
 
     @Test
@@ -80,42 +81,47 @@ public class TestWoffFont {
 
     @Test
     public void givenFlagEnum_writtenAs6BitFlagValue_2bittransform_thenInputReadsCorrect() throws Exception {
-        WoffOutputStream out = new WoffOutputStream();
-        out.writeFlagByte(WoffConstants.TableFlagType.maxp.getValue(), 0);
-        FontDataInput in = new FontDataInputStream(out.toByteArray());
+		try (WoffOutputStream out = new WoffOutputStream()) {
+			out.writeFlagByte(WoffConstants.TableFlagType.maxp.getValue(), 0);
+			FontDataInputStream in = new FontDataInputStream(out.toByteArray());
 
-        int[] split = in.readSplitBits(6);
-        int flag = split[1];
-
-        Assert.assertEquals(4, flag);
+			int[] split = in.readSplitBits(6);
+			int flag = split[1];
+			in.close();
+			
+			Assert.assertEquals(4, flag);
+		}
     }
 
     @Test(expected = IOException.class)
     public void oneByteUIntBase128_withInvalidSigBit_throwsException() throws Exception {
         byte data[] = new byte[]{(byte) 0x81};
 
-        FontDataInput in = new FontDataInputStream(data);
-        int readerResult = in.readUIntBase128();
+        FontDataInputStream in = new FontDataInputStream(data);
+        in.readUIntBase128();
+        in.close();
     }
 
     @Test(expected = IOException.class)
     public void twoByteUIntBase128_lastByteInvalidSigBit_throwsException() throws Exception {
         byte data[] = new byte[]{(byte) 0x81, (byte) 0x83};
-
-        FontDataInput in = new FontDataInputStream(data);
-        int readerResult = in.readUIntBase128();
+        try (FontDataInputStream fontInputStream = new FontDataInputStream(data)) {
+        	fontInputStream.readUIntBase128();
+        }
     }
 
     private int writeAndReadUIntBase128(int oneByteInt) throws IOException {
-        WoffOutputStream out = new WoffOutputStream();
-        out.writeUIntBase128(oneByteInt);
-        byte[] data = out.toByteArray();
+		try (WoffOutputStream out = new WoffOutputStream()) {
+			out.writeUIntBase128(oneByteInt);
+			byte[] data = out.toByteArray();
 
-        return readUIntBase128(data);
+			return readUIntBase128(data);
+		}
     }
 
-    private int readUIntBase128(byte[] data) throws IOException {
-        FontDataInput in = new FontDataInputStream(data);
-        return in.readUIntBase128();
-    }
+	private int readUIntBase128(byte[] data) throws IOException {
+		try (FontDataInputStream in = new FontDataInputStream(data)) {
+			return in.readUIntBase128();
+		}
+	}
 }
