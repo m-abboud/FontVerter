@@ -21,116 +21,78 @@ import org.apache.fontbox.cff.CFFStandardEncoding;
 import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 class Format4SubTable extends CmapSubTable {
-    private static final Logger log = getLogger(Format4SubTable.class);
 
     private static final int FORMAT4_HEADER_SIZE = 16;
     // LinkedHashMap important, for keeping ordering the same for loops
     private Map<Integer, Integer> charCodeToGlyphId = new LinkedHashMap<Integer, Integer>();
+    
     List<Integer> deltas;
     List<Integer> ends;
     List<Integer> starts;
     List<Integer> idRangeOffsets;
-    List<List<IndexedGlyph>> idRangeGlyphs;
-
-    private int glyphsStartPos;
 
     public Format4SubTable() {
         formatNumber = 4;
     }
 
-    public byte[] getData() throws IOException {
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        // kludge for read otf fonts
-        if (rawReadData != null) {
-            writer.writeUnsignedShort(formatNumber);
-            writer.writeUnsignedShort(rawReadData.length + 4);
-            writer.write(rawReadData);
+	public byte[] getData() throws IOException {
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			// kludge for read otf fonts
+			if (rawReadData != null) {
+				writer.writeUnsignedShort(formatNumber);
+				writer.writeUnsignedShort(rawReadData.length + 4);
+				writer.write(rawReadData);
 
-            return writer.toByteArray();
-        }
+				return writer.toByteArray();
+			}
 
-        calculateSegments();
+			calculateSegments();
 
-        writer.writeUnsignedShort((int) formatNumber);
-        writer.writeUnsignedShort(getLength());
-        writer.writeUnsignedShort((int) getLanguageId());
+			writer.writeUnsignedShort((int) formatNumber);
+			writer.writeUnsignedShort(getLength());
+			writer.writeUnsignedShort((int) getLanguageId());
 
-        writer.writeUnsignedShort(getSegmentCount() * 2);
-        writer.writeUnsignedShort(getSearchRange());
-        writer.writeUnsignedShort(getEntrySelector());
-        writer.writeUnsignedShort(getRangeShift());
+			writer.writeUnsignedShort(getSegmentCount() * 2);
+			writer.writeUnsignedShort(getSearchRange());
+			writer.writeUnsignedShort(getEntrySelector());
+			writer.writeUnsignedShort(getRangeShift());
 
-        for (Integer endEntryOn : ends)
-            writer.writeUnsignedShort(endEntryOn);
-        // array end code
-        writer.writeUnsignedShort(65535);
+			for (Integer endEntryOn : ends)
+				writer.writeUnsignedShort(endEntryOn);
+			// array end code
+			writer.writeUnsignedShort(65535);
 
-        // 'reservedPad' Set to 0
-        writer.writeUnsignedShort(0);
+			// 'reservedPad' Set to 0
+			writer.writeUnsignedShort(0);
 
-        for (Integer startEntryOn : starts)
-            writer.writeUnsignedShort(startEntryOn);
-        // array end code
-        writer.writeUnsignedShort(65535);
+			for (Integer startEntryOn : starts)
+				writer.writeUnsignedShort(startEntryOn);
+			// array end code
+			writer.writeUnsignedShort(65535);
 
-        for (Integer deltaEntryOn : deltas)
-            writer.writeUnsignedShort(deltaEntryOn);
-        // array end code
-        writer.writeUnsignedShort(1);
+			for (Integer deltaEntryOn : deltas)
+				writer.writeUnsignedShort(deltaEntryOn);
+			// array end code
+			writer.writeUnsignedShort(1);
 
-        for (Integer rangeOffsets : idRangeOffsets)
-            writer.writeUnsignedShort(0);
+			for (int i = 0; i < idRangeOffsets.size(); i++)
+				writer.writeUnsignedShort(0);
 //            writer.writeUnsignedShort(rangeOffsets);
-        // array end code
-        writer.writeUnsignedShort(0);
+			// array end code
+			writer.writeUnsignedShort(0);
 
 //        writeIndexedGlyphs(writer);
 
-        byte[] data = writer.toByteArray();
-        setDataHeaderLength(data);
-        return data;
-    }
-
-    private void writeIndexedGlyphs(FontDataOutputStream writer) throws IOException {
-        glyphsStartPos = writer.currentPosition();
-
-        for (int segIndex = 0; segIndex < idRangeOffsets.size(); segIndex++) {
-            Integer idRangeOn = idRangeOffsets.get(segIndex);
-            if (idRangeOn == 0)
-                continue;
-
-            writeSegmentGlyphs(writer, segIndex);
-        }
-    }
-
-    private void writeSegmentGlyphs(FontDataOutputStream writer, int segIndex) throws IOException {
-        Integer idRangeOn = idRangeOffsets.get(segIndex);
-
-        List<IndexedGlyph> glyphs = idRangeGlyphs.get(segIndex);
-        for (int glyphIndex = 0; glyphIndex < glyphs.size(); glyphIndex++) {
-            int position = writer.currentPosition();
-
-            long glyphOffset = glyphsStartPos + ((idRangeOn / 2) + glyphIndex + (segIndex - getSegmentCount())) * 2;
-
-            int paddingNeeded = (int) (glyphOffset - position - 1);
-            if (paddingNeeded > 0)
-                writer.write(new byte[paddingNeeded]);
-
-            IndexedGlyph glyphOn = glyphs.get(glyphIndex);
-            writer.writeUnsignedShort(glyphOn.glyphId);
-
-            log.warn(String.format("Wrote cmapsub4 indexed glyph. glyphId:%d glyphOffset:%d idRangeOffset: %d charCode:%d",
-                    glyphOn.glyphId, glyphOffset, idRangeOn, glyphOn.charCode));
-        }
-    }
+			byte[] data = writer.toByteArray();
+			setDataHeaderLength(data);
+			return data;
+		}
+	}
 
     private void calculateSegments() {
         initSegments();
@@ -160,13 +122,6 @@ class Format4SubTable extends CmapSubTable {
                 } else
                     idRangeOffsets.add(0);
 
-                idRangeGlyphs.add(new LinkedList<IndexedGlyph>());
-            }
-
-            int lastDeltaOn = deltas.get(deltas.size() - 1);
-            if (lastDeltaOn < 0) {
-                List<IndexedGlyph> rangeGlyphs = idRangeGlyphs.get(idRangeGlyphs.size() - 1);
-                rangeGlyphs.add(new IndexedGlyph(glyphIdOn, charCodeOn));
             }
 
             if (needAddSegment && lastCharCode != -1)
@@ -185,10 +140,10 @@ class Format4SubTable extends CmapSubTable {
         starts = new LinkedList<Integer>();
         ends = new LinkedList<Integer>();
         idRangeOffsets = new LinkedList<Integer>();
-        idRangeGlyphs = new LinkedList<List<IndexedGlyph>>();
     }
 
-    public void readData(FontDataInput input) throws IOException {
+    @SuppressWarnings({ "resource", "unused" })
+	public void readData(FontDataInput input) throws IOException {
         int length = input.readUnsignedShort();
         rawReadData = input.readBytes(length - 4);
         input = new FontDataInputStream(rawReadData);
@@ -234,11 +189,12 @@ class Format4SubTable extends CmapSubTable {
     }
 
     private void setDataHeaderLength(byte[] data) throws IOException {
-        FontDataOutputStream lengthWriter = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        lengthWriter.writeUnsignedShort(data.length);
-        byte[] lengthData = lengthWriter.toByteArray();
-        data[2] = lengthData[0];
-        data[3] = lengthData[1];
+		try (FontDataOutputStream lengthWriter = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			lengthWriter.writeUnsignedShort(data.length);
+			byte[] lengthData = lengthWriter.toByteArray();
+			data[2] = lengthData[0];
+			data[3] = lengthData[1];
+		}
     }
 
     public int glyphCount() {
@@ -294,13 +250,4 @@ class Format4SubTable extends CmapSubTable {
         return charCodeEntries;
     }
 
-    private static class IndexedGlyph {
-        public int glyphId;
-        public int charCode;
-
-        public IndexedGlyph(int glyphId, int charCode) {
-            this.glyphId = glyphId;
-            this.charCode = charCode;
-        }
-    }
 }
