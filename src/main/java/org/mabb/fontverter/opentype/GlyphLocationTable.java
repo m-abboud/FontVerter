@@ -19,16 +19,12 @@ package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.io.DataTypeProperty;
 import org.mabb.fontverter.io.DataTypeProperty.DataType;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 public class GlyphLocationTable extends OpenTypeTable {
-    private static final Logger log = getLogger(GlyphLocationTable.class);
 
     @DataTypeProperty(dataType = DataType.USHORT, isArray = true, ignoreIf = "isLongOffsets", arrayLength = "getNumGlyphs")
     Integer[] shortOffsets;
