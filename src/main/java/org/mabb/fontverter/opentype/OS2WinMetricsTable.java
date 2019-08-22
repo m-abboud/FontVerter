@@ -236,9 +236,9 @@ public class OS2WinMetricsTable extends OpenTypeTable {
 
         OtfEncodingType encode = font.getCmap().getCmapEncodingType();
         if (encode == OtfEncodingType.SYMBOL) {
-            codePageRanges.setPageBit(CodePageRange.SYMBOL_CHARACTER_SET, true);
+            codePageRanges.setPageBit(CodePageRange.SYMBOL_CHARACTER_SET.bit, true);
         } else {
-            unicodeRanges.setPageBit(CodePageRange.OtfUnicodeRange.BASIC_LATIN, true);
+            unicodeRanges.setPageBit(CodePageRange.OtfUnicodeRange.BASIC_LATIN.bit, true);
         }
 
         unicodeRange1 = unicodeRanges.getRanges().get(0);
@@ -280,33 +280,21 @@ public class OS2WinMetricsTable extends OpenTypeTable {
             Collections.reverse(ranges);
             return ranges;
         }
+        
+        public void setPageBit(int bitToSet, boolean enable) {
+            binary[bitToSet] = enable;
+        }
     }
 
     private static class UnicodeRanges extends BinaryBlock {
         UnicodeRanges() {
             super(128);
         }
-
-        public void setPageBit(CodePageRange.OtfUnicodeRange range, boolean enable) {
-            binary[range.bit] = enable;
-        }
-
-        public void setPageBit(CodePageRange.OtfUnicodeRange range) {
-            binary[range.bit] = true;
-        }
     }
 
     private static class CodePageRanges extends BinaryBlock {
         CodePageRanges() {
             super(64);
-        }
-
-        public void setPageBit(CodePageRange range, boolean enable) {
-            binary[range.bit] = enable;
-        }
-
-        public void setPageBit(CodePageRange range) {
-            binary[range.bit] = true;
         }
     }
 
