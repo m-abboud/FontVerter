@@ -32,8 +32,8 @@ public class AlignToReferencePoint extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        long point1Id = stack.popUint32();
-        long point2Id = stack.popUint32();
-        long ploopValue = stack.popUint32();
+//        long point1Id = stack.popUint32();
+//        long point2Id = stack.popUint32();
+//        long ploopValue = stack.popUint32();
     }
 }
