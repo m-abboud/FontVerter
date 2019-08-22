@@ -77,11 +77,10 @@ public class Woff2Font extends WoffFont {
                 .setQuality(11)
                 .setLgwin(10)
                 .setLgblock(24);
-        BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(param);
-        byte[] compressed = streamCompressor.compressArray(bytes, true);
-        streamCompressor.close();
-
-        return compressed;
+        
+		try (BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(param)) {
+			return streamCompressor.compressArray(bytes, true);
+		}
     }
 
     public FontProperties getProperties() {
