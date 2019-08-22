@@ -43,16 +43,16 @@ public class EotFont implements FVFont {
     public byte[] getData() throws IOException {
         normalize();
 
-        FontDataOutputStream os = new FontDataOutputStream();
-        os.write(header.getData());
+		try (FontDataOutputStream os = new FontDataOutputStream()) {
+			os.write(header.getData());
 
-        if (font == null)
-            throw new IOException("Embedded font is not set");
-        os.write(font.getData());
+			if (font == null)
+				throw new IOException("Embedded font is not set");
+			os.write(font.getData());
 
-        byte[] data = os.toByteArray();
-        os.close();
-        return data;
+			byte[] data = os.toByteArray();
+			return data;
+		}
     }
 
     public void normalize() throws IOException {
