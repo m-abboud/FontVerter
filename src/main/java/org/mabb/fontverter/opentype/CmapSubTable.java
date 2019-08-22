@@ -37,8 +37,6 @@ abstract class CmapSubTable {
     private int platformId;
     private int encodingId;
     private long subTableOffset;
-    private int[] glyphIdToCharacterCode;
-    private Map<Integer, Integer> characterCodeToGlyphId;
 
     public long getSubTableOffset() {
         return subTableOffset;
@@ -53,11 +51,13 @@ abstract class CmapSubTable {
     }
 
     public byte[] getRecordData() throws IOException {
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        writer.writeUnsignedShort(platformId);
-        writer.writeUnsignedShort(encodingId);
-        writer.writeUnsignedInt((int) subTableOffset);
-        return writer.toByteArray();
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			writer.writeUnsignedShort(platformId);
+			writer.writeUnsignedShort(encodingId);
+			writer.writeUnsignedInt((int) subTableOffset);
+			
+			return writer.toByteArray();
+		}
     }
 
     public int getPlatformId() {
@@ -99,26 +99,27 @@ abstract class CmapSubTable {
 
         @Override
         public byte[] getData() throws IOException {
-            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
+			try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
 
-            // kludge for read otf fonts
-            if (rawReadData != null) {
-                writer.writeUnsignedShort(formatNumber);
-                writer.writeUnsignedShort(rawReadData.length + 4);
-                writer.write(rawReadData);
+				// kludge for read otf fonts
+				if (rawReadData != null) {
+					writer.writeUnsignedShort(formatNumber);
+					writer.writeUnsignedShort(rawReadData.length + 4);
+					writer.write(rawReadData);
 
-                return writer.toByteArray();
-            }
+					return writer.toByteArray();
+				}
 
-            writer.writeUnsignedShort((int) formatNumber);
-            writer.writeUnsignedShort(getLength());
-            writer.writeUnsignedShort((int) getLanguageId());
+				writer.writeUnsignedShort((int) formatNumber);
+				writer.writeUnsignedShort(getLength());
+				writer.writeUnsignedShort((int) getLanguageId());
 
-            for (Map.Entry<Integer, Integer> entry : charCodeToGlyphId.entrySet()) {
-                writer.writeByte(entry.getValue());
-            }
+				for (Map.Entry<Integer, Integer> entry : charCodeToGlyphId.entrySet()) {
+					writer.writeByte(entry.getValue());
+				}
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public int glyphCount() {
@@ -134,7 +135,8 @@ abstract class CmapSubTable {
             charCodeToGlyphId.put(characterCode, glyphId);
         }
 
-        public void readData(FontDataInput input) throws IOException {
+        @SuppressWarnings("resource")
+		public void readData(FontDataInput input) throws IOException {
             int length = input.readUnsignedShort();
             rawReadData = input.readBytes(length - 4);
             input = new FontDataInputStream(rawReadData);
@@ -148,19 +150,21 @@ abstract class CmapSubTable {
 
         public byte[] getData() throws IOException {
             // kludge for read otf fonts
-            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-            writer.writeUnsignedShort(formatNumber);
-            writer.writeUnsignedShort(rawReadData.length + 4);
-            writer.write(rawReadData);
+			try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+				writer.writeUnsignedShort(formatNumber);
+				writer.writeUnsignedShort(rawReadData.length + 4);
+				writer.write(rawReadData);
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public int glyphCount() {
             return 0;
         }
 
-        public void readData(FontDataInput input) throws IOException {
+        @SuppressWarnings("resource")
+		public void readData(FontDataInput input) throws IOException {
             int length = input.readUnsignedShort();
             rawReadData = input.readBytes(length - 4);
             input = new FontDataInputStream(rawReadData);
@@ -175,19 +179,21 @@ abstract class CmapSubTable {
 
         public byte[] getData() throws IOException {
             // kludge for read otf fonts
-            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-            writer.writeUnsignedShort(formatNumber);
-            writer.writeUnsignedShort(rawReadData.length + 4);
-            writer.write(rawReadData);
+			try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+				writer.writeUnsignedShort(formatNumber);
+				writer.writeUnsignedShort(rawReadData.length + 4);
+				writer.write(rawReadData);
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public int glyphCount() {
             return 0;
         }
 
-        public void readData(FontDataInput input) throws IOException {
+        @SuppressWarnings("resource")
+		public void readData(FontDataInput input) throws IOException {
             int length = input.readUnsignedShort();
             rawReadData = input.readBytes(length - 4);
             input = new FontDataInputStream(rawReadData);
@@ -202,22 +208,25 @@ abstract class CmapSubTable {
 
         public byte[] getData() throws IOException {
             // kludge for read otf fonts
-            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-            writer.writeUnsignedShort(formatNumber);
-            // reserved
-            writer.writeUnsignedShort(0);
-            writer.writeUnsignedInt(rawReadData.length + 8);
-            writer.write(rawReadData);
+			try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+				writer.writeUnsignedShort(formatNumber);
+				// reserved
+				writer.writeUnsignedShort(0);
+				writer.writeUnsignedInt(rawReadData.length + 8);
+				writer.write(rawReadData);
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public int glyphCount() {
             return 0;
         }
 
-        public void readData(FontDataInput input) throws IOException {
-            int reserved = input.readUnsignedShort();
+        @SuppressWarnings("resource")
+		public void readData(FontDataInput input) throws IOException {
+//            int reserved = 
+        	input.readUnsignedShort();
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 8));
             input = new FontDataInputStream(rawReadData);
@@ -232,22 +241,25 @@ abstract class CmapSubTable {
 
         public byte[] getData() throws IOException {
             // kludge for read otf fonts
-            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-            writer.writeUnsignedShort(formatNumber);
-            // reserved
-            writer.writeUnsignedShort(0);
-            writer.writeUnsignedInt(rawReadData.length + 8);
-            writer.write(rawReadData);
+			try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+				writer.writeUnsignedShort(formatNumber);
+				// reserved
+				writer.writeUnsignedShort(0);
+				writer.writeUnsignedInt(rawReadData.length + 8);
+				writer.write(rawReadData);
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public int glyphCount() {
             return 0;
         }
 
-        public void readData(FontDataInput input) throws IOException {
-            int reserved = input.readUnsignedShort();
+        @SuppressWarnings("resource")
+		public void readData(FontDataInput input) throws IOException {
+            // int reserved = 
+        	input.readUnsignedShort();
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 8));
             input = new FontDataInputStream(rawReadData);
@@ -262,22 +274,25 @@ abstract class CmapSubTable {
 
         public byte[] getData() throws IOException {
             // kludge for read otf fonts
-            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-            writer.writeUnsignedShort(formatNumber);
-            // reserved
-            writer.writeUnsignedShort(0);
-            writer.writeUnsignedInt(rawReadData.length + 8);
-            writer.write(rawReadData);
+			try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+				writer.writeUnsignedShort(formatNumber);
+				// reserved
+				writer.writeUnsignedShort(0);
+				writer.writeUnsignedInt(rawReadData.length + 8);
+				writer.write(rawReadData);
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public int glyphCount() {
             return 0;
         }
 
-        public void readData(FontDataInput input) throws IOException {
-            int reserved = input.readUnsignedShort();
+        @SuppressWarnings("resource")
+		public void readData(FontDataInput input) throws IOException {
+            // int reserved = 
+        	input.readUnsignedShort();
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 8));
             input = new FontDataInputStream(rawReadData);
@@ -293,22 +308,25 @@ abstract class CmapSubTable {
 
         public byte[] getData() throws IOException {
             // kludge for read otf fonts
-            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-            writer.writeUnsignedShort(formatNumber);
-            // reserved
-            writer.writeUnsignedShort(0);
-            writer.writeUnsignedInt(rawReadData.length + 8);
-            writer.write(rawReadData);
+			try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+				writer.writeUnsignedShort(formatNumber);
+				// reserved
+				writer.writeUnsignedShort(0);
+				writer.writeUnsignedInt(rawReadData.length + 8);
+				writer.write(rawReadData);
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public int glyphCount() {
             return 0;
         }
 
-        public void readData(FontDataInput input) throws IOException {
-            int reserved = input.readUnsignedShort();
+        @SuppressWarnings("resource")
+		public void readData(FontDataInput input) throws IOException {
+            // int reserved = 
+        	input.readUnsignedShort();
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 8));
             input = new FontDataInputStream(rawReadData);
@@ -324,19 +342,21 @@ abstract class CmapSubTable {
 
         public byte[] getData() throws IOException {
             // kludge for read otf fonts
-            FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-            writer.writeUnsignedShort(formatNumber);
-            writer.writeUnsignedInt(rawReadData.length + 6);
-            writer.write(rawReadData);
+			try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+				writer.writeUnsignedShort(formatNumber);
+				writer.writeUnsignedInt(rawReadData.length + 6);
+				writer.write(rawReadData);
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public int glyphCount() {
             return 0;
         }
 
-        public void readData(FontDataInput input) throws IOException {
+        @SuppressWarnings("resource")
+		public void readData(FontDataInput input) throws IOException {
             long length = input.readUnsignedInt();
             rawReadData = input.readBytes((int) (length - 6));
             input = new FontDataInputStream(rawReadData);
