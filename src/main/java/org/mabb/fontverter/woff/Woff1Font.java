@@ -112,11 +112,13 @@ public class Woff1Font extends WoffFont {
         }
 
         protected byte[] compress(byte[] bytes) throws IOException {
-			try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-					DeflaterOutputStream compressStream = new DeflaterOutputStream(out)) {
+        	ByteArrayOutputStream out = new ByteArrayOutputStream();
+        	
+			try (DeflaterOutputStream compressStream = new DeflaterOutputStream(out)) {
 				compressStream.write(bytes);
-				return out.toByteArray();
 			}
+			
+			return out.toByteArray();
         }
 
         protected void readCompressedData(byte[] readData) throws IOException {
@@ -125,14 +127,15 @@ public class Woff1Font extends WoffFont {
                 return;
             }
 
-			try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-					InflaterOutputStream compressStream = new InflaterOutputStream(out)) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            
+			try (InflaterOutputStream compressStream = new InflaterOutputStream(out)) {
 				compressStream.write(readData);
 				tableData = out.toByteArray();
 			}
         }
 
-        public byte[] getDirectoryData() throws IOException {
+		public byte[] getDirectoryData() throws IOException {
 			try (WoffOutputStream writer = new WoffOutputStream()) {
 
 				writer.writeString(tag);
@@ -143,7 +146,7 @@ public class Woff1Font extends WoffFont {
 
 				return writer.toByteArray();
 			}
-        }
+		}
 
         public void setOffset(int offset) {
             this.offset = offset;
