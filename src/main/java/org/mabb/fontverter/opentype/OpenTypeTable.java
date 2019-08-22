@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -51,7 +51,7 @@ public abstract class OpenTypeTable {
 
     public static final int TABLE_RECORD_SIZE = 16;
 
-    private static List<Class> tableTypes;
+    private static List<Class<? extends OpenTypeTable>> tableTypes;
     private static final Object factoryLock = new Object();
     private static Logger log = LoggerFactory.getLogger(OpenTypeTable.class);
 
@@ -70,12 +70,12 @@ public abstract class OpenTypeTable {
     }
 
     public static OpenTypeTable createFromRecord(OtfTableRecord record, OpenTypeFont font)
-            throws IllegalAccessException, InstantiationException, IOException {
+            throws IllegalAccessException, InstantiationException, IOException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         initFactoryTableTypes();
 
         OpenTypeTable createdTable = null;
-        for (Class typeOn : tableTypes) {
-            OpenTypeTable tableOn = (OpenTypeTable) typeOn.newInstance();
+        for (Class<? extends OpenTypeTable> typeOn : tableTypes) {
+            OpenTypeTable tableOn = typeOn.getDeclaredConstructor().newInstance();
 
             if (tableOn.getTableType().equals(record.recordName)) {
                 createdTable = tableOn;
@@ -106,17 +106,14 @@ public abstract class OpenTypeTable {
     private static void initFactoryTableTypes() {
         synchronized (factoryLock) {
             if (tableTypes == null) {
+            	tableTypes = new ArrayList<>(); 
                 Reflections reflections = new Reflections("org.mabb.fontverter");
                 Set<Class<? extends OpenTypeTable>> adapterClasses = reflections.getSubTypesOf(OpenTypeTable.class);
-                tableTypes = Arrays.asList(adapterClasses.toArray(new Class[adapterClasses.size()]));
 
-                List<Class> filteredTables = new ArrayList<Class>();
-                for (Class tableTypeOn : tableTypes) {
+                for (Class<? extends OpenTypeTable> tableTypeOn : adapterClasses) {
                     if (!tableTypeOn.getCanonicalName().contains("Canned") && tableTypeOn != UnknownTableType.class)
-                        filteredTables.add(tableTypeOn);
+                    	tableTypes.add(tableTypeOn);
                 }
-
-                tableTypes = filteredTables;
             }
         }
     }
