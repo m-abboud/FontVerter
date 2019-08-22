@@ -23,12 +23,10 @@ import org.junit.Test;
 import org.mabb.fontverter.opentype.TtfInstructions.instructions.arithmetic.*;
 
 public class TestArithmeticInstructions {
-    private TtfInstructionParser parser;
     private TtfVirtualMachine vm;
 
     @Before
     public void init() {
-        parser = new TtfInstructionParser();
         vm = new TtfVirtualMachine(null);
     }
 
