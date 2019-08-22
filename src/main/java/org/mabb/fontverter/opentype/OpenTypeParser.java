@@ -20,22 +20,20 @@ package org.mabb.fontverter.opentype;
 import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 public class OpenTypeParser {
-    private static final Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
 
     private OpenTypeFont font;
     private FontDataInput input;
 
-    public OpenTypeFont parse(byte[] data) throws IOException, InstantiationException, IllegalAccessException {
+    public OpenTypeFont parse(byte[] data) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         return parse(data, new OpenTypeFont());
     }
 
-    public OpenTypeFont parse(byte[] data, OpenTypeFont font) throws IOException, InstantiationException, IllegalAccessException {
+    public OpenTypeFont parse(byte[] data, OpenTypeFont font) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         this.font = font;
         this.input = new FontDataInputStream(data);
 
@@ -50,7 +48,7 @@ public class OpenTypeParser {
     }
 
     private void readTableHeaderEntries()
-            throws IllegalAccessException, InstantiationException, IOException {
+            throws IllegalAccessException, InstantiationException, IOException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
 
         for (int i = 0; i < font.sfntHeader.numTables; i++) {
