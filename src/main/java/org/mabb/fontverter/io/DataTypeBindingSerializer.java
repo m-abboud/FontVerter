@@ -31,7 +31,7 @@ public class DataTypeBindingSerializer {
     }
     public byte[] serialize(Object object, FontDataOutput writer) throws DataTypeSerializerException {
         this.writer = writer;
-        Class type = object.getClass();
+        Class<?> type = object.getClass();
         List<AccessibleObject> properties = propReader.getProperties(type);
 
         for (AccessibleObject propertyOn : properties) {
