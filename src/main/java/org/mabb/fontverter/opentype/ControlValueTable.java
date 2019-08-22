@@ -37,23 +37,25 @@ public class ControlValueTable extends OpenTypeTable {
     }
 
     public void readData(byte[] data) throws IOException {
-        FontDataInputStream input = new FontDataInputStream(data);
-        while (input.available() >= 2)
-            values.add(input.readShort());
+		try (FontDataInputStream input = new FontDataInputStream(data)) {
+			while (input.available() >= 2)
+				values.add(input.readShort());
 
-        if (input.available() == 1) {
-            log.info("original cvt table data length not divisble by two, adding 1 byte padding.");
-            values.add((short) input.readByte());
-        }
+			if (input.available() == 1) {
+				log.info("original cvt table data length not divisble by two, adding 1 byte padding.");
+				values.add((short) input.readByte());
+			}
+		}
     }
 
-    protected byte[] generateUnpaddedData() throws IOException {
-        FontDataOutputStream out = new FontDataOutputStream(OPEN_TYPE_CHARSET);
-        for (Short valueOn : values)
-            out.writeShort(valueOn);
+	protected byte[] generateUnpaddedData() throws IOException {
+		try (FontDataOutputStream out = new FontDataOutputStream(OPEN_TYPE_CHARSET)) {
+			for (Short valueOn : values)
+				out.writeShort(valueOn);
 
-        return out.toByteArray();
-    }
+			return out.toByteArray();
+		}
+	}
 
     public List<Short> getValues() {
         return values;
@@ -66,6 +68,7 @@ public class ControlValueTable extends OpenTypeTable {
         return values.get(index.intValue());
     }
 
-    public static class CvtValueNotFoundException extends IOException {
+    @SuppressWarnings("serial")
+	public static class CvtValueNotFoundException extends IOException {
     }
 }
