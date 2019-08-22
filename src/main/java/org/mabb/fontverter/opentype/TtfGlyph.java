@@ -110,29 +110,30 @@ public class TtfGlyph {
         if (instructionLength > t)
             instructionLength = t;
 
-        FontDataOutputStream writer = new FontDataOutputStream();
-        DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
-        byte[] data = serializer.serialize(this);
-        writer.write(data);
+		try (FontDataOutputStream writer = new FontDataOutputStream()) {
+			DataTypeBindingSerializer serializer = new DataTypeBindingSerializer();
+			byte[] data = serializer.serialize(this);
+			writer.write(data);
 
-        for (GlyphCoordinate pointOn : points) {
-            CoordinateFlagSet coordFlags = new CoordinateFlagSet();
-            if (pointOn.isOnCurve())
-                coordFlags.add(ON_CURVE);
+			for (GlyphCoordinate pointOn : points) {
+				CoordinateFlagSet coordFlags = new CoordinateFlagSet();
+				if (pointOn.isOnCurve())
+					coordFlags.add(ON_CURVE);
 
-            writer.write(coordFlags.write());
-        }
+				writer.write(coordFlags.write());
+			}
 
-        for (GlyphCoordinate pointOn : points)
-            writer.writeShort((int) pointOn.x);
+			for (GlyphCoordinate pointOn : points)
+				writer.writeShort((int) pointOn.x);
 
-        for (GlyphCoordinate pointOn : points)
-            writer.writeShort((int) pointOn.y);
+			for (GlyphCoordinate pointOn : points)
+				writer.writeShort((int) pointOn.y);
 
-        if (writer.size() % 2 != 0)
-            writer.writeByte(0);
+			if (writer.size() % 2 != 0)
+				writer.writeByte(0);
 
-        return writer.toByteArray();
+			return writer.toByteArray();
+		}
     }
 
     private void readSimpleGlyphData(FontDataInput reader) throws IOException {
@@ -375,7 +376,8 @@ public class TtfGlyph {
         }
     }
 
-    protected static class GlyphCoordinate extends Point2D.Double {
+    @SuppressWarnings("serial")
+	protected static class GlyphCoordinate extends Point2D.Double {
         CoordinateFlagSet flags;
 
         public GlyphCoordinate(double x, double y, CoordinateFlagSet flags) {
@@ -388,7 +390,8 @@ public class TtfGlyph {
         }
     }
 
-    protected static class CoordinateFlagSet extends LinkedList<CoordinateFlagType> {
+    @SuppressWarnings("serial")
+	protected static class CoordinateFlagSet extends LinkedList<CoordinateFlagType> {
         public int repeatCount = 0;
         boolean forX = true;
 
