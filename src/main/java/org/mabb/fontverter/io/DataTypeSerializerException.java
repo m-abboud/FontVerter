@@ -19,7 +19,9 @@ package org.mabb.fontverter.io;
 
 import java.io.IOException;
 
+@SuppressWarnings("serial")
 public class DataTypeSerializerException extends IOException {
+	
     public DataTypeSerializerException(Exception e) {
         super(e);
     }
