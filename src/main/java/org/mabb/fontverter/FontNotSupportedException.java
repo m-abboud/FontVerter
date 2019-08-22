@@ -19,8 +19,11 @@ package org.mabb.fontverter;
 
 import java.io.IOException;
 
+@SuppressWarnings("serial")
 public class FontNotSupportedException extends IOException {
+	
     public FontNotSupportedException(String s) {
         super(s);
     }
+    
 }

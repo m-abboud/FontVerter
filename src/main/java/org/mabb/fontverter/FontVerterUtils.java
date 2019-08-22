@@ -25,7 +25,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class FontVerterUtils {
-    public static Field findPrivateField(String fieldName, Class type) {
+    public static Field findPrivateField(String fieldName, Class<?> type) {
         Field[] fields = type.getDeclaredFields();
 
         Field mapField = null;
@@ -38,7 +38,7 @@ public class FontVerterUtils {
         return mapField;
     }
 
-    public static Method findPrivateMethod(String methodName, Class type) {
+    public static Method findPrivateMethod(String methodName, Class<?> type) {
         Method[] methods = type.getDeclaredMethods();
 
         Method mapMethod = null;
