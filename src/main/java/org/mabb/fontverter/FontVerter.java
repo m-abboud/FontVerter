@@ -27,7 +27,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class FontVerter {
 
@@ -105,7 +104,6 @@ public class FontVerter {
         // if nothing can read go at it again and use the first one to throw an exception
         // as the exception message for debugging.
         for (Class<? extends FVFont> adapterOn : adapters) {
-
             try {
                 FVFont adapter = parseFont(fontData, adapterOn);
                 if (adapter != null)
@@ -128,6 +126,7 @@ public class FontVerter {
 
     private static FVFont parseFont(byte[] fontData, Class<? extends FVFont> adapterOn) throws InstantiationException, IllegalAccessException, IOException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         FVFont adapter = adapterOn.getDeclaredConstructor().newInstance();
+        
         if (adapter.detectFormat(fontData)) {
             adapter.read(fontData);
             return adapter;
@@ -140,32 +139,32 @@ public class FontVerter {
         synchronized (adapterLock) {
             if (adapters == null) {
                 Reflections reflections = new Reflections("org.mabb.fontverter");
-                Set<Class<? extends FVFont>> adapterClasses = reflections.getSubTypesOf(FVFont.class);
-                adapters = new ArrayList<>(adapterClasses);
+                adapters = new ArrayList<>(reflections.getSubTypesOf(FVFont.class));
 
-                // CFF always last to try
+                int cffIndex = -1;
                 Class<? extends FVFont> cffAdapter = null;
-                for (Class<? extends FVFont> adapterOn : adapters) {
-                    if (adapterOn.getSimpleName().contains("CffFont")) {
-                        cffAdapter = adapterOn;
+                
+                for (int i=0; i < adapters.size(); i++) {
+                    if (adapters.get(i).getSimpleName().contains("CffFont")) {
+                        cffAdapter = adapters.get(i);
+                        cffIndex = i;
                         break;
                     }
                 }
 
-                int cffIndex = adapters.indexOf(cffAdapter);
                 adapters.set(cffIndex, adapters.get(adapters.size() - 1));
                 adapters.set(adapters.size() - 1, cffAdapter);
-
-                adapters = removeAbstractClasses(adapters);
+                adapters = removeAbstractAdapters(adapters);
             }
         }
     }
 
-    private static List<Class<? extends FVFont>> removeAbstractClasses(List<Class<? extends FVFont>> classes) {
+    private static List<Class<? extends FVFont>> removeAbstractAdapters(List<Class<? extends FVFont>> adapters) {
         List<Class<? extends FVFont>> filtered = new ArrayList<>();
-        for (Class<? extends FVFont> adapterOn : classes) {
-            if (!Modifier.isAbstract(adapterOn.getModifiers()))
-                filtered.add(adapterOn);
+        
+        for (Class<? extends FVFont> adapter : adapters) {
+            if (!Modifier.isAbstract(adapter.getModifiers()))
+                filtered.add(adapter);
         }
 
         return filtered;
