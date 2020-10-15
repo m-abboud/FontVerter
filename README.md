@@ -22,7 +22,7 @@ Java library for converting and manipulating various font formats, normalizing i
 ## Maven (On Maven Central)
     <dependencies>
 		<dependency>
-			<groupId>org.fontverter</groupId>
+			<groupId>net.mabboud.fontverter</groupId>
 			<artifactId>FontVerter</artifactId>
 			<version>1.2.22</version>
 		</dependency>
