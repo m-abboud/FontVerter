@@ -41,7 +41,7 @@ public class CmapTable extends OpenTypeTable {
     private Format4SubTable unixTable;
     private Format0SubTable macTable;
 
-    public List<CmapSubTable> subTables = new ArrayList<CmapSubTable>();
+    private List<CmapSubTable> subTables = new ArrayList<CmapSubTable>();
 
     @DataTypeProperty(dataType = DataTypeProperty.DataType.USHORT)
     int version;
