@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mabb.fontverter.opentype.SfntHeader.*;
 
@@ -139,9 +140,34 @@ public class OpenTypeFont implements FVFont {
         if (getOs2() == null)
             createNewOS2WinMetricsTable();
 
-        if (getNameTable() == null)
+        if (getNameTable() == null) {
             setName(NameTable.createDefaultTable());
+        } else {
+            if( getNameTable().getName( OtfNameConstants.RecordType.FONT_FAMILY ) == null ) {
+                getNameTable().setFontFamily( "DefaultFamily" );
+            }
 
+            if( getNameTable().getName( OtfNameConstants.RecordType.FONT_SUB_FAMILY ) == null ) {
+                getNameTable().setFontSubFamily( "Normal" );
+            }
+
+            if( getNameTable().getName( OtfNameConstants.RecordType.FULL_FONT_NAME ) == null ) {
+                getNameTable().setFontFullName( "DefaultFontFullName" );
+            }
+
+            if( getNameTable().getName( OtfNameConstants.RecordType.POSTSCRIPT_NAME ) == null ) {
+                getNameTable().setPostScriptName( "DefaultPostScriptName" );
+            }
+
+            if( getNameTable().getName( OtfNameConstants.RecordType.UNIQUE_FONT_ID ) == null ) {
+                getNameTable().setUniqueId( UUID.randomUUID().toString().replace("-", ""));
+            }
+
+            if( getNameTable().getName( OtfNameConstants.RecordType.VERSION_STRING ) == null ) {
+                getNameTable().setVersion( "Version 1.1" );
+            }
+        }
+        
         if (getPost() == null)
             setPost(PostScriptTable.createDefaultTable(getOpenTypeVersion()));
 
@@ -228,6 +254,11 @@ public class OpenTypeFont implements FVFont {
     private void normalizeTables() throws IOException {
         if (sfntHeader.sfntFlavor.isEmpty())
             sfntHeader.sfntFlavor = determineSfntFlavor();
+
+        CmapTable cmap = getCmap();
+        if( cmap != null ) {
+            cmap.normalize();
+        }
 
         if (getCmap() != null && getMxap() != null && !getMxap().isFromParsedFont)
             getMxap().setNumGlyphs(getCmap().getGlyphCount());
