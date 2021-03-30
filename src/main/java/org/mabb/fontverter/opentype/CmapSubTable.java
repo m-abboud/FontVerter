@@ -205,7 +205,7 @@ abstract class CmapSubTable {
             int entryCount = input.readUnsignedShort();
             int[] glyphIndex = input.readUnsignedShortArray( entryCount );
             
-            for( int i = 0; i < entryCount; i++ ) {
+            for(int i = 0; i < entryCount; i++) {
             	charCodeToGlyphId.put( firstCode+i, glyphIndex[i] );
             }
         }
