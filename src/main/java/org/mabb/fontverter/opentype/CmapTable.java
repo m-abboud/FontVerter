@@ -24,8 +24,6 @@ import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.io.DataTypeProperty;
 import org.mabb.fontverter.opentype.OtfNameConstants.OtfEncodingType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,8 +32,8 @@ import static org.mabb.fontverter.opentype.CmapSubTable.*;
 import static org.mabb.fontverter.opentype.CmapSubTable.CMAP_RECORD_BYTE_SIZE;
 
 public class CmapTable extends OpenTypeTable {
-    private static Logger log = LoggerFactory.getLogger(CmapTable.class);
-    private static final int CMAP_HEADER_SIZE = 4;
+
+	private static final int CMAP_HEADER_SIZE = 4;
     private Format4SubTable windowsTable;
     private Format4SubTable unixTable;
     private Format0SubTable macTable;
@@ -58,17 +56,18 @@ public class CmapTable extends OpenTypeTable {
     protected byte[] generateUnpaddedData() throws IOException {
         calculateOffsets();
 
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        writer.write(super.generateUnpaddedData());
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			writer.write(super.generateUnpaddedData());
 
-        for (CmapSubTable tableOn : subTables) {
-            writer.write(tableOn.getRecordData());
-        }
+			for (CmapSubTable tableOn : subTables) {
+				writer.write(tableOn.getRecordData());
+			}
 
-        for (CmapSubTable tableOn : subTables)
-            writer.write(tableOn.getData());
+			for (CmapSubTable tableOn : subTables)
+				writer.write(tableOn.getData());
 
-        return writer.toByteArray();
+			return writer.toByteArray();
+		}
     }
 
     public void readData(byte[] data) throws IOException {

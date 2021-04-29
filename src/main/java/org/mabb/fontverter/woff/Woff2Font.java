@@ -77,11 +77,10 @@ public class Woff2Font extends WoffFont {
                 .setQuality(11)
                 .setLgwin(10)
                 .setLgblock(24);
-        BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(param);
-        byte[] compressed = streamCompressor.compressArray(bytes, true);
-        streamCompressor.close();
-
-        return compressed;
+        
+		try (BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(param)) {
+			return streamCompressor.compressArray(bytes, true);
+		}
     }
 
     public FontProperties getProperties() {
@@ -117,23 +116,24 @@ public class Woff2Font extends WoffFont {
         }
 
         public byte[] getDirectoryData() throws IOException {
-            WoffOutputStream writer = new WoffOutputStream();
+			try (WoffOutputStream writer = new WoffOutputStream()) {
 
-            WoffConstants.TableFlagType flag = WoffConstants.TableFlagType.fromString(tag);
-            writer.writeFlagByte(flag.getValue(), getTransform());
+				WoffConstants.TableFlagType flag = WoffConstants.TableFlagType.fromString(tag);
+				writer.writeFlagByte(flag.getValue(), getTransform());
 
-            if (flag == arbitrary) {
-                // maybe should string pad < 4
-                assert tag.length() == 4;
-                writer.writeString(tag);
-            }
+				if (flag == arbitrary) {
+					// maybe should string pad < 4
+					assert tag.length() == 4;
+					writer.writeString(tag);
+				}
 
-            writer.writeUIntBase128(tableData.length);
+				writer.writeUIntBase128(tableData.length);
 
-            if (isTableTransformed())
-                writer.writeUIntBase128(getCompressedData().length);
+				if (isTableTransformed())
+					writer.writeUIntBase128(getCompressedData().length);
 
-            return writer.toByteArray();
+				return writer.toByteArray();
+			}
         }
 
         public int getTransformedLength() throws IOException {

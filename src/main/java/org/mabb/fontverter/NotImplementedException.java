@@ -19,5 +19,6 @@ package org.mabb.fontverter;
 
 import java.io.IOException;
 
+@SuppressWarnings("serial")
 public class NotImplementedException extends IOException {
 }

@@ -19,15 +19,13 @@ package org.mabb.fontverter.woff;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mabb.fontverter.io.FontDataOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WoffOutputStream extends FontDataOutputStream {
-    private static Logger log = LoggerFactory.getLogger(WoffOutputStream.class);
+//    private static Logger log = LoggerFactory.getLogger(WoffOutputStream.class);
 
     public WoffOutputStream() {
         super(OPEN_TYPE_CHARSET);

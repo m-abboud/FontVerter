@@ -28,6 +28,7 @@ import org.mabb.fontverter.opentype.*;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +37,7 @@ public class PsType0ToOpenTypeConverter {
     private OpenTypeFont otfFont;
     private PDType0Font type0Font;
 
-    public FVFont convert(PDType0Font type0Font) throws IOException, IllegalAccessException, InstantiationException {
+    public FVFont convert(PDType0Font type0Font) throws IOException, IllegalAccessException, InstantiationException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         this.type0Font = type0Font;
         PDCIDFont descendantFont = type0Font.getDescendantFont();
 
@@ -56,7 +57,7 @@ public class PsType0ToOpenTypeConverter {
         return otfFont;
     }
 
-    private OpenTypeFont getOtfFromDescendantFont(PDCIDFont descendantFont) throws IOException, InstantiationException, IllegalAccessException {
+    private OpenTypeFont getOtfFromDescendantFont(PDCIDFont descendantFont) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         if (isTtfDescendant()) {
             byte[] ttfData = type0Font.getFontDescriptor().getFontFile2().toByteArray();
             OpenTypeParser otfParser = new OpenTypeParser();
@@ -121,7 +122,6 @@ public class PsType0ToOpenTypeConverter {
         otfFont.setName(names);
     }
 
-    @SuppressWarnings("unchecked")
     private Map<Integer, String> getType0CharToUnicode() throws IllegalAccessException {
         CMap cmap = (CMap) FontVerterUtils.findPrivateField("toUnicodeCMap", PDFont.class).get(type0Font);
         if (cmap == null)

@@ -25,6 +25,7 @@ import org.mabb.fontverter.woff.WoffFont;
 import org.mabb.fontverter.woff.WoffTable;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 public class WoffToOtfConverter implements FontConverter {
     OpenTypeFont otfFont;
@@ -44,7 +45,7 @@ public class WoffToOtfConverter implements FontConverter {
         return otfFont;
     }
 
-    private void readTables() throws IOException, InstantiationException, IllegalAccessException {
+    private void readTables() throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         for (WoffTable tableOn : woffFont.getTables()) {
             OpenTypeTable.OtfTableRecord record = new OpenTypeTable.OtfTableRecord();
 

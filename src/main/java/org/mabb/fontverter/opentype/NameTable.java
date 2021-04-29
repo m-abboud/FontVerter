@@ -18,7 +18,6 @@
 package org.mabb.fontverter.opentype;
 
 import org.mabb.fontverter.io.DataTypeBindingDeserializer;
-import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.slf4j.Logger;
@@ -52,60 +51,61 @@ public class NameTable extends OpenTypeTable {
     }
 
     public void readData(byte[] data) throws IOException {
-        FontDataInput reader = new FontDataInputStream(data);
-        formatSelector = reader.readUnsignedShort();
-        if (formatSelector > 0) {
-            log.warn("nametable format 1 reading not implemented");
-            return;
-        }
+		try (FontDataInputStream reader = new FontDataInputStream(data)) {
+			formatSelector = reader.readUnsignedShort();
+			if (formatSelector > 0) {
+				log.warn("nametable format 1 reading not implemented");
+				return;
+			}
 
-        // read record headers first then thier actual strings
-        int count = reader.readUnsignedShort();
-        int stringOffset = reader.readUnsignedShort();
-        for (int i = 0; i < count; i++) {
-            DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
-            NameRecord record = (NameRecord) deserializer.deserialize(reader, NameRecord.class);
-            nameRecords.add(record);
-        }
+			// read record headers first then thier actual strings
+			int count = reader.readUnsignedShort();
+			int stringOffset = reader.readUnsignedShort();
+			for (int i = 0; i < count; i++) {
+				DataTypeBindingDeserializer deserializer = new DataTypeBindingDeserializer();
+				NameRecord record = (NameRecord) deserializer.deserialize(reader, NameRecord.class);
+				nameRecords.add(record);
+			}
 
-
-        // discard junk bytes between offset to actual string storage
+			// discard junk bytes between offset to actual string storage
 //        reader.readBytes(stringOffset - reader.getPosition());
 
-        for (int i = 0; i < count; i++) {
-            NameRecord recordOn = nameRecords.get(i);
-            reader.seek(recordOn.offset + stringOffset);
+			for (int i = 0; i < count; i++) {
+				NameRecord recordOn = nameRecords.get(i);
+				reader.seek(recordOn.offset + stringOffset);
 
-            String nameOn = reader.readString(recordOn.length);
-            recordOn.setStringData(nameOn);
-        }
+				String nameOn = reader.readString(recordOn.length);
+				recordOn.setStringData(nameOn);
+			}
+		}
     }
 
     protected byte[] generateUnpaddedData() throws IOException {
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        writer.writeUnsignedShort(formatSelector);
-        writer.writeUnsignedShort(nameRecords.size());
-        writer.writeUnsignedShort(getOffsetToStringStorage());
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			writer.writeUnsignedShort(formatSelector);
+			writer.writeUnsignedShort(nameRecords.size());
+			writer.writeUnsignedShort(getOffsetToStringStorage());
 
-        calculateOffsets();
+			calculateOffsets();
 
-        Collections.sort(nameRecords, new Comparator<NameRecord>() {
-            @Override
-            public int compare(NameRecord o1, NameRecord o2) {
-                if (o1.platformID != o2.platformID)
-                    return o1.platformID < o2.platformID ? -1 : 1;
-                return o1.nameID < o2.nameID ? -1 : o1.nameID == o2.nameID ? 0 : 1;
+			Collections.sort(nameRecords, new Comparator<NameRecord>() {
+				@Override
+				public int compare(NameRecord o1, NameRecord o2) {
+					if (o1.platformID != o2.platformID)
+						return o1.platformID < o2.platformID ? -1 : 1;
+					return o1.nameID < o2.nameID ? -1 : o1.nameID == o2.nameID ? 0 : 1;
 
-            }
-        });
+				}
+			});
 
-        for (NameRecord record : nameRecords)
-            writer.write(record.getRecordData());
+			for (NameRecord record : nameRecords)
+				writer.write(record.getRecordData());
 
-        for (NameRecord record : nameRecords)
-            writer.write(record.getStringData());
+			for (NameRecord record : nameRecords)
+				writer.write(record.getStringData());
 
-        return writer.toByteArray();
+			return writer.toByteArray();
+		}
     }
 
     public String getTableType() {

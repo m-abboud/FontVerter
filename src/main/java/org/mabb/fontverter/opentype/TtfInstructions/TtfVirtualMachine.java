@@ -56,7 +56,7 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
     private TtfGraphicsState graphicsState;
     private Long[] storageArea;
     private boolean hasFpgmRun = false;
-    private boolean onFpgm;
+//    private boolean onFpgm;
 
     public TtfVirtualMachine(OpenTypeFont font) {
         this.font = font;
@@ -99,13 +99,13 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
         if (hasFpgmRun)
             return;
 
-        onFpgm = true;
+//        onFpgm = true;
         hasFpgmRun = true;
         // font == null for some lazy test code
         if (font != null && font.getFpgmTable() != null)
             execute(font.getFpgmTable().getInstructions());
 
-        onFpgm = false;
+//        onFpgm = false;
     }
 
     public void execute(TtfInstruction instruction) throws IOException {
@@ -218,7 +218,8 @@ public class TtfVirtualMachine implements TtfInstructionVisitor {
         return loopVar;
     }
 
-    public static class TtfVmRuntimeException extends IOException {
+    @SuppressWarnings("serial")
+	public static class TtfVmRuntimeException extends IOException {
         public TtfVmRuntimeException(String message) {
             super(message);
         }

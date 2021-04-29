@@ -24,9 +24,11 @@ import java.util.Stack;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+@SuppressWarnings("serial")
 public class InstructionStack extends Stack<Object> {
-    private static final Logger log = getLogger(InstructionStack.class);
+	
     boolean typeCheckExceptions = false;
+    private static final Logger log = getLogger(InstructionStack.class);
 
     public Long popUint32() throws IOException {
         Number obj = (Number) pop();

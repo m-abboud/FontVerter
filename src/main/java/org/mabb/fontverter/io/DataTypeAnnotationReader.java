@@ -35,7 +35,7 @@ class DataTypeAnnotationReader {
     public DataTypeAnnotationReader() {
     }
 
-    public List<AccessibleObject> getProperties(Class type) throws DataTypeSerializerException {
+    public List<AccessibleObject> getProperties(Class<?> type) throws DataTypeSerializerException {
         List<AccessibleObject> properties = new LinkedList<AccessibleObject>();
 
         for (Field fieldOn : type.getDeclaredFields()) {
@@ -44,6 +44,7 @@ class DataTypeAnnotationReader {
                 properties.add(fieldOn);
             }
         }
+        
         for (Method methodOn : type.getDeclaredMethods()) {
             if (methodOn.isAnnotationPresent(DataTypeProperty.class)) {
                 methodOn.setAccessible(true);
@@ -159,22 +160,20 @@ class DataTypeAnnotationReader {
         throw new DataTypeSerializerException("Could not find annotation for property " + property.toString());
     }
 
-    private static List<Boolean> setAllPropertiesAccessible(Class type) {
+    private static List<Boolean> setAllPropertiesAccessible(Class<?> type) {
         List<Boolean> originalAccessiblity = new LinkedList<Boolean>();
 
         for (Field fieldOn : type.getDeclaredFields()) {
-            originalAccessiblity.add(fieldOn.isAccessible());
-            fieldOn.setAccessible(true);
+            originalAccessiblity.add(fieldOn.trySetAccessible());
         }
         for (Method methodOn : type.getDeclaredMethods()) {
-            originalAccessiblity.add(methodOn.isAccessible());
-            methodOn.setAccessible(true);
+            originalAccessiblity.add(methodOn.trySetAccessible());
         }
 
         return originalAccessiblity;
     }
 
-    private static void resetAccessibility(List<Boolean> originalAccessibility, Class type) {
+    private static void resetAccessibility(List<Boolean> originalAccessibility, Class<?> type) {
         int i = 0;
 
         for (Field fieldOn : type.getDeclaredFields()) {

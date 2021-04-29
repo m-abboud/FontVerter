@@ -17,7 +17,6 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.slf4j.Logger;
@@ -38,46 +37,49 @@ public class GlyphTable extends OpenTypeTable {
     }
 
     protected byte[] generateUnpaddedData() throws IOException {
-        FontDataOutputStream out = new FontDataOutputStream();
-        for (TtfGlyph glyphOn : glyphs) {
-            if (!glyphOn.isEmpty())
-                out.write(glyphOn.generateData());
-        }
+		try (FontDataOutputStream out = new FontDataOutputStream()) {
+			for (TtfGlyph glyphOn : glyphs) {
+				if (!glyphOn.isEmpty())
+					out.write(glyphOn.generateData());
+			}
 
-        return out.toByteArray();
+			return out.toByteArray();
+		}
     }
 
-    public void readData(byte[] data) throws IOException {
-        super.readData(data);
-        FontDataInput reader = new FontDataInputStream(data);
-        Long[] offsets = font.getLocaTable().getOffsets();
+	public void readData(byte[] data) throws IOException {
+		super.readData(data);
 
-        for (int i = 0; i < offsets.length - 1; i++) {
-            Long offset = offsets[i];
-            long length = offsets[i + 1] - offset;
+		try (FontDataInputStream reader = new FontDataInputStream(data)) {
+			Long[] offsets = font.getLocaTable().getOffsets();
 
-            // 0 length is valid and means an empty outline for glyph
-            if (length == 0) {
-                glyphs.add(new TtfGlyph());
-                continue;
-            }
+			for (int i = 0; i < offsets.length - 1; i++) {
+				Long offset = offsets[i];
+				long length = offsets[i + 1] - offset;
 
-            if (offset >= data.length) {
-                log.error("Invalid loca table offset, offset greater than glyf table length");
-                continue;
-            }
+				// 0 length is valid and means an empty outline for glyph
+				if (length == 0) {
+					glyphs.add(new TtfGlyph());
+					continue;
+				}
 
-            try {
-                reader.seek(offset.intValue());
-                byte[] glyphData = reader.readBytes((int) length);
+				if (offset >= data.length) {
+					log.error("Invalid loca table offset, offset greater than glyf table length");
+					continue;
+				}
 
-                TtfGlyph glyph = TtfGlyph.parse(glyphData, font);
-                glyphs.add(glyph);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
+				try {
+					reader.seek(offset.intValue());
+					byte[] glyphData = reader.readBytes((int) length);
+
+					TtfGlyph glyph = TtfGlyph.parse(glyphData, font);
+					glyphs.add(glyph);
+				} catch (Exception ex) {
+					log.error("", ex);
+				}
+			}
+		}
+	}
 
     public List<TtfGlyph> getGlyphs() {
         return glyphs;

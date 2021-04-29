@@ -36,13 +36,13 @@ public class DataTypeBindingDeserializer {
     private boolean recoverFromEOF;
     private boolean stopDeserializeEarly = false;
 
-    public Object deserialize(byte[] data, Class toClass) throws DataTypeSerializerException {
+    public Object deserialize(byte[] data, Class<?> toClass) throws DataTypeSerializerException {
         return deserialize(new FontDataInputStream(data), toClass);
     }
 
-    public Object deserialize(FontDataInput dataInput, Class toClass) throws DataTypeSerializerException {
+    public Object deserialize(FontDataInput dataInput, Class<?> toClass) throws DataTypeSerializerException {
         try {
-            return deserialize(dataInput, toClass.newInstance());
+            return deserialize(dataInput, toClass.getDeclaredConstructor().newInstance());
         } catch (Exception ex) {
             throw new DataTypeSerializerException(ex);
         }
@@ -52,7 +52,7 @@ public class DataTypeBindingDeserializer {
         try {
             input = dataInput;
 
-            Class toClass = toObj.getClass();
+            Class<?> toClass = toObj.getClass();
             List<AccessibleObject> properties = propReader.getProperties(toClass);
 
             for (AccessibleObject propertyOn : properties) {

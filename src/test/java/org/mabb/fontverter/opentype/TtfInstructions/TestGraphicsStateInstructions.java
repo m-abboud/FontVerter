@@ -30,13 +30,11 @@ import static org.mabb.fontverter.opentype.TtfInstructions.graphicsengine.RoundS
 
 public class TestGraphicsStateInstructions {
     public static final float DELTA = 0.0000001f;
-    private TtfInstructionParser parser;
     private TtfVirtualMachine vm;
     private OpenTypeFont font;
 
     @Before
     public void init() throws IOException {
-        parser = new TtfInstructionParser();
         font = OpenTypeFont.createBlankTtfFont();
 
         vm = new TtfVirtualMachine(font);

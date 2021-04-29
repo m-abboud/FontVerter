@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,11 +36,12 @@ import java.util.concurrent.ConcurrentHashMap;
     https://developer.apple.com/fonts/TrueType-Reference-Manual/RM05/Chap5.html
  */
 public class TtfInstructionParser {
-    private static ConcurrentHashMap<Integer, Class> instructionTypes = new ConcurrentHashMap<Integer, Class>();
+	
+	private static ConcurrentHashMap<Integer, Class<? extends TtfInstruction>> instructionTypes = new ConcurrentHashMap<>();
 
     private static Logger log = LoggerFactory.getLogger(TtfInstructionParser.class);
 
-    public List<TtfInstruction> parse(byte[] data) throws IOException, InstantiationException, IllegalAccessException {
+    public List<TtfInstruction> parse(byte[] data) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         List<TtfInstruction> instructions = new LinkedList<TtfInstruction>();
 
         FontDataInputStream in = new FontDataInputStream(data);
@@ -62,31 +64,30 @@ public class TtfInstructionParser {
     }
 
     public static TtfInstruction createFromCode(int code)
-            throws IllegalAccessException, InstantiationException, IOException {
+            throws IllegalAccessException, InstantiationException, IOException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         initInstructionTypes();
 
-        Class type = instructionTypes.get(code);
+        Class<? extends TtfInstruction> type = instructionTypes.get(code);
         if (type == null)
             return null;
 
-        TtfInstruction instruction = (TtfInstruction) type.newInstance();
+        TtfInstruction instruction = type.getDeclaredConstructor().newInstance();
         instruction.code = code;
 
         return instruction;
     }
 
-    private static void initInstructionTypes() throws IllegalAccessException, InstantiationException {
+    private static void initInstructionTypes() throws IllegalAccessException, InstantiationException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
         // uses reflection to grab all TtfInstruction implementations than grabs their code ranges and adds an entry
         // into a code=> instruction class map to be used when creating instruction objects from a code when parsing
         // to remove the need for a giant if/switch block
         if (instructionTypes.isEmpty()) {
             Reflections reflections = new Reflections("org.mabb.fontverter");
-            Set<Class<? extends TtfInstruction>> adapterClasses = reflections.getSubTypesOf(TtfInstruction.class);
-            List<Class> instructionClasses = Arrays.asList(adapterClasses.toArray(new Class[adapterClasses.size()]));
+            Set<Class<? extends TtfInstruction>> instructionClasses = reflections.getSubTypesOf(TtfInstruction.class);
 
-            for (Class typeOn : instructionClasses) {
+            for (Class<? extends TtfInstruction> typeOn : instructionClasses) {
                 // instiante a test object once to grab it's code ranges to use in code=>instruction class type map
-                TtfInstruction instructOn = (TtfInstruction) typeOn.newInstance();
+                TtfInstruction instructOn = (TtfInstruction) typeOn.getDeclaredConstructor().newInstance();
 
                 int[] range = instructOn.getCodeRanges();
                 if (range.length == 1)

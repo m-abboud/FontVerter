@@ -21,8 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mabb.fontverter.FVFont;
 import org.mabb.fontverter.FontVerter;
-import org.mabb.fontverter.opentype.OpenTypeFont;
-import org.mabb.fontverter.opentype.SfntHeader;
 
 import static org.mabb.fontverter.TestUtils.TEST_PATH;
 import static org.mabb.fontverter.TestUtils.saveTempFile;

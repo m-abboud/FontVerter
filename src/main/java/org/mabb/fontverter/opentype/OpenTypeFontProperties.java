@@ -17,7 +17,6 @@
 
 package org.mabb.fontverter.opentype;
 
-import org.apache.commons.lang3.StringUtils;
 import org.mabb.fontverter.FontProperties;
 import org.mabb.fontverter.cff.CffFontAdapter;
 
@@ -64,9 +63,5 @@ class OpenTypeFontProperties extends FontProperties {
         properties.setVersion(cff.getVersion());
         properties.setSubFamilyName(cff.getSubFamilyName());
         properties.setTrademarkNotice(cff.getTrademarkNotice());
-    }
-
-    private static boolean isNameTableRecordsEmpty(OpenTypeFont font) {
-        return StringUtils.isEmpty(font.getNameTable().getName(OtfNameConstants.RecordType.FULL_FONT_NAME));
     }
 }

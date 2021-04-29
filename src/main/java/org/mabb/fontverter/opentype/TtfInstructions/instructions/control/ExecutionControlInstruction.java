@@ -32,6 +32,6 @@ public class ExecutionControlInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-       Integer value = (Integer)stack.pop();
+//       Integer value = (Integer)stack.pop();
     }
 }

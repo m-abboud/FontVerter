@@ -61,9 +61,11 @@ public class TestOpenTypeTable {
     public void fourBytesOfData_thenTableChecksumIsSumOfLongs() throws Exception {
         // note longs in opentype are 32bit vs java 64
         CannedOpenTypeTable table = new CannedOpenTypeTable();
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        writer.writeInt(1234567);
-        table.fillerData = writer.toByteArray();
+        
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			writer.writeInt(1234567);
+			table.fillerData = writer.toByteArray();
+		}
 
         long checksum = table.checksum();
 
@@ -75,31 +77,33 @@ public class TestOpenTypeTable {
         // note longs in opentype are 32bit vs java 64
         CannedOpenTypeTable table = new CannedOpenTypeTable();
 
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        int[] dataLongs = new int[]{500, 1000, 1234567, 991076541};
-        int expectedChecksum = 0;
-        for (int intOn : dataLongs) {
-            expectedChecksum += intOn;
-            writer.writeUnsignedInt(intOn);
-        }
-        table.fillerData = writer.toByteArray();
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			int[] dataLongs = new int[] { 500, 1000, 1234567, 991076541 };
+			int expectedChecksum = 0;
+			for (int intOn : dataLongs) {
+				expectedChecksum += intOn;
+				writer.writeUnsignedInt(intOn);
+			}
+			table.fillerData = writer.toByteArray();
 
-        long checksum = table.checksum();
+			long checksum = table.checksum();
 
-        Assert.assertEquals(expectedChecksum, checksum);
+			Assert.assertEquals(expectedChecksum, checksum);
+		}
     }
 
     @Test
     public void _2BytesOfData_thenTableChecksumDoesNotThrowException() throws Exception {
         // if internal methods don't pad checksum calc won't be able to read 4 bytes at time
         CannedOpenTypeTable table = new CannedOpenTypeTable();
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        writer.writeUnsignedShort(55);
-        table.fillerData = writer.toByteArray();
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			writer.writeUnsignedShort(55);
+			table.fillerData = writer.toByteArray();
 
-        long checksum = table.checksum();
+			long checksum = table.checksum();
 
-        Assert.assertEquals(55 << 16, checksum);
+			Assert.assertEquals(55 << 16, checksum);
+		}
     }
 
     private class CannedOpenTypeTable extends OpenTypeTable {

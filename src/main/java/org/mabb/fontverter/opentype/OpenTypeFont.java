@@ -22,8 +22,6 @@ import org.mabb.fontverter.*;
 import org.mabb.fontverter.converter.*;
 import org.mabb.fontverter.io.FontDataOutputStream;
 import org.mabb.fontverter.validator.RuleValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,9 +39,9 @@ import static org.mabb.fontverter.opentype.SfntHeader.*;
  * Apple TrueType spec can be found here: https://developer.apple.com/fonts/TrueType-Reference-Manual
  */
 public class OpenTypeFont implements FVFont {
+	
     SfntHeader sfntHeader;
     private List<OpenTypeTable> tables;
-    private static Logger log = LoggerFactory.getLogger(OpenTypeFont.class);
     private File sourceFile;
 
     public static OpenTypeFont createBlankFont() throws IOException {
@@ -149,7 +147,6 @@ public class OpenTypeFont implements FVFont {
     }
 
     private void createNewOS2WinMetricsTable() {
-        HorizontalHeadTable hhea = getHhea();
         OS2WinMetricsTable table = OS2WinMetricsTable.createDefaultTable();
         setOs2(table);
     }
@@ -248,18 +245,18 @@ public class OpenTypeFont implements FVFont {
     }
 
     private byte[] getRawData() throws IOException {
-        FontDataOutputStream out = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
-        sfntHeader.setNumTables(tables.size());
+		try (FontDataOutputStream out = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
+			sfntHeader.setNumTables(tables.size());
+			out.write(sfntHeader.getData());
 
-        out.write(sfntHeader.getData());
+			for (OpenTypeTable tableOn : tables)
+				out.write(tableOn.getRecordData());
 
-        for (OpenTypeTable tableOn : tables)
-            out.write(tableOn.getRecordData());
+			for (OpenTypeTable tableOn : tables)
+				out.write(tableOn.getData());
 
-        for (OpenTypeTable tableOn : tables)
-            out.write(tableOn.getData());
-
-        return out.toByteArray();
+			return out.toByteArray();
+		}
     }
 
     private void calculateOffsets(List<OpenTypeTable> tables) throws IOException {
@@ -311,7 +308,7 @@ public class OpenTypeFont implements FVFont {
         this.sourceFile = sourceFile;
     }
 
-    public void removeTable(Class toRemoveType) {
+    public void removeTable(Class<? extends OpenTypeTable> toRemoveType) {
         OpenTypeTable toRemoveTable = null;
         for (OpenTypeTable tableOn : tables) {
             if (tableOn.getClass() == toRemoveType)
@@ -322,7 +319,8 @@ public class OpenTypeFont implements FVFont {
             tables.remove(toRemoveTable);
     }
 
-    private <T extends OpenTypeTable> T findTableType(Class type) {
+    @SuppressWarnings("unchecked")
+	private <T extends OpenTypeTable> T findTableType(Class<T> type) {
         for (OpenTypeTable tableOn : tables) {
             if (tableOn.getClass() == type)
                 return (T) tableOn;

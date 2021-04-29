@@ -21,17 +21,14 @@ import org.mabb.fontverter.cff.CffFontAdapter;
 import org.mabb.fontverter.cff.CffFontAdapter.CffGlyph;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 public class HorizontalMetricsTable extends OpenTypeTable {
-    private static final Logger log = getLogger(HorizontalMetricsTable.class);
-    private int[] advanceWidths;
+
+	private int[] advanceWidths;
 
     private short[] leftSideBearings;
     private Short[] nonHorizontalLeftSideBearing;
@@ -41,35 +38,38 @@ public class HorizontalMetricsTable extends OpenTypeTable {
     }
 
     public void readData(byte[] data) throws IOException {
-        FontDataInputStream reader = new FontDataInputStream(data);
+		try (FontDataInputStream reader = new FontDataInputStream(data)) {
 
-        int numHMetrics = font.getHhea().numberOfHMetrics;
-        advanceWidths = new int[numHMetrics];
-        leftSideBearings = new short[numHMetrics];
+			int numHMetrics = font.getHhea().numberOfHMetrics;
+			advanceWidths = new int[numHMetrics];
+			leftSideBearings = new short[numHMetrics];
 
-        for (int i = 0; i < numHMetrics; i++) {
-            advanceWidths[i] = reader.readUnsignedShort();
-            leftSideBearings[i] = reader.readShort();
-        }
+			for (int i = 0; i < numHMetrics; i++) {
+				advanceWidths[i] = reader.readUnsignedShort();
+				leftSideBearings[i] = reader.readShort();
+			}
 
-        LinkedList<Short> nonHorzBearings = new LinkedList<Short>();
-        while (reader.available() >= 2)
-            nonHorzBearings.add(reader.readShort());
+			LinkedList<Short> nonHorzBearings = new LinkedList<Short>();
+			while (reader.available() >= 2)
+				nonHorzBearings.add(reader.readShort());
 
-        nonHorizontalLeftSideBearing = nonHorzBearings.toArray(new Short[nonHorzBearings.size()]);
+			nonHorizontalLeftSideBearing = nonHorzBearings.toArray(new Short[nonHorzBearings.size()]);
+		}
     }
 
     protected byte[] generateUnpaddedData() throws IOException {
-        FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET);
+		try (FontDataOutputStream writer = new FontDataOutputStream(FontDataOutputStream.OPEN_TYPE_CHARSET)) {
 
-        for (int i = 0; i < advanceWidths.length; i++) {
-            writer.writeUnsignedShort(advanceWidths[i]);
-            writer.writeShort(leftSideBearings[i]);
-        }
-        for (Short bearingOn : nonHorizontalLeftSideBearing)
-            writer.writeUnsignedShort(bearingOn);
+			for (int i = 0; i < advanceWidths.length; i++) {
+				writer.writeUnsignedShort(advanceWidths[i]);
+				writer.writeShort(leftSideBearings[i]);
+			}
+			
+			for (Short bearingOn : nonHorizontalLeftSideBearing)
+				writer.writeUnsignedShort(bearingOn);
 
-        return writer.toByteArray();
+			return writer.toByteArray();
+		}
     }
 
     public static HorizontalMetricsTable createDefaultTable(OpenTypeFont font) {

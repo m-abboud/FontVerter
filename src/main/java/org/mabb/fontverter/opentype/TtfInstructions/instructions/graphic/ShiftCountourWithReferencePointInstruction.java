@@ -36,7 +36,8 @@ public class ShiftCountourWithReferencePointInstruction extends TtfInstruction {
     }
 
     public void execute(InstructionStack stack) throws IOException {
-        Long contourId = stack.popUint32();
+//        Long contourId = 
+    	stack.popUint32();
         // todo graphics state handeling
     }
 }

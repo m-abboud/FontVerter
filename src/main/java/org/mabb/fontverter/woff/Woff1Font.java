@@ -31,6 +31,7 @@ import java.util.zip.InflaterOutputStream;
 import static org.mabb.fontverter.woff.Woff1Font.Woff1Table.WOFF1_TABLE_DIRECTORY_ENTRY_SIZE;
 
 public class Woff1Font extends WoffFont {
+	
     static final int WOFF1_HEADER_SIZE = 44;
 
     public WoffTable createTable() {
@@ -111,12 +112,13 @@ public class Woff1Font extends WoffFont {
         }
 
         protected byte[] compress(byte[] bytes) throws IOException {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            DeflaterOutputStream compressStream = new DeflaterOutputStream(out);
-            compressStream.write(bytes);
-            compressStream.close();
-
-            return out.toByteArray();
+        	ByteArrayOutputStream out = new ByteArrayOutputStream();
+        	
+			try (DeflaterOutputStream compressStream = new DeflaterOutputStream(out)) {
+				compressStream.write(bytes);
+			}
+			
+			return out.toByteArray();
         }
 
         protected void readCompressedData(byte[] readData) throws IOException {
@@ -126,24 +128,25 @@ public class Woff1Font extends WoffFont {
             }
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            InflaterOutputStream compressStream = new InflaterOutputStream(out);
-            compressStream.write(readData);
-            compressStream.close();
-
-            tableData = out.toByteArray();
+            
+			try (InflaterOutputStream compressStream = new InflaterOutputStream(out)) {
+				compressStream.write(readData);
+				tableData = out.toByteArray();
+			}
         }
 
-        public byte[] getDirectoryData() throws IOException {
-            WoffOutputStream writer = new WoffOutputStream();
+		public byte[] getDirectoryData() throws IOException {
+			try (WoffOutputStream writer = new WoffOutputStream()) {
 
-            writer.writeString(tag);
-            writer.writeInt(offset);
-            writer.writeInt(getCompressedData().length - paddingAdded);
-            writer.writeInt(tableData.length);
-            writer.writeUnsignedInt((int) checksum);
+				writer.writeString(tag);
+				writer.writeInt(offset);
+				writer.writeInt(getCompressedData().length - paddingAdded);
+				writer.writeInt(tableData.length);
+				writer.writeUnsignedInt((int) checksum);
 
-            return writer.toByteArray();
-        }
+				return writer.toByteArray();
+			}
+		}
 
         public void setOffset(int offset) {
             this.offset = offset;
