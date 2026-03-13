@@ -18,6 +18,7 @@
 package org.mabb.fontverter.opentype.TtfInstructions;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -40,7 +41,7 @@ public class TestFullTtfPrograms {
     // Currentley only testing that real world full font programs execute without error in these tests
     @Test
     public void executeSecondGlyphIn_BrokenHelveticaNeueTtf() throws Exception {
-        PDDocument doc = PDDocument.load(TestUtils.readTestFile("pdf/HorariosMadrid_Segovia.pdf"));
+        PDDocument doc = Loader.loadPDF(TestUtils.readTestFile("pdf/HorariosMadrid_Segovia.pdf"));
 
         PDFont rawType0Font = extractFont(doc, "TCQDAA+HelveticaNeue-Light-Identity-H");
         OpenTypeFont font = (OpenTypeFont) PdfFontExtractor.convertType0FontToOpenType((PDType0Font) rawType0Font);

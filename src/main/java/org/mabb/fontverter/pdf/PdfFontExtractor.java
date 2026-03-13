@@ -18,11 +18,15 @@
 package org.mabb.fontverter.pdf;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType1CFont;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -33,7 +37,10 @@ import org.mabb.fontverter.converter.PsType0ToOpenTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -86,7 +93,7 @@ public class PdfFontExtractor extends PDFTextStripper {
         if (!fontExtractDir.exists())
             fontExtractDir.mkdir();
 
-        PDDocument pdf = PDDocument.load(pdfFile);
+        PDDocument pdf = Loader.loadPDF(pdfFile);
 
         PdfFontExtractor fontExtractor = new PdfFontExtractor();
         fontExtractor.setExtractFormat(format);
@@ -105,13 +112,13 @@ public class PdfFontExtractor extends PDFTextStripper {
     }
 
     public void extractFontsToDir(File pdf, String path) throws IOException {
-        PDDocument doc = PDDocument.load(pdf);
+        PDDocument doc = Loader.loadPDF(pdf);
         extractFontsToDir(doc, path);
         doc.close();
     }
 
     public void extractFontsToDir(byte[] pdf, String path) throws IOException {
-        PDDocument doc = PDDocument.load(pdf);
+        PDDocument doc = Loader.loadPDF(pdf);
         extractFontsToDir(doc, path);
         doc.close();
     }

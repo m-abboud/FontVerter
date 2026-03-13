@@ -19,10 +19,10 @@ package org.mabb.fontverter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.fontbox.ttf.OTFParser;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.mabb.fontverter.opentype.OpenTypeFont;
 import org.mabb.fontverter.opentype.OpenTypeValidator;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -52,7 +52,7 @@ public class TestUtils {
         // fontbox for validating generated fonts, fontbox has good pdf type font parsing no generation tho
         // but font classes have package local constructors
         OTFParser parser = new OTFParser();
-        org.apache.fontbox.ttf.OpenTypeFont font = parser.parse(new ByteArrayInputStream(file));
+        org.apache.fontbox.ttf.OpenTypeFont font = parser.parse(new RandomAccessReadBuffer(file));
         font.getName();
     }
 

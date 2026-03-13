@@ -23,16 +23,18 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.EncodedFont;
 import org.apache.fontbox.cff.*;
 import org.apache.fontbox.encoding.Encoding;
+import org.mabb.fontverter.FVFont;
+import org.mabb.fontverter.FontNotSupportedException;
+import org.mabb.fontverter.FontProperties;
+import org.mabb.fontverter.FontVerter;
 import org.mabb.fontverter.converter.CFFToOpenTypeConverter;
 import org.mabb.fontverter.converter.CombinedFontConverter;
 import org.mabb.fontverter.converter.FontConverter;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
-import org.mabb.fontverter.*;
 import org.mabb.fontverter.opentype.GlyphMapReader;
 import org.mabb.fontverter.validator.RuleValidator;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class CffFontAdapter implements FVFont {
@@ -49,7 +51,12 @@ public class CffFontAdapter implements FVFont {
 
     private static CFFFont fontboxParse(byte[] cffData) throws IOException {
         CFFParser parser = new CFFParser();
-        List<CFFFont> fonts = parser.parse(cffData);
+        List<CFFFont> fonts = parser.parse(cffData, new CFFParser.ByteSource() {
+            @Override
+            public byte[] getBytes() throws IOException {
+                return new byte[0];
+            }
+        });
         if (fonts.size() > 1)
             throw new FontNotSupportedException("Multiple CFF fonts in one file are not supported.");
         return fonts.get(0);
@@ -171,23 +178,51 @@ public class CffFontAdapter implements FVFont {
 
     @SuppressWarnings("unchecked")
     public Map<Integer, String> getGlyphIdsToNames() throws IOException {
-        try {
-            // reflection to get private map field for lazyness, !fragile!, obviously
-            Field mapField = FontVerterUtils.findPrivateField("gidToName", CFFCharset.class);
-            return (Map<Integer, String>) mapField.get(font.getCharset());
-        } catch (Exception ex) {
-            throw new IOException(ex);
+
+        Map<Integer, String> codeToNameMap = getEncoding().getCodeToNameMap();
+
+        Map<Integer, String> gidToName = new HashMap();
+
+        // key: sidorcid, value: name
+        for (Map.Entry<Integer, String> entry : codeToNameMap.entrySet()) {
+            if (!font.getCharset().isCIDFont()) {
+                int sid = font.getCharset().getSID(entry.getValue());
+                int gid = font.getCharset().getGIDForSID(sid);
+                gidToName.put(gid, entry.getValue());
+            } else {
+
+                int gid = font.getCharset().getGIDForCID(entry.getKey());
+                gidToName.put(gid, entry.getValue());
+            }
         }
+        return gidToName;
+
+
     }
 
     @SuppressWarnings("unchecked")
     public Map<Integer, Integer> getCharCodeToGlyphIds() throws IOException {
-        try {
-            Field mapField = FontVerterUtils.findPrivateField("sidOrCidToGid", CFFCharset.class);
-            return (Map<Integer, Integer>) mapField.get(font.getCharset());
-        } catch (Exception ex) {
-            throw new IOException(ex);
+
+
+        Map<Integer, String> codeToNames = getEncoding().getCodeToNameMap();
+
+        Map<Integer, Integer> glyphIds = new HashMap();
+
+        // key = sidorcid, value = name
+        for (Map.Entry<Integer, String> entry : codeToNames.entrySet()) {
+            if (!font.getCharset().isCIDFont()) {
+                int gid = font.getCharset().getGIDForSID(entry.getKey());
+                glyphIds.put(entry.getKey(), gid);
+            } else {
+                int gid = font.getCharset().getGIDForCID(entry.getKey());
+                glyphIds.put(entry.getKey(), gid);
+            }
         }
+
+
+        return glyphIds;
+
+
     }
 
     public List<GlyphMapReader.GlyphMapping> getGlyphMaps() throws IOException {
@@ -198,20 +233,17 @@ public class CffFontAdapter implements FVFont {
         return GlyphMapReader.readCharCodesToGlyphs(getCharCodeToGlyphIds(), getEncoding());
     }
 
-    public Encoding getEncoding() {
-		if (font instanceof EncodedFont) {
-			try {
-				Encoding encoding = ((EncodedFont) font).getEncoding();
-				if (encoding.getCodeToNameMap().values().size() > 1) {
-					return encoding;
-				}
-			} catch (IOException error) {
-				LOG.error("", error);
-			}
-		}
 
-		return CFFStandardEncoding.getInstance();
-	}
+    public Encoding getEncoding() {
+        if (font instanceof EncodedFont) {
+            Encoding encoding = ((EncodedFont) font).getEncoding();
+            if (encoding.getCodeToNameMap().values().size() > 1) {
+                return encoding;
+            }
+        }
+
+        return CFFStandardEncoding.getInstance();
+    }
 
 
     private <X> X nonNullDictEntry(String key, Class<X> type) {
@@ -223,7 +255,7 @@ public class CffFontAdapter implements FVFont {
             return (X) "";
 
         if (type == Integer.class)
-            return (X) new Integer(1);
+            return (X) Integer.valueOf(1);
 
         return (X) "";
     }
@@ -261,15 +293,44 @@ public class CffFontAdapter implements FVFont {
         for (GlyphMapReader.GlyphMapping mapOn : getGlyphMaps()) {
             CffGlyph glyph = createGlyph();
 
+            String charString = font.toString().substring(font.toString().indexOf("charStrings="));
+            String[] charStrings = charString.replace("charStrings=", "").replace("[[", "").replace("]", "").split("\\[");
+
+            Type2CharStringParser parser = new Type2CharStringParser(font.getName());
+
             Type2CharString charStr = font.getType2CharString(mapOn.glyphId);
-            glyph.readType2Sequence(charStr.getType2Sequence());
-            glyph.map = mapOn;
+            byte[] bytes = null;
+
+            if (charStr.getGID() < charStrings.length) {
+                bytes = font.getCharStringBytes().get(charStr.getGID());
+            }
+            if (bytes == null) {
+                bytes = font.getCharStringBytes().get(0);
+            }
+
             glyph.charStr = charStr;
+
+
+            byte[][] globalSubrIndex = new byte[getFont().getGlobalSubrIndex().size()][];
+
+            for (int i = 0; i < getFont().getGlobalSubrIndex().size(); i++) {
+                globalSubrIndex[i] = getFont().getGlobalSubrIndex().get(i);
+            }
+
+
+            List<Object> result = parser.parse(bytes, globalSubrIndex,
+                    null,
+                    mapOn.name);
+            glyph.readType2Sequence(result);
+
+            glyph.map = mapOn;
             glyphs.add(glyph);
+
         }
 
         return glyphs;
     }
+
 
     public Integer getDefaultWidth() {
         String key = "defaultWidthX";
@@ -366,7 +427,7 @@ public class CffFontAdapter implements FVFont {
         }
 
         private void parseHint(Command command) {
-            if (command.name.startsWith("hstem")) {
+            if (command.name.toLowerCase().startsWith("hstem")) {
                 leftSideBearing = command.values.get(0);
             }
         }
@@ -375,5 +436,7 @@ public class CffFontAdapter implements FVFont {
             String name;
             List<Integer> values = new LinkedList<Integer>();
         }
+
+
     }
 }

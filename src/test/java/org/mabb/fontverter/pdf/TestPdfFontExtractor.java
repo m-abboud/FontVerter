@@ -18,6 +18,7 @@
 package org.mabb.fontverter.pdf;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -34,7 +35,7 @@ import java.util.List;
 public class TestPdfFontExtractor {
     @Test
     public void givenCorruptOverlyLargeOpenTypeTableLength_doesNotThrowOomError() throws IOException {
-        PDDocument doc = PDDocument.load(
+        PDDocument doc = Loader.loadPDF(
                 TestUtils.readTestFile("pdf/corrupt_overly_large_opentype_table_length.pdf"));
         PdfFontExtractor extractor = new PdfFontExtractor();
 
@@ -46,7 +47,7 @@ public class TestPdfFontExtractor {
 
     @Test
     public void givenPdfWith2Fonts_extractFontsToFVFontList_thenListHasSameNumberOfFonts() throws IOException {
-        PDDocument doc = PDDocument.load(TestUtils.readTestFile("pdf/brno30.pdf"));
+        PDDocument doc = Loader.loadPDF(TestUtils.readTestFile("pdf/brno30.pdf"));
         PdfFontExtractor extractor = new PdfFontExtractor();
 
         List<FVFont> fonts = extractor.extractToFVFonts(doc);
@@ -60,7 +61,7 @@ public class TestPdfFontExtractor {
 
     @Test
     public void givenPdfWith2Fonts_extractFontsToDir_thenDirectoryHasThreeTtfFiles() throws IOException {
-        PDDocument doc = PDDocument.load(TestUtils.readTestFile("pdf/brno30.pdf"));
+        PDDocument doc = Loader.loadPDF(TestUtils.readTestFile("pdf/brno30.pdf"));
         PdfFontExtractor extractor = new PdfFontExtractor();
 
         File extractDir = folder.getRoot();
@@ -77,7 +78,7 @@ public class TestPdfFontExtractor {
     @Test
     public void givenPdfWith2Fonts_extractFontsToDirWithWoff1FormatSet_thenDirectoryHasThreeWoffFiles() throws IOException {
         File extractDir = folder.getRoot();
-        PDDocument doc = PDDocument.load(TestUtils.readTestFile("pdf/brno30.pdf"));
+        PDDocument doc = Loader.loadPDF(TestUtils.readTestFile("pdf/brno30.pdf"));
 
         PdfFontExtractor extractor = new PdfFontExtractor();
         extractor.setExtractFormat(FontVerter.FontFormat.WOFF1);

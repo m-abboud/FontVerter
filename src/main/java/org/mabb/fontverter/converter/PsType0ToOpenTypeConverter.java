@@ -132,7 +132,7 @@ public class PsType0ToOpenTypeConverter {
 
     @SuppressWarnings("unchecked")
     private Map<Integer, String> getCmapUnicodeMap(CMap cmap) throws IllegalAccessException {
-        Object mappings = FontVerterUtils.findPrivateField("charToUnicode", cmap.getClass()).get(cmap);
+        Object mappings = FontVerterUtils.findPrivateField("charToUnicodeTwoBytes", cmap.getClass()).get(cmap);
         if (mappings == null)
             return new HashMap<Integer, String>();
 

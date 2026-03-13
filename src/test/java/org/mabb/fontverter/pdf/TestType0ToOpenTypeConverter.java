@@ -17,6 +17,7 @@
 
 package org.mabb.fontverter.pdf;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -36,7 +37,7 @@ public class TestType0ToOpenTypeConverter {
     private static PDDocument doc;
 
     public TestType0ToOpenTypeConverter() throws IOException {
-        doc = PDDocument.load(TestUtils.readTestFile("pdf/HorariosMadrid_Segovia.pdf"));
+        doc = Loader.loadPDF(TestUtils.readTestFile("pdf/HorariosMadrid_Segovia.pdf"));
     }
 
     @After

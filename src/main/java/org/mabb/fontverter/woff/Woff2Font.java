@@ -17,21 +17,23 @@
 
 package org.mabb.fontverter.woff;
 
+import com.aayushatharva.brotli4j.Brotli4jLoader;
+import com.aayushatharva.brotli4j.encoder.BrotliOutputStream;
+import com.aayushatharva.brotli4j.encoder.Encoder;
 import org.apache.commons.lang3.ArrayUtils;
-import org.mabb.fontverter.*;
+import org.mabb.fontverter.FontNotSupportedException;
+import org.mabb.fontverter.FontProperties;
+import org.mabb.fontverter.FontVerter;
+import org.mabb.fontverter.FontVerterUtils;
 import org.mabb.fontverter.converter.CombinedFontConverter;
 import org.mabb.fontverter.converter.FontConverter;
 import org.mabb.fontverter.converter.OtfToWoffConverter;
 import org.mabb.fontverter.converter.WoffToOtfConverter;
-import org.meteogroup.jbrotli.Brotli;
-import org.meteogroup.jbrotli.BrotliStreamCompressor;
-import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.mabb.fontverter.woff.WoffConstants.TableFlagType.arbitrary;
-import static org.mabb.fontverter.woff.WoffConstants.TableFlagType.glyf;
-import static org.mabb.fontverter.woff.WoffConstants.TableFlagType.loca;
+import static org.mabb.fontverter.woff.WoffConstants.TableFlagType.*;
 
 public class Woff2Font extends WoffFont {
     private byte[] cachedCompressedBlock;
@@ -70,18 +72,24 @@ public class Woff2Font extends WoffFont {
     }
 
     private byte[] brotliCompress(byte[] bytes) {
-        BrotliLibraryLoader.loadBrotli();
 
-        Brotli.Parameter param = new Brotli.Parameter()
-                .setMode(Brotli.Mode.TEXT)
-                .setQuality(11)
-                .setLgwin(10)
-                .setLgblock(24);
-        BrotliStreamCompressor streamCompressor = new BrotliStreamCompressor(param);
-        byte[] compressed = streamCompressor.compressArray(bytes, true);
-        streamCompressor.close();
 
-        return compressed;
+        Brotli4jLoader.ensureAvailability();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bytes.length);
+
+        Encoder.Parameters params = new Encoder.Parameters();
+        params.setMode(Encoder.Mode.TEXT);
+        params.setQuality(11);
+        params.setWindow(10);
+
+        try (BrotliOutputStream brotliOutputStream = new BrotliOutputStream(outputStream, params)) {
+            brotliOutputStream.write(bytes, 0, bytes.length);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return outputStream.toByteArray();
     }
 
     public FontProperties getProperties() {

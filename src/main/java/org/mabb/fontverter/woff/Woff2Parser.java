@@ -17,13 +17,15 @@
 
 package org.mabb.fontverter.woff;
 
+import com.aayushatharva.brotli4j.Brotli4jLoader;
+import com.aayushatharva.brotli4j.decoder.BrotliInputStream;
 import org.mabb.fontverter.woff.Woff2Font.Woff2Table;
 import org.mabb.fontverter.woff.WoffConstants.TableFlagType;
-import org.meteogroup.jbrotli.BrotliDeCompressor;
-import org.meteogroup.jbrotli.libloader.BrotliLibraryLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -92,11 +94,19 @@ public class Woff2Parser extends WoffParser {
     }
 
     private byte[] brotliDecompress(byte[] compressed) {
-        BrotliLibraryLoader.loadBrotli();
+        Brotli4jLoader.ensureAvailability();
 
-        byte[] decompressed = new byte[compressed.length * 4];
-        int decompressLength = new BrotliDeCompressor().deCompress(compressed, decompressed);
 
-        return Arrays.copyOfRange(decompressed, 0, decompressLength);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressed);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(compressed.length * 4);
+
+        try (BrotliInputStream brotliInputStream = new BrotliInputStream(byteArrayInputStream)) {
+            byteArrayOutputStream.write(brotliInputStream.read());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return Arrays.copyOfRange(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.size());
     }
 }
