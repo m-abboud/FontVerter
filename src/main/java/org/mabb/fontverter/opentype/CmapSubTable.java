@@ -17,6 +17,7 @@
 
 package org.mabb.fontverter.opentype;
 
+import org.apache.fontbox.cff.CFFStandardEncoding;
 import org.mabb.fontverter.io.FontDataInput;
 import org.mabb.fontverter.opentype.GlyphMapReader.GlyphMapping;
 import org.mabb.fontverter.io.FontDataInputStream;
@@ -169,6 +170,8 @@ abstract class CmapSubTable {
     }
 
     static class Format6SubTable extends CmapSubTable {
+    	private Map<Integer, Integer> charCodeToGlyphId = new LinkedHashMap<Integer, Integer>();
+    	
         public Format6SubTable() {
             formatNumber = 6;
         }
@@ -186,12 +189,25 @@ abstract class CmapSubTable {
         public int glyphCount() {
             return 0;
         }
+        
+        @Override
+        public List<GlyphMapping> getGlyphMappings() {
+        	return GlyphMapReader.readCharCodesToGlyphs(charCodeToGlyphId, CFFStandardEncoding.getInstance());
+        }
 
         public void readData(FontDataInput input) throws IOException {
             int length = input.readUnsignedShort();
             rawReadData = input.readBytes(length - 4);
             input = new FontDataInputStream(rawReadData);
 
+            languageId = input.readUnsignedShort();
+            int firstCode = input.readUnsignedShort();
+            int entryCount = input.readUnsignedShort();
+            int[] glyphIndex = input.readUnsignedShortArray( entryCount );
+            
+            for(int i = 0; i < entryCount; i++) {
+            	charCodeToGlyphId.put( firstCode+i, glyphIndex[i] );
+            }
         }
     }
 

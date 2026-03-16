@@ -19,6 +19,7 @@ package org.mabb.fontverter.opentype;
 
 
 import org.mabb.fontverter.io.FontDataInput;
+import org.mabb.fontverter.opentype.CmapSubTable.Format0SubTable;
 import org.mabb.fontverter.opentype.GlyphMapReader.GlyphMapping;
 import org.mabb.fontverter.io.FontDataInputStream;
 import org.mabb.fontverter.io.FontDataOutputStream;
@@ -53,7 +54,67 @@ public class CmapTable extends OpenTypeTable {
     public String getTableType() {
         return "cmap";
     }
+    
+    @Override
+    public void normalize() throws IOException {
+        super.normalize();
 
+        Format4SubTable newWindowsTable = null;
+        Format4SubTable newUnixTable = null;
+        Format0SubTable newMacTable = null;
+        
+        if( this.windowsTable == null ) {
+            newWindowsTable = new Format4SubTable();
+            newWindowsTable.setPlatformId(3);
+            newWindowsTable.setEncodingId(1);
+
+            this.windowsTable = newWindowsTable;
+        }
+
+        if( this.unixTable == null ) {
+            newUnixTable = new Format4SubTable();
+            newUnixTable.setPlatformId(0);
+            newUnixTable.setEncodingId(3);
+            
+            this.unixTable = newUnixTable;
+        }
+
+        if( this.macTable == null ) {
+            newMacTable = new Format0SubTable();
+            newMacTable.setPlatformId(1);
+            newMacTable.setEncodingId(0);
+
+            this.macTable = newMacTable;
+        }
+        
+        if( newWindowsTable != null || newUnixTable != null || newMacTable != null ) {
+            for( GlyphMapping m : getGlyphMappings() ) {
+                if( m.glyphId > 0 ) {
+                    if( newWindowsTable != null ) {
+                        newWindowsTable.addGlyphMapping( m.charCode, m.glyphId );
+                    }
+                    if( newUnixTable != null ) {
+                        newUnixTable.addGlyphMapping( m.charCode, m.glyphId );
+                    }
+                    if( newMacTable != null ) {
+                        newMacTable.addGlyphMapping( m.charCode, m.glyphId );
+                    }
+                }
+            }
+            if( newWindowsTable != null ) {
+                this.subTables.add(newWindowsTable);
+            }
+
+            if( newUnixTable != null ) {
+                this.subTables.add(newUnixTable);
+            }
+
+            if( newMacTable != null ) {
+                this.subTables.add(newMacTable);
+            }
+        }
+    }
+    
     @Override
     protected byte[] generateUnpaddedData() throws IOException {
         calculateOffsets();
@@ -117,6 +178,17 @@ public class CmapTable extends OpenTypeTable {
             subTable.setEncodingId(header.encodingID);
             subTable.setPlatformId(header.platformID);
             subTables.add(subTable);
+            
+            if( header.platformID == 0
+                    && subTable instanceof Format4SubTable) {
+                this.unixTable = (Format4SubTable) subTable;
+            } else if( header.platformID == 1
+                    && subTable instanceof Format0SubTable) {
+                this.macTable = (Format0SubTable) subTable;
+            } else if( header.platformID == 3
+                    && subTable instanceof Format4SubTable) {
+                this.windowsTable = (Format4SubTable) subTable;
+            }
         }
     }
 
