@@ -72,13 +72,13 @@ public class FontDataInputStream extends DataInputStream implements FontDataInpu
     public int readUIntBase128() throws IOException {
         int accum = 0;
         for (int i = 0; i < 5; i++) {
-            int data_byte = readByte();
+            int data_byte = readByte() & 0xFF;
 
             if (i == 0 && data_byte == 0x80)
                 throw new IOException("No leading 0's");
 
 
-            if ((accum & 0xFE000000) > 0)
+            if ((accum & 0xFE000000) != 0)
                 throw new IOException("UIntBase128 read error If any of top 7 bits are set then << 7 would overflow");
 
             accum = (accum << 7) | (data_byte & 0x7F);
