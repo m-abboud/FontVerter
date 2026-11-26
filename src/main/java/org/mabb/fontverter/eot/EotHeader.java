@@ -17,14 +17,14 @@
 
 package org.mabb.fontverter.eot;
 
-import com.google.common.primitives.Bytes;
+import org.apache.commons.lang3.ArrayUtils;
 import org.mabb.fontverter.io.DataTypeBindingSerializer;
 import org.mabb.fontverter.io.DataTypeProperty;
 import org.mabb.fontverter.io.DataTypeSerializerException;
 import org.mabb.fontverter.io.LittleEndianOutputStream;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.util.Objects;
 
 import static org.mabb.fontverter.io.DataTypeProperty.DataType.*;
 
@@ -175,9 +175,8 @@ public class EotHeader {
     }
 
     private String headerEntryToString(Byte[] data) {
-        // since our annotation deserializer has to have the propertys as Byte objects instead of
-        // byte primative we have to do a wierd little dance to read our strings
-        byte[] fullName = Bytes.toArray(Arrays.asList(data));
+        // The annotation deserializer stores boxed bytes; decode their primitive representation.
+        byte[] fullName = ArrayUtils.toPrimitive(Objects.requireNonNull(data));
         try {
             return new String(fullName, "UTF-16");
         } catch (UnsupportedEncodingException e) {
